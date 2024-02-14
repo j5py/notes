@@ -1,5 +1,5 @@
 # Notes
-###### Solutions to a given problem
-> see/facility
-###### Notes taken while studying
-> see/lesson
+
+> `see/facility ... .md` My solutions to a given problem
+
+> `see/lesson ... .md` My notes taken during different studies
