@@ -1,0 +1,244 @@
+
+
+Ping uses ICMP (Internet Control Message Protocol) packets
+
+
+
+Local Area Network (LAN) Topologies
+
+    Star (expensive)
+    Bus (cost-efficient)
+    Ring
+
+
+
+Subnetting
+
+    The Internet
+        Router
+            Switch
+                Subnet
+                    Computer
+                    Computer
+                    ...
+                Subnet
+                    Computer
+                    ...
+
+    Subnets use IP addresses in three different ways
+
+        Identify the network address
+        Identify the host address
+        Identify the default gateway
+
+    Subnetting provides a range of benefits, including
+
+        Efficiency
+        Security
+        Full control
+
+
+
+ARP (Address Resolution Protocol) sends two types of
+messages to map IP address and MAC address together
+
+    ARP Request
+        SRC MAC...
+        DST MAC...
+        Who has...
+
+    ARP Reply
+        SRC MAC...
+        DST MAC...
+        I have...
+
+
+
+DHCP (Dynamic Host Configuration Protocol)
+
+    DHCP Discover
+        " IP Address? "
+    DHCP Offer
+        " You can have... "
+    DHCP Request
+        " Yes... "
+    DHCP ACK
+        " ...for the next 24 hours "
+
+
+
+OSI (Open Systems Interconnection Model) encapsulation layers
+
+    7. Application
+
+    6. Presentation
+
+    5. Session
+
+    4. Transport
+        TCP guarantees the accuracy of data
+        UDP is much faster
+
+    3. Network
+        OSPF (Open Shortest Path First)
+        RIP (Routing Information Protocol)
+
+    2. Data link
+        NIC (Network Interface Card)
+        MAC (Media Access Control)
+
+    1. Physical
+
+
+
+Some notable packet headers
+
+    Time to Live
+    Checksum
+    Source Address
+    Destination Address
+
+
+
+TCP/IP protocol consists of four layers
+
+    Application
+    Transport
+    Internet
+    Network Interface
+
+        Information is added to each layer of the TCP model
+        as the piece of data (or packet) traverses it
+
+        In the OSI model, a frame is at layer 2 meaning
+        there is no such information as IP addresses
+
+        About anything IP addresses,
+        we are talking about packets
+
+
+
+Transmission Control Protocol (TCP)
+
+    Crucial headers
+
+        Source Port
+        Destination Port
+        Source IP
+        Destination IP
+        Sequence Number
+        Acknowledgement Number
+        Checksum
+        Data
+        Flag
+
+
+    Establishing a TCP connection (Three-way handshake)
+
+        SYN >>>
+        <<< SYN/ACK
+        ACK >>>
+
+            DATA
+        FIN (properly) | RST
+
+
+    Closing a TCP connection
+
+        FIN >>>
+        <<< ACK
+        <<< FIN
+        ACK >>>
+
+
+
+User Datagram Protocol (UDP) packet
+
+    Fewer headers
+        Time to Live (TTL)
+        Source Address
+        Destination Address
+        Source Port
+        Destination Port
+        Data
+
+
+UDP is stateless
+
+    " Request " >>>
+    <<< " Response "
+    <<< " Response "
+    <<< " Response "
+    ...
+
+
+
+Ports
+
+    21      FTP     File Transfer Protocol
+    22      SSH     Secure Shell
+    80      HTTP    HyperText Transfer Protocol
+    443     HTTPS   HyperText Transfer Protocol Secure
+    445     SMB     Server Message Block
+    3389    RDP     Remote Desktop Protocol
+
+
+
+VPN Technologies
+
+    PPP
+        Used by PPTP to allow for authentication and provide encryption of data
+        VPNs work by using a private key and public certificate (similar to SSH)
+        This technology is not capable of leaving a network by itself (non-routable)
+    PPTP
+        Point-to-Point Tunneling Protocol allows the data from PPP to travel and leave a network
+        Very easy to set up, weakly encrypted in comparison to alternatives
+    IPSec
+        Internet Protocol Security encrypts data using the existing Internet Protocol (IP) framework
+        Difficult to set up, it boasts strong encryption
+
+
+
+Computer
+    Recursive DNS Server
+        Root DNS Server
+            Authoritative DNS server
+
+
+
+Common HTTP methods
+
+    GET
+    POST
+    PUT
+    DELETE
+
+
+
+HTTP Status Codes
+
+    100-199     Information Response
+    200-299     Success
+    300-399     Redirection
+    400-499     Client Errors
+    500-599     Server Errors
+
+
+
+Common Request Headers
+
+    Host
+    User-Agent
+    Content-Length
+    Accept-Encoding
+
+
+
+Common Response Headers
+
+    Set-Cookie
+    Cache-Control
+    Content-Type
+    Content-Encoding
+
+
