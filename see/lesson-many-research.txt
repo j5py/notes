@@ -1,0 +1,1165 @@
+
+
+GNU/Linux
+
+    Standard streams
+                0 stdin
+                1 stdout
+                2 stderr
+
+        Example
+            Keyboard -> 0 -> Process -> 1 or 2 -> Display
+
+
+    3 types de fichiers
+                Ordinaires (ou réguliers)
+                Catalogues (dossiers ou répertoires)
+                Spéciaux (interfaces vers périphériques, surtout dans /dev)
+
+        Example
+                . et .. sont de véritables fichiers répertoires
+            Append indicator (ls -F)
+                /   Répertoire
+                *   Exécutable
+                @   Lien symbolique
+
+
+    Long listing format (ls -l)
+        1               2       3               4       5       6           7
+        Type/droits     Liens   Propriétaire    Groupe  Octets  Date modif  Nom
+
+            Type/droits
+                Suivi d'un .
+                    Contexte de sécurité selinux
+                Suivi d'un +
+                    Droits étendus ACL
+
+
+    Shortcuts
+        Ctrl + Alt + T      Terminal
+                                $   User
+                                #   Root
+
+    C standard library
+        EOF                 End-of-file (a condition where no more data can be read from a data source)
+
+    Main files
+        /etc/passwd         Informations on the system's users
+        /etc/shadow         User's password hashes
+        /etc/fstab          Local and remote mounted or accessible filesystems
+        /etc/hosts          Static entries for the local DNS resolver
+
+    Main directories
+        /                   The filesystem's root
+        /bin                Global system binaries
+        /sbin               Administrator system binaries
+        /dev                I/O and various devices pointers
+        /etc                Services and softwares configuration files
+        /usr                Internal resources shared by the system
+        /mnt                Default mounting directory
+        /home               Users directories
+        ~/.ssh              Configuration files and keys
+
+    Basic I/O
+        /dev/stdin          The standard input
+        /dev/stdout         The standard output
+        /dev/stderr         The error standard output
+        /dev/null           The empty input/output virtual device
+        /dev/urandom        A virtual device outputting random data
+
+    Shebang (sharp-exclamation)
+        First line of a script, it indicates wich executable should
+        be used to interpret the command (if none: current shell)
+            Examples
+                #!/bin/bash
+                #!/bin/python3
+
+    Variables
+        Examples
+            FNAME=John
+            LNAME=Doe
+            echo "Your name is $FNAME $FNAME"
+
+    Command evaluation
+        Command's output can be stored as strings in a variable
+            ROOT_USER=$(cat /etc/passwd | grep root)
+            ROOT_USER=`cat /etc/passwd | grep root`
+
+
+
+CLI
+
+    Structure
+
+        Commande [paramètres] -- [arguments]
+
+            --      Option GNU signifiant fin des paramètres et début des arguments
+                            rm -- -i
+                            rm ./ -i
+                                    Supprimer un fichier nommé "-i"
+
+
+    Shortcuts
+
+        Ctrl + A            Début de ligne
+        Ctrl + E            Fin de ligne
+        Ctrl + U            Efface vers le début
+        Ctrl + K            Efface vers la fin
+
+        Ctrl + L            Clear terminal
+        Ctrl + Shift + T    New tab
+
+        Ctrl + C            Aborts the application almost immediately
+        Ctrl + Z            Shunts it into the background, suspended
+        Ctrl + D            Sends EOF to the terminal, only works if your terminal is reading inputs
+
+        Shift +
+            stty -a             Print all current settings in human-readable form
+
+
+    Basics
+
+        <command> "example"                 Interprétation des caractères spéciaux et variables
+        <command> 'example'                 Verrouile tous les caractères spéciaux
+
+        man                                 The most important command in Linux
+        which <command>                     Locate a program file in the user's path
+        type <command>                      Display information about the command (internal or external)
+        <command> -h                        Sometimes there's a quick help message
+        <command> --help                    Not every time
+        history                             Previous commands
+        history -c                          Wipe history
+        alias al='ls -al'                   Magic
+
+
+    Package
+
+        apt search <program>                Find programs and utilities
+
+
+    Super user
+
+        sudo                                Super user do
+        sudo -i                             Shell as root
+        sudo root                           Shell as root
+
+
+    Pipes (to another program or utility)
+
+        <command1> | <command2>             Redirect the standard output to the standard input
+        cat /etc/passwd | grep 1000         Filter the lines containing "1000"
+
+
+    Redirections (to either a file or stream)
+
+        <command1> > <command2>             Redirect the output
+        <command> < <file>                  File's content to stdin
+        <command> >> <file>                 Append stdout to the file
+
+
+    Filesystem
+
+        pwd                                 Print working directory
+        cd <path>                           Change directory
+        cd ~                                To user directory
+        cd                                  To user directory
+        cd /                                To root directory
+        cd -                                Back to the previous directory
+        ..                                  Represents the parent directory
+        .                                   Represents the current directory
+        ls -l                               List files in the long format
+        ls -alF                             Append indicator
+        ls -altrF                           By date, reverse
+        cp a.txt b.txt                      Copy
+        sudo cp a.txt b.txt                 Copy editable by root
+        mkdir                               Make directory
+        mkdir -p <main>/<sub>/<deep>        Arborescence complète
+        mv                                  Move
+        rm                                  Remove
+        rm -ir                              Remove recursively if confirmation
+        tree                                List contents of directories in a tree-like format
+        cp a/. b/ -R                        Copy a directory tree
+        cp * <directory>                    All of current in <directory>
+        cp <directory>/*/<file>             All <file> in current
+        ls -lR                              Recursively list subdirectories encountered
+        ls -lR > a.txt                      Output the result to a file
+        ls -lR >> a.txt                     Append to the file
+
+
+    Wildcards
+
+                    *           Longueur variable, même vide
+                    ?           Un caractère quelconque
+                    [...]       Série ou plage de caractères
+                    [a-b]       Un caractère parmi la plage
+                    [!...]      Inversion de la recherche
+                    [^...]      Idem
+        ls a*                               Fichiers commençants par "a"
+        ls a???                             Début "a", total 4
+        ls a??*                             "a", et minimum 2
+        ls *[12]                            Finissant par 1 ou 2
+        ls [a-c]?*[12]                      Début "a" ou "c", un ou plus, finissant par 1 ou 2
+        ls *[!3]                            Ne finissant pas par 3
+        ls paie\ *.xls                      Prise en compte de l'espace
+
+
+    Searches
+
+        find / -name <string> 2>/dev/null   Find occurrences from root directory and output errors to null
+        find $PWD -name *flag* 2>/dev/null  For obvious flags
+        grep root /etc/passwd               Global regular expression print, lines with "root" in /etc/passwd
+        grep <keyword> <file>
+        history | grep <command>            Magic
+        grep -R <pattern> <directory>       Marvelous
+
+
+
+    Files
+
+        cat                                 Short for concatenate
+        cat a.txt | more                    Give a "more button" (paginated) "space"
+            q                                   Quit
+        less a.txt                          Traverse (up and down keys)
+        head a.txt                          First 10 lines
+        tail a.txt                          Last 10 lines
+        diff a.txt b.txt                    Allow comparing files
+        diff a.txt b.txt -y                 With two column option (side by side)
+        file <name>                         Determine file type
+        pdfinfo <name.pdf>                  (Kali: sudo apt install poppler-utils)
+        exiftool <name>                     Photo EXIF Data (Kali: libimage-exiftool-perl)
+
+        scp [user@]host:[path] .            OpenSSH secure file copy to the current directory
+
+
+    Executable
+
+        echo '#!'$(wich bash) > a.sh        Automatically write a shebang for a bash script to a new file
+        echo '#!'$SHELL > a.sh;vim a.sh     Create and open file with shebang and absolute shell path
+
+
+    Python
+
+        pip list                            Packages and versions
+        pip install <package>               Install
+        pip install -r requirements.txt     File to specify a whole environment to be installed
+
+
+    Permissions
+
+        chmod u=rwx                         User can read, write and execute
+        chmod go=rx                         Groups and Others
+
+
+    Environment Variables
+
+        env                                 Print variables
+        echo $SHELL                         Display the absolute path to the command interpreter
+
+
+    Machine
+
+        diskutil list                       List internal and external disks
+
+
+    Network
+
+        ip a                                Network information
+        ip route                            Machine routing table
+        arp -a                              Shows ARP table
+        arp -d <ip>                         Delete entry
+        ping -c 3 <address>                 Count 3 ping and stop
+
+
+vim
+
+    :help quickref
+
+
+    view <file>
+        Read only
+
+    vim <file>
+        Command mode
+            Main
+
+                i               Insert mode
+                a               Append (Insert mode)
+
+                :q              Quit
+                :w              Write file
+                :wq             Write and quit
+
+            Move
+
+                :1              First line
+                :$              Last line
+
+                (               Back one sentence
+                )               Forward one sentence
+
+                ^               Start of line
+                $               End of line
+
+                w               Next word
+                b               Previous word
+
+                h               Left
+                j               Down
+                k               Up
+                l               Right
+
+            Edit
+
+                r               Replace one character
+                cw              Change word
+                R               Overwrite from
+                D               Delete to the end of file
+
+                yy              Yank the line
+                dd              Delete the line
+                    p               Put the line
+
+                2yy             Yank two lines
+                2dd             Delete two lines
+                    p               Put two lines
+
+            Set
+
+                :set nu                                         Lines numbers
+                :set nonu                                       No line numbers
+
+                :set ic                                         Ignore case
+                :set noic                                       No ignore case
+
+                :set wrap                                       To wrap long lines (default setting)
+                :set nowrap
+
+                :set shiftwidth=4 softtabstop=4 expandtab       4 spaces as indentation
+
+                :set shiftwidth=4 softtabstop=4 tabstop=4       A size 4 hard tab as indentation
+
+                :set list                                       Show <Tab> and <EOL>
+                :set nolist
+
+            Find
+
+                /any            Search "any" from the beginning
+                    n               See occurrences
+
+                ?any            Reverse search "any"
+
+            Replace
+
+                :s/any/new      Substitute "any" by "new"
+                    u               To undo (Undue)
+
+                :s/"//g         Remove every quotes (global)
+                :9,21s/"//g     Remove every quotes (for certain lines)
+                :9,$s/"//g      Remove every quotes (from line 9)
+
+                :%s/^./\u&/g    Replace each first character with its upper case (% = all the lines)
+
+        Insert mode
+
+                esc             Command mode
+
+
+
+Shell scripting
+
+    Logical
+
+        if <expression>
+        then
+            <command1>
+        else
+            <command2>
+        fi # Mandatory
+
+
+        while <expression>
+        do
+            <command>
+        done # It ends the do section
+
+
+        for <item> in <list>;do
+            <command> # Use $<item>
+        done
+
+
+        for NUMBER in $(seq 1 100);do
+            echo $NUMBER;
+        done
+
+
+    Arithmetic evaluation
+
+        # let <variable>=<expression>
+
+        NUM=42
+        let NUM2=$NUM+1
+        echo $NUM2 # 43
+
+
+    Arithmetic expansion
+
+        NUMBER=42
+        RESULT=$((12 * $NUMBER))
+        echo $RESULT # 504
+
+
+    Range
+
+        echo {0..3} # 0 1 2 3
+
+        echo {0..20..5} # 0 5 10 15 20
+
+
+    Current command's parameters
+
+        echo "My arguments are $@"
+
+
+    Run a script available from the web
+
+        curl -s https://example.false/script.sh | bash
+
+
+    Run multiple scripts available from the web
+
+        for script in $(cat customization-scripts.txt); do curl -s https://example.false/$script | bash; done
+
+        cat customization-scripts.txt
+        Prompt.sh
+        Tools.sh
+        GUI.sh
+        Tmux.sh
+        Vim.sh
+
+
+
+Microsoft Windows
+
+    Patch Tuesday, Exploit Wednesday    2nd of month
+
+    NetBIOS                             Network Basic Input/Output System
+                                            (services related to the session
+                                            layer of the OSI model, over TCP/IP)
+
+    LLMNR                               Link-local Multicast Name Resolution
+    NBNS                                NetBIOS Name Service
+
+    SMB                                 Server Message Block
+                                            (entry point to enumarate
+                                            users, groups, file shares)
+
+    SAM                                 Security Account Manager
+    LM                                  LAN Manager hash
+    NTLM                                New Technology LM
+
+
+    CMD
+
+        Windows + R                         Run
+            cmd                             Command Prompt
+
+                Ctrl + Shift + Enter            Administrator
+                Enter                           User
+
+                    Prompt
+
+                        ipconfig /all               Network information
+                        arp -a                      ARP table
+                        arp -d                      Empty cache
+
+                        cd ..                       To the parent directory
+                        cd \                        To the root directory
+
+                        dir /s *flag*               Search file by name in current and sub folders
+                        type flag.txt               The Windows cat command
+
+                        dir                         Display files and folders in the current directory
+                        dir /A:D                    Display only directories
+                        dir /A:-D                   Display only files
+
+                        tree /F                     Display files in current and sub folders
+
+                        cls                         Clear
+
+
+
+Programming
+
+    Basic patterns
+        Sequential
+        Repeated
+        Conditional
+        Store and reuse
+
+    Language type
+        Compiled        Process in one go, faster
+        Interpreted     By line, easier
+
+
+
+Conceptual model
+
+    Representation of a system
+
+            Layers = Encapsulation
+                A packet is in a frame
+                    Frame (en) = Trame (fr)
+
+
+        OSI model
+            Layers              Protocols                       Processing Data Unit
+
+            7 - Application     FTP, SSH, HTTP, Telnet, DNS     Data
+            6 - Presentation    XML, Unicode, JSON, JPEG        Data
+            5 - Session         NetBIOS, ASP                    Data
+            4 - Transport       TCP, UDP                        Segment
+            3 - Network         IP, ICMP, OSPF, RIP             Packet
+            2 - Data Link       NIC, MAC, ARP                   Frame
+            1 - Physical        USB, RJ45, Bluetooth            Bit
+
+
+        TCP/IP model
+                DoD model (Departement of Defense)
+                    ARPANET (Advanced Research Projects Agency Network)
+                        Initiated in 1968, decommissioned in 1990
+            Layers                  Protocols
+
+            4 - Application         FTP, SSH, HTTP
+            3 - Transport           TCP, UDP
+            2 - Internet            IP Addresses, ICMP
+            1 - Network Access      MAC Addresses, ARP, Ethernet
+            0 - Physical            Copper, Wireless Transmitters, Fiber Optic Cables
+
+                Encapsulation
+
+                    Source
+                        [ Message ]                                         Application
+                        [ Message ][ H ]                TCP Segment         Transport
+                        [ Message ][ H ][ H ]           IP Packet           Internet
+                        [ Message ][ H ][ H ][ H ]      Ethernet Frame      Network Access
+                                                                            Physical
+                            Switch
+                                [x]                                         Network Access
+                                                                            Physical
+                                    Router
+                                        (x)                                 Internet
+                                                                            Network Access
+                                                                            Physical
+                    Destination
+                                                                            Physical
+                        [ Message ][ H ][ H ][ H ]      Ethernet Frame      Network Access
+                        [ Message ][ H ][ H ]           IP Packet           Internet
+                        [ Message ][ H ]                TCP Segment         Transport
+                        [ Message ]                                         Application
+
+
+
+TCP
+
+    Three-way handshake or TCP handshake or SYN-SYN-ACK, a new TCP connection
+
+            SYN     Synchronize Sequence Number (data packet)
+            ACK     Acknowledgement Sequence Number (or SYN/ACK packet)
+
+        Sender              Receiver
+
+        SYN x=rand()    ->
+                        <-  SYN ACK x+1 y=rand()
+        ACK x+1 y+1     ->
+
+        App data        ->
+
+
+
+Ports
+
+    65536
+        80 (443)    HTTP (S)    Hypertext Transfert Protocol
+        22          SSH         Secure Shell
+        20 / 21     FTP         File Transfert Protocol
+        445         SMB         Server Message Block
+        3389        RDP         Remote Desktop Protocol
+        3306        MySQL       Structured Query Language
+
+    A port number is like an application address
+        1 port = 1 application
+
+    IP + Port = 1 request
+        Implicit (default) / Explicit
+
+
+
+Puissance
+
+    a⁰ = 1
+    a¹ = a
+    a² = a x a
+    a³ = a x a x a
+
+
+
+Nombre
+
+    Décimal
+    Binaire (les 1 vont vers la gauche)
+    Hexadécimal
+        0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
+        0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111
+        0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
+
+
+
+Network
+
+    Topology
+        Star, Bus, Ring
+
+
+    4 opérations de base
+        Adressage
+        Encapsulation
+        Routage
+        Désencapsulation
+
+
+    3 types d'adresses IP au sein de chaque réseau
+        Adresse réseau
+        Adresses hôtes
+        Adresse de diffusion
+
+
+    Router (dynamic or static)
+        Routing Table
+                    Route
+                    Next Hop OR Exit Interface
+            3 types d'itinéraires de routage
+                Directement connecté
+                Routes distantes
+                Route par défaut
+
+
+    NAT vs. Bridge
+        Network Address Translation
+            Le processus NAT convertit les adresses privées en adresses publiques
+        Interconnection of two network segments
+
+
+    Address MAC
+        6 bytes (octets)
+            First 3 = Manufacturer ID (vendor)
+            Last 3 = Network Card ID (unique)
+
+
+    Ping
+        ICMP
+
+
+    IPv4
+        localhost
+            Plage 127.0.0.0/8
+                127.0.0.1 - 127.255.255.254
+
+            Interface de loopback
+                Destinée à renvoyer un signal reçu
+                    127.0.0.1
+                        lo (Linux)
+
+        APIPA
+            Automatic Private Internet Protocol Addressing
+                169.254.0.0/16
+                    169.254.0.1 - 169.254.255.254
+                        Utilisées par un client DHCP pour se configurer automatiquement
+
+        IPv4 network address
+            IPv4 host address + Subnet mask
+
+        Subnet
+            Plus le masque est petit, plus il y a de machines
+                Minmum 1, maximum 31
+
+            Opération logique AND pour déterminer l'adresse réseau
+                1 AND 1 = 1, autre = 0
+
+                    1 1 0 ...
+                    + + +
+                    1 0 0
+                    = = =
+                    1 0 0
+
+        Segmentation
+
+            ARP utilise des diffusions pour localiser d'autres périphériques
+
+            Les hôtes envoient des diffusions de découverte DHCP pour localiser un serveur DHCP
+
+            Les commutateurs diffusent des broadcasts (découverte)
+
+            Le routeur est le seul périphérique qui arrête les diffusions
+
+            Chaque routeur se connecte à un domaine de diffusion
+
+            Les hôtes peuvent générer un nombre excessif de diffusion et avoir un impact
+            négatif sur le réseau : réduire la taille du réseau, de plus petits domaines
+            de diffusion (diffusion compartimentées, permet aussi différentes politiques
+            de sécurité)
+
+
+    IPv6
+        localhost
+            ::1
+
+
+Nmap
+
+    Options
+        -F          Fast mode
+        -h          Help menu
+        -v          Verbose mode
+        -T<0-5>     Scan rapidity (higher is faster)
+        -A          Aggressive mode (OS, version, script, traceroute)
+        -sV         Banner grabbing (probe open ports to determine service and version info)
+        -sS         TCP SYN Scan without establishing a full connection (half-open scanning), stealthy
+        -sT         TCP Connect Scan (run a full TCP connect scan)
+        -sP         Ping scanning
+        -O          OS footprint
+        -p          Port range
+        -sU         UDP Scan
+
+    IPv4 Packet Header
+        Time-To-Live (TTL) = Number of routers
+            OS guessed by default value
+
+    NSE             Nmap Script Engine
+
+
+
+Acronyms
+
+    CMD                 Command Prompt (only for Windows)
+    CLI                 Command Line Interface (more Unix/linu but works for all)
+    APT                 Advanced Package Tool
+    DOS                 Disk Operating System (1980-90, remplacé par Windows)
+    CIA triad           Confidentiality Integrity Availability
+    SPOF                Single Point of Failure
+    OWASP               Open Web Application Security Project
+    RAM                 Random Access Memory (velatile, rapide)
+    ROM                 Read-Only Memory (non volatile, plus lente)
+    EEPROM              Electrically Erasable Programmable Read-Only Memomry
+    CPU                 Central Processing Unit
+    GPU                 Graphics Processing Unit
+    UEFI                Unified Extensible Firmware Interface (le nouveau BIOS)
+    BIOS                Basic Input/Output System (dans ROM ou EEPROM, effectue processus POST)
+    POST                Power-On Self Test
+    GNU                 GNU's Not Unix
+    PIP                 Pip Installs Packages (Python)
+    OSI                 Open Systems Interconnection (divisé en 7 couches)
+    ISO                 International Organization for Standardization
+    TCP                 Transmission Control Protocol
+    UDP                 User Datagram Protocol
+    FQDN                Fully Qualified Domain Name
+    EC2                 Elastic Compute Cloud
+    SOC                 Security Operations Center
+    OSINT               Open-Source Intelligence
+    DHCPv4, DHCPv6      Dynamic Host Configuration Protocol (giving out IP addresses to new hosts on a network)
+    CVSS                Common Vulnerability Scoring System
+    CWE                 Common Weakness Enumeration
+    CVE                 Common Vulnerabilities and Exposures
+    CGI                 Common Gateway Interface
+    ARP                 Address Resolution Protocol
+    RCE                 Remote Code Execution
+    HSTS                HTTP Strict Transport Security (against MitM such as protocol downgrade and cookie hijacking)
+    PAT                 Port Address Translation, extension to NAT that permits multiple devices on a LAN to be mapped to a single public IP address
+    NAT                 Network Address Translation
+    LAN                 Local Area Network
+    SIEM                Security Information Event Management
+    IDS                 Intrusion Detection System
+    WSL                 Windows Subsystem for Linux
+    GRUB                GRand Unified Bootloader
+    LILO                Linux loader
+    DLL                 Dynamic Link Library, Windows module that contains functions and data that can be used by another module
+    ICMP                Internet Control Message Protocol (ping)
+    PDU                 Processing Data Unit
+    NIC                 Network Interface Card
+    MAC                 Media Access Control (MAC is in NIC)
+    IPS                 Intrusion Prevention Systems
+    IDOR                Insecure Direct Object Reference
+    EXIF                Exchangeable Image File Format
+    PPP                 Point-to-Point Protocol
+    IANA                Internet Assigned Numbers Authority
+    RIR                 Regional Internet Registry
+    OSPF                Open Shortest Path First
+    RIP                 Routing Information Protocol
+    DFIR                Digital Forensics and Incident Response
+    DoT                 DNS over TLS
+    NIST                National Institute of Standards and Technology
+    ANSSI               Agence Nationale de la Sécurité des Systèmes d'Information
+
+
+
+Hacking Tools
+
+    Nmap                    Network mapper
+    Wpscan                  Wordpress scanner
+    Aircrack - ng           Wireless cracking
+    Hydra                   Bruteforce
+    Wireshark               Network traffic analyser
+    Nessus                  Vulnerability scanner
+    Burp Suite              Web proxy
+    BeEF                    Browser exploiation framework
+    Apk Tool                Android hacking tool
+    Sqlmap                  SQL injection exploit tool
+    John The Ripper         Hash cracking tool
+    Nikto                   Vulnerability scanner
+    SET                     Social engineering toolkit
+    Metasploit framework    Expoit tools
+    Skipfish                Vulnerability scanner
+
+
+
+Shell
+
+    Web Shell       Shell-like interface from a browser that enables a web server to be remotely accessed
+
+
+    Bind Shell      Listener running on the target and the attacker connect to the listener in order to gain a remote shell
+
+
+    Reverse Shell   Listener running on the attacker and the target connects to the attacker with a shell
+
+                        The term commonly used to receive a connection from a target is "catching a shell"
+
+
+
+Attacks
+
+    Man in the Middle (MitM)
+        ARP Poisoning (or Spoofing)         Modification de la table ARP
+        Stripping Attacks                   Downgrade SSL or HTTPS to not secure
+        DNS cache poisoning (or Spoofing)   Modification de l'IP associée à un domaine
+
+
+
+Tricks
+
+    FTP
+        ftp -p  <ip>
+            Name field
+                anonymous
+            Password
+                (none, press enter)
+            ftp> pwd
+            ftp> ls
+            ftp> cd <directory>
+            ftp> cdup
+            ftp> get <file>
+            ftp> exit (bye)
+
+    Shellshock
+        curl -A <...>
+            -A pour User-Agent
+            Déclaration d'une fonction en valeur de User-agent suivie de commandes
+
+    XSS
+        <script>alert(1)</script>
+
+        <img src=1 onerror="alert(1)" />
+
+        <style src=1 onerror="alert(1)" />
+
+    SQLi
+        Username field
+            whatever' OR 1=1;--
+        Password field
+            anything
+
+    Path Traversal
+        Always backward
+            ../../../../../../../../../../../etc
+                Will work even if ../../etc is enough
+
+
+
+Authentication
+    Something you...
+        know (password)
+        are (fingerprint)
+        have (phone)
+
+
+
+Transfer
+    python3 -m http.server 9000         Start a Python web server
+    wget http://<ip>:9000/<file>        Download a file from Python web server
+
+
+
+Un chiffre est un signe d'écriture utilisé seul
+ou en combinaison pour représenter des nombres.
+
+
+
+Nombre
+    Binaire 2
+        Chiffres possibles : 0 ou 1
+
+    Décimal 10
+        Chiffres possibles : 0,1,2,3,4,5,6,7,8,9
+
+    Hexadécimal 16
+        Chiffres possibles : 0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F
+
+
+
+Puissance
+
+    Python
+        2**0
+
+    Shell
+        2^0
+            1
+        2^1
+            2
+        2^2
+            4
+                2 x 2
+        2^3
+            8
+                2 x 2 x 2
+        2^4
+            16
+                2 x 2 x 2 x 2
+        2^5
+            32
+                ... (ou puissance précédente x 2)
+        2^6
+            64
+        2^7
+            128
+        2^8
+            256
+        2^9
+            512
+        2^10
+            1 024 bits
+                Kilobyte (KB) ou Kilooctet (ko)
+        2^11
+            2 048
+        2^12
+            4 096
+        2^13
+            8 192
+        2^14
+            16 384
+        2^15
+            32 768
+        2^16
+            65 536
+        2^17
+            131 072
+        2^18
+            262 144
+        2^19
+            524 288
+        2^20
+            1 048 576 bits
+                Mégabyte (MB) ou Mégaoctet (Mo)
+        2^21
+            2 097 152
+        2^22
+            4 194 304
+        2^23
+            8 388 608
+        2^24
+            16 777 216
+        2^25
+            33 554 432
+        2^26
+            67 108 864
+        2^27
+            134 217 728
+        2^28
+            268 435 456
+        2^29
+            536 870 912
+        2^30
+            1 073 741 824 bits
+                Gigabyte (GB) ou Gigaoctet (Go)
+        2^31
+            2 147 483 648
+        2^32
+            4 294 967 296
+
+
+
+
+Bit (b)
+    Se compose des mots "binary digit"
+        Mégabit (Mb)
+
+Byte (B) ou Octet (o)
+    Composé de 8 bits
+        Mégabyte (MB) ou Mégaoctet (Mo)
+            En Bits
+                8 388 608
+            En Bytes ou Octets
+                1 048 576
+            En KB ou Ko
+                1024
+
+
+
+IPv4
+
+    Adresse hiérarchique de 32 bits divisés en 4 octets
+            192.168.10.10
+        Partie réseau (Network Portion)
+            192.168.10.
+        Parti hôte (Host Portion)
+                      .10
+
+
+    Masque de sous-réseau
+        L'opération AND (différencier réseau et hôte)
+                Network Portion (1)                 Host Portion (0)
+
+            IPv4 Address
+                192.        168.        10.         10
+                11000000    10101000    00001010    00001010
+            Subnet Mask
+                255.        255.        255.        0
+                11111111    11111111    11111111    00000000
+
+        Longueur de préfixe
+            Masque              Adresse 32 bits                         Préfixe
+
+            255.0.0.0           11111111.00000000.00000000.00000000     /8
+            255.255.0.0         11111111.11111111.00000000.00000000     /16
+            255.255.255.0       11111111.11111111.11111111.00000000     /24
+            255.255.255.128     11111111.11111111.11111111.10000000     /25
+            255.255.255.192     11111111.11111111.11111111.11000000     /26
+            255.255.255.224     11111111.11111111.11111111.11100000     /27
+            255.255.255.240     11111111.11111111.11111111.11110000     /28
+            255.255.255.248     11111111.11111111.11111111.11111000     /29
+            255.255.255.252     11111111.11111111.11111111.11111100     /30
+
+
+    Détermination du réseau
+        AND (ET) logique
+            Superposition représentée verticalement
+                1       1       0
+                &&      &&      &&
+                1       0       0
+                ==      ==      ==
+                1       0       0
+
+            IPv4 HOST address
+                192.        168.        10.         10
+                11000000    10101000    00001010    00001010
+            Subnet Mask
+                255.        255.        255.        0
+                11111111    11111111    11111111    00000000
+        IPv4 NETWORK address
+                192.        168.        10.         0
+                11000000    10101000    00001010    00000000
+
+
+    Structure
+                Partie réseau                       Partie hôte
+
+        Masque de sous-réseau
+            /24
+                255.        255.        255.        0
+                11111111    11111111    11111111    00000000
+
+        Adresses réseau
+            /24
+                192.        168.        10.         0
+                11000000    10101000    00001010    00000000
+        Adresses d'hôtes
+            /24
+                192.        168.        10.         1
+                11000000    10101000    00001010    00000001
+                                                        Première adresse
+                192.        168.        10.         254
+                11000000    10101000    00001010    11111110
+                                                        Dernière adresse
+        Adresse de diffusion
+            /24
+                192.        168.        10.         255
+                11000000    10101000    00001010    11111111
+
+
+        Classes
+                Byte        Byte        Byte        Byte
+
+            A
+                Network     Host        Host        Host
+            B
+                Network     Network     Host        Host
+            C
+                Network     Network     Network     Host
+
+
+    Adresses publiques
+        Acheminées globalement entre les routeurs des FAI
+
+    Adresses privées
+            Ne sont pas routables globalement
+            Utilisation par n'importe quel réseau interne
+            Attribution aux hôtes internes
+            Ne sont pas uniques
+
+        Adresse réseau et préfixe   Gamme d'adresses privée RFC 1918
+            10.0.0.0/8                  10.0.0.0 - 10.255.255.255
+            172.16.0.0/12               172.16.0.0 - 172.31.255.255
+            192.168.0.0/16              192.168.0.0 - 192.168.255.255
+
+    Network Address Translation (NAT)
+        Convertit les adresses privées en publiques
+        Généralement activé sur le routeur qui se connecte à Internet
+
+    Adresses de bouclage
+            127.0.0.0/8                 127.0.0.1 - 127.255.255.254
+
+    Adresses link-local
+            169.254.0.0/16              169.254.0.1 - 169.254.255.254
+        Plus connue comme APIPA (Automatic Private Internet Protocol Addressing)
+        Utilisées par un client DHCP Windows pour se configurer si aucun serveur DHCP
+
+    Segmentation du réseau
+            Domaines de diffusion et de Segmentation
+                ARP utilise des diffusions pour localiser d'autres périphériques
+                Les hôtes envoient des diffusions de découverte DHCP
+                Les commutateurs diffusent sur toutes les interfaces sauf les émettrices
+                Le seul périphérique qui arrête les diffusions est un routeur
+                    Les routeurs ne diffusent pas les messages de diffusion
+                    Chaque interface de routeur se connecte à un domaine de diffusion
+                        Et les diffusions sont propagées dans leur domaines de diffusion spécifique
+        Utilisé pour cloisonner les hôtes générant un nombre excessif de diffusion
+        Permet l'application de politiques de sécurité par sous-réseau
+
+
+    Plage d’adresses des sous-réseaux
+
+        Pour le réseau 192.168.1.0/24 découpé en 4 sous-réseaux
+            Le nombre de machines adressables dans chaque sous-réseau sera de 2^6 −2 adresses interdites
+
+            Notez que l'utilisation de préfixes plus longs réduit le nombre d'hôtes par sous-réseau
+                Préfixe             Masque de sousréseau                    Nombre d'hôtes
+                /8 255.0.0.0        11111111.00000000.00000000.00000000     16777214
+                /16 255.255.0.0     11111111.11111111.00000000.00000000     65534
+                /24 255.255.255.0   11111111.11111111.11111111.00000000     254
+
+        Sous-réseaux n°0 192.168.1.0/26     192.168.1.1 - 192.168.1.62      Broadcast 192.168.1.63
+        Sous-réseaux n°1 192.168.1.64/26    192.168.1.65 - 192.168.1.126    Broadcast 192.168.1.127
+        Sous-réseaux n°2 192.168.1.128/26   192.168.1.129 - 192.168.1.190   Broadcast 192.168.1.191
+        Sous-réseaux n°3 192.168.1.192/26   192.168.1.193 - 192.168.1.254   Broadcast 192.168.1.255
+
+
