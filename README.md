@@ -1,4 +1,4 @@
 # Notes
-- `see/facility ... .md` My solutions to a given problem
-- `see/lesson ... .md` My notes taken during different studies
-- `see/lesson ... .txt` My cheat sheets, strictly the essentials
+- `see/facility ... .md` My solutions to a given problem, neat and tidy
+- `see/lesson ... .md` My own examples from lessons, strictly the essentials
+- `see/lesson ... .txt` My notes, voluminous but raw and personal
