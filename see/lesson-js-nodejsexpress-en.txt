@@ -1,0 +1,298 @@
+
+
+Based on IBM's course on Coursera (Developing Back-End Apps with Node.js and Express)
+
+
+    Load
+        Number of concurrent users
+        Number of concurrent transactions
+        Amount of concurrent data transfer between clients and servers
+
+    Scalability
+        Ability to handle changes in load without affecting performance
+        Essential for client-server application success
+
+
+    Middleware
+        A software that sits between applications, databases, or services and allows those different technologies to communicate
+
+
+
+Runtime environement
+
+    The infrastructure that supports the execution of a codebase
+    The environment in which an application gets executed
+        Like a mini operating system that provides the resources necessary for an application to run
+
+
+    Node.js
+
+        A back-end runtime environment
+        Server-side JavaScript applications
+        Popular choice for solutions that require constantly updated data, works well with microservices
+        Same code scanning and code testing can be used for front-end and back-end
+        Results in a unified approach to dependencies and packages
+        Runs on Google Chrome's V8 engine
+        Executes JavaScript
+
+            Event-driven, Asynchronous, Non-blocking, Single-threaded
+
+                When Node.js performs an I/O operation, an event is triggered
+                While a process is being executed, the program doesn't have to wait until the process finishes
+                Failure of a given thread does not cause failure in another
+                Faster processing of concurrent requests
+                Relies on callbacks
+
+                    Event Loop is in the underlying system that execute your program
+                        The runtime execute the call and pass the callback function to the Event Queue
+
+
+
+Framework
+
+    Provide structure for code
+
+
+    Two approaches
+
+        Applications can use both MVC and REST APIs
+
+            MVC
+                Model-View-Controller
+
+            REST API
+                Representational State Transfer Application Programming Interface
+
+                    Client and server code are independent of each other
+                    Client does not know the state of the server and vice versa (stateless)
+                    Communicate via operations on resources
+                    Communication does not rely on an implementation of the API
+
+
+    Frameworks
+
+        Express
+
+            Runs on top of Node.js
+            Server-side JavaScript Web framework
+            A messaging framework used to handle routes and write middleware
+            Abstracts lower-level APIs in Node.js by using HTTP utility methods and middleware
+            Handles multiple operation requests concurrently
+            Handles the HTTP requests made to a Web server
+            Makes it simple to create APIs and endpoints
+
+
+            Five steps
+
+                1. Declare as dependency in the package manifest
+                    Create a package.json file in your project folder
+                        name, version, description, main, dependencies
+
+                2. npm install
+                    You can use different versions of the same Node module in different packages
+                        npm install <module_name>
+
+                3. Import the Express module and create an Express application
+                4. Create a new route handler
+                5. Start an HTTP server on a given port number
+
+
+            An Express application is essentially a series of middleware function calls
+
+                Five types
+                    Application level
+                    Router level
+                    Error handling
+                    Built-in
+                    Third party
+
+
+        Koa
+
+            Designed by the same team that designed Express
+            More robust foundation for Web applications and APIs
+            Uses async functions such that callbacks are not necessary
+            Increased error-handling ability
+
+            Appropriate for applications that are
+                Developed by large experienced teams
+                High-performance
+                Demanding
+                Complex
+
+
+        Socket.io
+
+            Best for apps with real-time bidirectional data exchange between clients and servers
+            Utilizes WebSocket rather than HTTP for communication
+            Servers push data without a request from the client
+
+            Works well for applications such as
+                Video conferencing
+                Mutiplayer games
+                Chat rooms
+                Texting
+
+
+        Hapi.js
+
+            Open source
+            Lots of built-in security
+            Many built-in plugins so no need for unofficial middleware
+
+            Good for developing
+                HTTP proxy applications
+                Proxy servers
+                API servers
+                REST APIs
+
+
+        NestJS
+
+            Built on top of Express
+            Compatible with TypeScript
+            Works in conjunction with the Angular framework
+            Combines object-oriented and functional reactive programming
+            Easy to implement an MVC architecture
+            Multitude of libraries
+            Flexible
+
+            Appropriate for
+                Dynamic, scalable, Entreprise applications
+
+
+
+
+Modules
+
+    Import and Require
+
+
+        Modules
+
+            Reusable
+            Serves a specific purpose
+            Related, encapsulated JavaScript code
+            Can be a single file or a folder containing files
+            Breaks down complex code into manageable chunks
+
+
+        Packages and specifications
+
+            Package
+                A directory with one or more modules
+
+            Module specifications
+                Conventions and standards used to create packages
+
+                    CommonJS
+                        require()   module.exports      packagename.js
+
+                    ES
+                        import()    export              packagename.mjs
+
+
+        Differences calling require() and import()
+
+            require()
+
+                Dynamic
+                    Can be called anywhere in the code
+                    Can be called within conditionals and functions
+                    Binding errors not identified until run-time
+
+                Synchronous
+                    Means the modules will be loaded and processed in linear fashion, one at a time
+
+
+            import()
+
+                Static
+                    Can only be called at the beginning of the file
+                    Cannot be called within conditionals or functions
+                    Binding errors identified at compile-time
+
+                Asynchronous
+                    Means the modules can be processed simultaneously, runs faster compare to require() functions
+
+
+    Node.js Modules
+
+        A package consists of one or more modules
+            Every package has a package.json file that describes details about a Node.js module
+
+        If a module does not have a package.json file, Node.js assumes that the main class is named index.js
+            To specify a different main script for your module, specify a relative path to the Node.js script from the module directory
+
+
+        The require statement assumes that scripts have a file extension of .js
+            The require function creates an object that represents the imported Node.js module, an instance of the module
+
+        When you call require with the name of a subdirectory, Node.js looks for a script file with the same name as the subdirectory
+            If the script file does not exist
+                The function assumes that the name is the name of a directory, and looks for a script named index.js within that directory
+
+
+        Each Node.js module has an implicit exports object
+            Add a property to exports
+
+
+        Three types of Node.js modules
+            Libraries are the same thing as modules in regard to Node.js
+
+                Core
+                    Core Node.js modules form a minimal library
+                        They contain the minimal functionnality needed to develop Node.js applications
+                            http, path, fs, os, util, url, querystring
+
+                Local
+                    The modules written by you and the development team as part of creating your Node.js application
+
+                Third-party
+                    Available online and have been created by the back-end Node.js community
+                        AsyncJS, Axios, Express, JWT (JSON Web Token), Lodash (functions for arrays, objects, strings, numbers and more)
+
+
+
+npm
+
+    Package Manager
+
+        Set of tools to deal with modules and packages containing dependencies
+
+            Automates the process of finding, installing, upgrading, configuring, maintaining, and removing packages
+            Usually connected to and maintain a database of dependencies and versioning information for the packages in a repository
+            Ensures that a piece of software has the dependencies to run correctly and eliminates the need to do this work manually
+
+
+        Two functions
+            Provides a CLI
+            Behaves as an online repository of JavaScript packages
+
+        Two ways
+            Locally (default behavior)
+                npm install <package_name>
+                    Creates a directory named node_modules with the package and its dependencies in your current working directory
+            Globally
+                npm install -g <package_name>
+
+
+    Dependencies
+
+        Code in the form of a library or a package reused in a program
+        A module can be dependent on many other modules
+
+
+        Libraries and packages contain many dependencies
+
+            But a library is self-contained and isn't dependent on code outside of the library itself
+                A library does not depend on code outside of it to function
+
+
+            npm packages require a file named package.json in the project's root directory to determine all of the dependencies
+
+                Contains the project's identifying metadata
+                    Project name
+                    Project version
+
+
