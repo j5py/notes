@@ -203,6 +203,13 @@ axios.get('https://api.example.false/users')
 Proving that the user is who they claim they are
 - Authorization header
     - A bearer token or acces token
+```JavaScript
+function getToken(auth) {
+    const prefix = 'Bearer ';
+    if (auth.startsWith(prefix))
+        return auth.slice(prefix.length)
+}
+```
 #### CORS
 Cross-Origin Resource Sharing
 - Control which domains are allowed to make requests from a given server
