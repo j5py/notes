@@ -1,0 +1,47 @@
+
+
+Jasmine Fundamentals
+
+
+    Suite
+        Collection of test cases used to verify the behavior of a JavaScript object or function
+
+            Two parameters
+                Title and a function that implements the test suite
+
+
+    Spec
+        A test case within a test suite
+
+            Two parameters
+                Title and a function that implements the test case
+
+            Includes one or more expectations that represent a true or false statement
+
+            Spec passes if all the expectations are met
+
+
+    Expectation
+        An assertion of true or false
+
+            Described as `expect` within the function that takes a value, referred to as the "toBe" value
+
+
+    Matchers
+        A comparison between the actual and expected values
+
+
+    Describe function
+        Used to group related specs
+
+            Uses a string parameter to name the collection of specs
+            Helps locate specs in large suites
+
+
+    Spies
+        Test double functions that can stub function and track calls and arguments
+
+            Defined in `describe` or `it` block and removed after each spec
+            Created to mimic the real object to avoid overhead costing
+
+
