@@ -1,0 +1,747 @@
+
+
+Based on MongoDB's course on Coursera (Introduction to MongoDB)
+
+
+    MongoDB Atlas is a comprehensive developer data platform
+
+        Change as you scale
+            Scaling tier, region, cloud provider
+
+        Backups with point-in-time restore
+        Atlas CLI or administration API
+        Operational insights
+        Online archive
+
+        Services
+
+            Atlas Search
+                From MongoDB's aggregation query interface
+
+            Atlas Device Sync
+                Keep data in sync between the cloud and mobile or other edge devices
+
+            Atlas Data Lake
+                Automatically extract data from your Atlas databases to your own low-cost and fully managed data lake
+
+            Atlas Data Federation
+                Query, transform, aggregate, and write data from Atlas databases, Atlas Data Lakes, or your own objects storage environments
+
+            Atlas Charts
+                Built-in data visualization tool, allows you to easily create, share, and embed rich dashboards
+
+            Atlas App Services
+                Includes
+                    Data API with standard HTTPS requests
+                    GraphQL API
+
+
+
+    Two types of database deployments
+
+        Serveless instances
+            Scales on-demand and only charges you for the resources that you use
+
+        Clusters
+            Several MongoDB servers working together
+                Dedicated
+                Shared
+                    Smaller and include a free tier option
+
+
+    Replica Set
+        A group of servers that hold your data
+        Ensures data redundancy and high availability
+
+
+
+CRUD Operations
+
+    Inserting Documents
+
+        db.<collection>.insertOne({ ... })
+
+        db.<collection>.insertMany([ ... ])
+
+
+    Finding Documents
+
+        db.<collection>.find({ <field>: <value> })
+
+        db.<collection>.find({ _id: ObjectId(<id>) })
+
+
+            Operators
+
+                db.<collection>.find({ <field>: { $in: [ ... ] } })
+
+
+                    Comparison
+                        $lt, $lte, $gt, $gte
+
+                            db.<collection>.find({ <field>: { $lt: <value> } })
+
+
+                    Logical
+
+                        $or
+                            db.<collection>.find({ $or: [{<expression1>}, {<expression2>}, ...] })
+
+
+                        $and
+
+                            Implicit
+                                db.<collection>.find({ <field1>: <value1>, <field2>: <value2> })
+
+                            Explicit
+                                db.<collection>.find({ $and: [{<expression1>}, {<expression2>}, ...] })
+
+
+                                Example where it must be explicit
+                                    To prevent the previous expression from being overwritten by the next one
+                                    Because we can't store two fields with the same name in the same JSON object
+
+                                        db.<collection>.find({
+                                            $and: [
+                                                { $or: [{<expression1>}, {<expression2>}, ...] },
+                                                { $or: [{<expression1>}, {<expression2>}, ...] },
+                                                ...
+                                            ]
+                                        })
+
+
+    Querying on Array Elements
+
+        db.<collection>.find({
+            <field>: {
+                $elemMatch: { <field1>: <value1>, <field2>: { $gt: <value2>} }
+            }
+        })
+
+
+    Replacing
+
+        db.<collection>.replaceOne(<filter>, <replacement>, <options>)
+            <replacement> is the entire document to replace the old one with
+
+                db.<collection>.replaceOne(
+                    { _id: ObjectId(<id>) },
+                    {
+                        <field1>: <value1>,
+                        <field2>: [ ... ],
+                        ...
+                    }
+                )
+
+
+    Updating
+
+        One
+
+            db.<collection>.updateOne(<filter>, <update>, <options>)
+
+
+                    Operators
+
+                        $set
+                            Adds new fields and values to a document
+                            Or it replaces the value of a field with a specified value
+
+                        $push
+                            Appends a value to an array
+                            Or if the field is absent, adds the array field with the value as its element
+
+
+                If the update filter doesn't match any documents, then no update occurs
+
+
+                    Option
+
+                        upsert
+                            Short for update or insert (if matching document don't exist)
+
+
+                Examples
+
+                    db.<collection>.updateOne(
+                        { <field1>: <value1> },
+                        { $set: <field2>: [ ... ] },
+                        { upsert: true }
+                    )
+
+                    db.<collection>.updateOne(
+                        { _id: ObjectId(<id>) },
+                        { $push: { <field>: <value> } }
+                    )
+
+
+        Find and Modify
+
+            db.<collection>.findAndModify({
+                query: <filter>,
+                update: <replacement>,
+                new: <boolean>
+            })
+
+                To avoid the updateOne + findOne approach that makes two round trips to the server
+                Additionally, another user could modify the document in between these two methods
+
+
+        Update Many
+
+            db.<collection>.updateMany(<filter>, <update>, <options>)
+
+                Not an all-or-nothing operation
+
+
+    Deleting
+
+        db.<collection>.deleteOne({ _id: ObjectId(<id>) })
+
+        db.<collection>.deleteMany({ <field>: <value> })
+
+
+
+Query Results
+
+    Cursors in MongoDB
+        A pointer to the result set of a query
+        The db.<collection>.find method return a cursor and points to the documents that match that query
+        Cursor methods which are chained to queries can then be used to perform actions on the resulting set
+
+
+    Sorting and Limiting
+
+        cursor.sort()
+
+            Descending
+                db.<collection>.find({ <field>1: <value1> }).sort({ <field2>: -1 })
+            Ascending
+                db.<collection>.find({ <field>1: <value1> }).sort({ <field2>: 1 })
+                db.<collection>.find({ <field>1: <value1> }).sort({ <field2>: 1, <field3>: 1 })
+
+        cursor.limit()
+
+            db.<collection>.find({ <field>1: <value1> }).sort({ <field2>: -1 }).limit(<number>)
+
+                Can enhance the performance of an app by avoiding unnecessary data processing
+
+
+    Returning Specific Data
+
+        Projection
+            db.<collection>.find(<query>, <projection>)
+
+                Include
+                    db.<collection>.find(<query>, { <field1>: 1 })
+                    db.<collection>.find(<query>, { <field1>: 1, <field2>: 1 })
+                Exclude
+                    db.<collection>.find(<query>, { <field1>: 0, <field2>: 0, ... })
+
+
+                Inclusion and exclusion statements can't be combined
+                    _id field is an exception
+
+
+    Counting
+
+        db.<collection>.countDocuments(<query>, <options>)
+
+
+
+Aggregation
+
+    Aggregation
+        An analysis and summary of data
+
+    Stage
+        An aggregation operation performed on the data
+        Does not permanently alter the source data
+        Order of stages matters
+
+            $match
+                Filters for data that matches criteria
+            $group
+                Groups documents based on criteria
+            $sort
+                Puts the documents in a specified order
+            ...
+
+
+
+    Aggregation Pipeline
+
+        A series of stages completed one at a time, in order
+        Where data can be filtered, sorted, grouped, and transformed
+
+            db.<collection>.aggregate([
+                { <stage1>: { <expression1> } },
+                { <stage2>: { <expression2> } },
+                ...
+            ])
+
+
+
+        Using $match and $group Stages
+
+            $match
+                Place as early as possible in the pipeline so it can use indexes
+                Reduces the number of documents
+                Lessens processing required
+
+            $group
+                Groups documents by a group key
+                Output is one document for each unique value of the group key
+
+                    An accumulator is an expression that specifies how to aggregate information for each of the groups
+
+
+            db.<collection>.aggregate([
+                {
+                    $match: { <query> }
+                },
+                {
+                    $group: {
+                        _id: <expression>, // Group key
+                        <field1>: { <accumulator1>: <expression1> },
+                        ...
+                    }
+                }
+            ])
+
+
+
+        Using $sort and $limit Stages
+
+            $sort
+                Sorts all input documents and passes them through pipeline in sorted order
+                    Alphabetical, dates, timestamps
+                        1 Ascending
+                        -1 Descending
+
+            $limit
+                Limits the number of documents that are passed on to the next aggregation stage
+
+
+            db.<collection>.aggregate([
+                {
+                    $sort: { <field>: -1 }
+                },
+                {
+                    $limit: <number>
+                }
+            ])
+
+
+
+        Using $project, $count, and $set Stages
+
+            $project
+                Determines output shape
+                Projection similar to find() operations
+                Should be the last stage to format the output
+                    1 to include
+                    0 to exclude
+
+                {
+                    $project: {
+                        <field1>: 1,
+                        <field2>: 1,
+                        _id: 0
+                    }
+                }
+
+
+            $set
+                Adds or modifies fields in the pipeline
+
+                {
+                    $set: {
+                        <field>: { ... },
+                        ...
+                    }
+                }
+
+
+            $count
+                Counts documents in the pipeline
+                Returns the total document count
+
+                {
+                    $count: <field>
+                }
+
+
+
+        Using $out Stages
+
+            $out
+                Must be the last stage
+                Writes the documents that are returned by an aggregation pipeline into a collection
+                    Creates a new collection if it does not already exist
+                    Or replaces the existing collection with new data
+
+                {
+                    $out: {
+                        db: <db>,
+                        coll: <collection>
+                    }
+                }
+
+
+                Another way is to provide only the collection name
+                    Uses the same database used in the Aggregation Pipeline
+
+                { $out: <collection> }
+
+
+
+Indexes
+
+
+    Basics
+
+        Special data structures that store a small portion of the collections data
+            In an ordered form that is easy to traverse and search efficiently
+
+        Point to the document identity and allow you to access and update data faster
+
+            Speed up queries
+            Reduce disk I/O
+            Reduce resources required
+
+            Support
+                Equality matches
+                Range-based operations
+
+            Return
+                Sorted results
+
+
+        Without indexes
+            MongoDB has to read every document in a collection by performing a collection scan
+            Sorts results in memory
+
+        When using an index
+            MongoDB only fetches the documents identified by the index based on the query
+            If the index includes all the information to retrieve, no need to read the document
+
+
+        One default index per collection, which includes only the _id field
+
+        Every query should use an index
+            Performance can degrade if we have too many indexes in a collection
+            We need to make sure that all the indexes we have are being used
+
+
+
+    Most common index types
+
+        Single field
+        Compound
+
+            Both multikey indexes if they operate on an array field
+
+
+
+    View the Indexes used in a Collection
+
+        db.<collection>.getIndexes()
+
+
+
+    Check if an Index is being used on a query
+
+        db.<collection>.explain().<query>
+
+
+            Execution Stages
+
+                IXSCAN indicates the query is using an index and what index is being selected
+                COLLSCAN indicates a collection scan, not using any indexes
+                FETCH indicates documents are being read from the collection
+                SORT indicates documents are being sorted in memory
+
+
+
+    Creating a Single Field Index
+
+        Ascending
+            db.<collection>.createIndex({ <field>:1 })
+
+        Unique
+            db.<collection>.createIndex({ <field>:1 }, { unique:true })
+
+
+
+    Creating a Multikey Index
+
+        db.<collection>.createIndex({ <fields>:1 })
+
+
+            Any index where one of the indexed fields contains an array
+
+            There is a limitation of only one array field per index
+                If an index has multiple fields, only one of them can be an array
+
+                    MongoDB decomposes the array and stores each unique value found whithin it as an individual index entry
+
+
+
+    Working with Compound Indexes
+
+        Index on multiple fields
+
+        Can be a multikey index if it includes an array field
+            Maximum one array field per index
+
+
+        Support queries that match on the prefix of the index fields
+            The order of the fields in a compound index matters
+
+                Follow this order
+
+                    Equality
+                        Reduces query processing time
+                        Retrieves fewer documents
+
+                        { <field>: true }
+
+                    Sort
+                        Eliminates the need for in-memory sorts
+
+                        sort({ <field1>:1, <field2>:-1 })
+
+                    Range
+
+                        find({ <field>:{ $gte:<value1>, $lt:<value2> } })
+
+
+
+    Deleting Indexes
+
+        db.<collection>.dropIndex(<index>)
+
+        db.<collection>.dropIndexes([<index1>, <index2>, ...])
+
+            With no parameters, this command deletes all the indexes in the collection
+                Except for the _id index
+
+
+        Indexes have a write cost
+            Every time we insert new documents or update them, the index keys need to be updated
+
+        Too many indexes in a collection can affect the system performance
+            We should delete unused or redundant indexes
+
+
+        If we're not sure if the index is needed, hide the index instead of deleting it
+
+            db.<collection>.hideIndex(<index>)
+
+
+
+Atlas Search
+
+
+    Relevance-based Search Index (in an application) vs. Database Index
+
+        Search Index
+            Defines how a search should be performed
+
+        Database Index
+            Makes database queries more efficient
+
+
+    Search Index with Dynamic Mapping
+
+        All fields indexed (except booleans, objectIds anf timestamps)
+
+
+    Static Indexing
+
+        The fields being queried are always the same
+            Makes the search quick and efficient by minimizing the number of fields to be indexed
+
+
+    Coumpound operators
+
+        Improve your search by assigning weights to different fields
+            So that when your user searches on your application, the most important results return first
+
+                We'll create an aggregation pipeline with a $search stage
+                And then we'll use the $compound operator to specify how the results should be ranked
+
+
+                In the $search stage, there are several components that we can configure
+
+                    Which search index to use
+                    Options about how much text to return with the search terms highlighted
+                    Number of total documents
+
+                    And the compound operator
+                        Nested in the search stage
+                        Includes clauses that specify the weight that the different fields should have in the search ranking
+
+                            must
+                                Only include results that match the clause
+                            mustNot
+                                The negation of must
+                            should
+                                Which will assign a weight to records that match the clause
+                            filter
+                                Will eliminate any search results that do not match the clauses, but does not affect the score
+
+
+                $search {
+                    "compound": {
+                        "must": [{
+                            "text": {
+                                "query": <term>,
+                                "path": <field1>
+                            }
+                        }],
+                        "should": [{
+                            "range": {
+                                "gte": <number>,
+                                "path": <field2>,
+                                "score": {"constant": {"value": <positive>}}
+                            }
+                        }]
+                    }
+                }
+
+
+    Using Facets
+
+        Facets are buckets that we group our search results into
+
+            Data Type
+                <type>Facet
+
+
+        Plus search meta aggregation stage to customize search results by categorizing them
+
+            Aggregation Pipeline
+                $searchMeta
+
+                    Instead of using a regular search stage
+                    Allows us to see the facets and how many results are in each bucket
+
+
+        The buckets that the search will be filtered into are not part of search results themselves
+            They're part of the search metadata, information about how the search was carried out
+
+
+        $searchMeta: {
+            "facet": {
+                "operator": {
+                    "text": {
+                        "query": <search-string>,
+                        "path": <field-to-search>
+                    }
+                },
+                "facets": {
+                    <facet-name>: {
+                        "type": "date",
+                        "path": <field-path-to-facet-on>,
+                        "boundaries": <array-of-dates>,
+                        "default" : <bucket-name>
+                    }
+                }
+            }
+        }
+
+
+
+Data Modeling
+
+    The process of defining how data is stored and the relationships that exist among different entities in your data
+        We refer to the organization of data inside a database as a schema
+
+
+    Document Model (vs. Relational Data Model)
+    
+        Do not enforce any document structure by default
+        Each document can be different, which is known as polymorphism
+
+
+            Referencing (vs. Embedding)
+
+                Using references is sometimes called linking or data normalization
+                Referencing avoids duplication of data and in most cases results in smaller documents
+
+                    However, you'll need to query data from multiple documents
+                    This can cost extra resources and impact read performance
+
+
+    Scalling
+
+        Data that is accessed together should be stored together
+            Query result times
+            Memory usage
+            CPU usage
+            Storage
+
+
+        We want to avoid documents that are unbounded
+
+            Means that the document size grows infinitely
+                Like comments on a post for example
+
+            This can happen when we use document embedding
+                Maximum document size of 16 megabytes will lead to storage problems
+
+
+        Common schema anti-patterns
+
+            Massive arrays
+            Massive number of collections
+            Bloated documents
+            Unnecessary indexes
+            Queries without indexes
+            Data that is accessed together stored in different collections
+
+
+
+ACID Transactions
+
+    Atomicity
+        All operations will either succeed or fail together
+
+    Consistency
+        All changes made by operations are consistent with database constraints
+
+    Isolation
+        Mutlitple transactions can happen at the same time without affecting the outcome of the other transaction
+
+    Durability
+        All of the changes that are made by operations in a transaction will persist
+
+
+
+    A transaction has a maximum runtime of less than one minute after the first write
+
+
+        Multi-document ACID Transaction
+
+
+            Using a Transaction
+
+                const session = db.getMongo().startSession()
+                const target = session.getDatabase(<db>).getCollection(<collection>)
+
+                session.startTransaction()
+
+                // operations...
+
+                session.commitTransaction()
+
+
+            Aborting a Transaction
+
+                // ...
+
+                session.abortTransaction()
+
+
