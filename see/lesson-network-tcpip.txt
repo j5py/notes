@@ -1,0 +1,1191 @@
+
+
+Based on the Yonsei University course on Coursera (Introduction to TCP/IP)
+
+
+Computer Internet IPv4 Network Connection Setup
+
+    Computer/Smartphone can have several Interfaces and therefore several IPs
+        One IP address for each Interface
+
+            Mobile Communication
+                2G (GSM)
+                3G (UMTS, TD-SCDMA)
+                4G (LTE FDD, TDD)
+            Wi-Fi (Wireless Fidelity)
+                IEEE 802.11 a/b/g/n/ac (2.4, 5 GHz)
+            Bluetooth v4.2
+
+    Internet is divided into Subnets
+        Subnets are divided into smaller Subnets
+
+    IPv4 Subnet Mask is formed by 32 bits
+        From Left
+            MSB (Most Significant Bit)
+        To Right
+            LSB (Last Significant Bit)
+
+    Subnet Mask can be used to find the Subnet Size
+        255.        255.        252.        0
+        11111111.   11111111.   11111100.   00000000
+            10 zeros
+                2^10 = 1024 IP addresses
+
+    Default Gateway is the dedicated Internet Router
+        Send and receive all Internet IP packets
+
+    Domain Name Server (DNS)
+                Convert hostnames to IP addresses
+        Preferred
+            is the main
+        Alternate
+            is the backup
+
+
+
+Automatic Internet Setup using DHCP (Dynamic Host Configuration Protocol)
+
+    DHCP enables a Computer/Smartphone to automatically
+        Contact the local DHCP Server
+            Request for an IP address and networking parameters
+
+                Computer/Smartphone's IP Address
+                Subnet Mask
+                Default Gateway's IP Address
+                DNS Server's IP Address
+                ...
+
+    Used for IPv4 and IPv6 connections
+
+    Enables the reuse of IP addresses
+        Only a Computer/Smartphone that needs connection is assigned an IP address
+        After the Internet connection ends, that IP address can be reused
+
+    DHCP operates on a Client-Server model
+
+    DHCP Server manages the following
+        Pool of IP addresses
+        Client information
+            Default Gateway
+            Domain Name
+            Name Servers
+            Time Servers
+
+    DHCP Setup Messages & Operations
+        1. Client connects to the network
+        2. DHCP uses UDP with Client port 68 and DHCP Server port 67
+        3. Client's DHCP program broadcasts a "Server Discovery" message
+        4. Any DHCP Server can provide service by replying an "IP Lease Offer"
+        5. Client will send an "IP Lease Request" backup
+        6. The DHCP Server will send back an "IP Lease Acknowledgement"
+
+            Enabling IP address and network parameters for a limited time duration
+
+    When a Client tries to reconnect
+        The DHCP Server tries to give the same IP address that was used before
+        A different IP may be assigned if being used or due to assignment policies
+
+
+
+IP Gateway/Router Configuration
+
+        Subnetting 165.132.9.0 (256 IP addresses)
+
+    Configure the Gateway/Router's Routing table to support the following setup
+
+        1. Room A
+            100 PCs + 3 (Network, Gateway, Broadcast)
+                Subnet
+                    2^7 = 128 = Subnet Size
+                        7 zeros
+                            11111111.   11111111.   11111111.   10000000
+                            255.        255.        255.        128
+
+                    103 IP addresses
+                        0
+                            Network Destination 1 IP address (Lowest)
+                        1 - 100
+                            PCs 100 IP addresses
+                        101 - 125
+                            IP addresses not used
+                        126
+                            Gateway Interface 1 IP address (Second highest)
+                        127
+                            Broadcast 1 IP address (Highest)
+
+                    CIDR (Classless Inter-Domain Routing)
+                        Network Destination & Subnet Mask = 32 - 7 = 25
+                            CIDR Network ID
+
+                                165.132.9.0/25
+
+        2. Room B
+            25 PCs + 3
+                Subnet
+                    2^5 = 32
+                        5 zeros
+                            11111111.   11111111.   11111111.   11100000
+                            255.        255.        255.        224
+
+                    28 IP addresses
+                        128
+                            Network Destination
+                        129 - 153
+                            PCs 25 IP addresses
+                        154 - 157
+                            IP addresses not used
+                        158
+                            Gateway
+                        159
+                            Broadcast
+
+                    CIDR Notation
+                        Network Destination & Subnet Mask = 32 - 5 = 27
+                            CIDR Network ID
+
+                                165.132.9.128/27
+
+        3. Room C & D
+
+                25 PCs
+                25 PCs
+
+            Hub/Switch
+
+                50 PCs + 3
+                    Subnet
+                        2^6 = 64
+                            6 zeros
+                                11111111.   11111111.   11111111.   11000000
+                                255.        255.        255.        192
+
+                    53 IP addresses
+                        160
+                            Network Destination
+                        161 -210
+                            PCs 25 IP addresses
+                            PCs 25 IP addresses
+                        211 - 221
+                            IP addresses not used
+                                221 (Next highest one after Broadcast and Gateway
+
+                                    Hub/Switch
+
+                        222
+                            Gateway
+                        223
+                            Broadcast
+
+        4. Internet
+
+
+
+IP Routing Table (included in the Gateway)
+
+    For a received IP Packet
+        The routing table is checked from top to down
+
+            A ---> B ---> C & D ---> Internet
+
+
+    Room            Destination     Netmask             Gateway         Interface (Port)
+
+    A               165.132.9.0     255.255.255.128     165.132.9.126   1
+    B               165.132.9.128   255.255.255.224     165.132.9.158   2
+    C & D           165.132.9.160   255.255.255.192     165.132.9.222   3
+
+    Internet        165.132.15.56   255.255.255.252     165.132.15.58   4
+    Default Route   0.0.0.0         0.0.0.0             165.132.15.58   4
+                        Lowest to       fully opened up
+
+
+
+OSI vs TCP/IP
+
+        OSI 7 Layer Model   TCP/IP 5 Layer Model    TCP/IP Protocol Suite
+
+        Application
+        Presentation        Application             IMAP, FTP, SMTP, DNS, Telnet, SNMP
+        Session
+
+        Transport           Transport               TCP, UDP
+
+        Network             Internet                IP
+
+        Data Link           Network Access          Ethernet, Wi-Fi, Bluetooth, 3G, LTE
+
+        Physical            Physical                Copper, Fiber Optic Cables, Wireless Transmitters
+
+
+
+Network Operations
+
+    Host A
+
+        1. Application Data File
+
+        2. Application Data File is divided in to payload segments
+            Based on the MTU (Maximum Transfer Unit) of the IP Packet and Ethernet Frame
+
+        3. TCP Header + Payload Segment
+            Host A and Host B setup a TCP Session
+                Using a Three Way Handshake
+                    SYN -->
+                    <-- SYN, ACK
+                    ACK -->
+
+        4. IP Header is added to form an IP Packet
+            Include Source and Destination IP addresses
+
+        5. Ethernet Header and Trailer are added to the IP Packet
+            Used by Ethernet Switches
+                Conduct Flow & Error Control
+
+        6. Routers use the IP addresses to route IP Packets
+            Using Routing Tables
+            Optimal routing paths are setup using routing algorithms
+                +-----+----+-----+-----------------+-+
+                | ETH | IP | TCP | Payload Segment | |
+                +-----+----+-----+-----------------+-+
+
+
+    Host B
+
+        7. Ethernet Frame is received at Host B's NIC (Network Interface Card)
+            Ethernet Header and Trailer are used to detect errors in the frame
+                The frame can be discarded and retransmission is requested
+
+        8. Ethernet Header and Trailer are removed to reveal the IP Packet
+            IP Packet Header contains many network control functions
+                Example: IPv4 ECN (Explicit Congestion Notification)
+
+        9. IP Header is removed to reveal the TCP Header
+            TCP will control the Window Size for data transfer rate
+            TCP includes the Port Address that connects the data to Host B's app
+
+        10. TCP header is removed to reveal the Payload Segment
+
+        11. Payload Segments are combined to make the Application Data File
+
+
+
+TCP/IP Networking Functions
+
+    Layer 5: Application
+        Communication of applications/services between separate computers/hosts
+
+    Layer 4: Transport
+        Provides port delivery to the application at the destination computer
+
+    Layer 3: Internet
+        Provides inter-connection for networks that use different Layer 2 protocols
+        Enables a packet to go through multiple different interconnected networks
+        Support addressing and routing functions
+
+    Layer 2: Network Access Layer (NAL)
+        Provide communication within a single type network
+            Ethernet, Wi-Fi, Bluetooth, 2G, 3G, 4G, 5G, etc.
+        Within a network it provides device
+            Addressing, Priority Control, Error Control, Flow Control, etc.
+        In LANs the NAL device's address is called the MAC address
+
+    Layer 1: Physical
+        Physical interface of devices and netwok to support signal sending and receiving
+        Medium and Channel
+            Wired / Cables (CAT5), Wireless, Optical / Lasers, Acoustic, Electro Magnetic, etc.
+        Modem (Modulator + Demodulator)
+            RF, Microwave, Millimetre Wave, Light, Infrared, Lasers and Photodetectors, etc.
+        Antenna
+            Single antenna, Multipe antennas / Array antennas
+            Omni-directional antenna, Directional antenna, etc.
+
+
+
+IPv4 Protocol
+
+    Essential Functions
+        Inter-Networking
+        Routing
+
+    1 octet = 1 byte = 8 bits
+
+    Word = Group of multiple bits
+        16 bit word, 32 bit word, etc.
+
+    Flag = 1 bit Control Function
+        1: set
+        0: clear
+
+
+    IPv4 Packet is called a Datagram
+
+        A self-contained, independent entity of data carrying sufficient information to be routed
+
+
+        Header = IPv4 Header
+
+                20 octets (+ Options + Padding)
+
+            Version --> 4 bits
+
+            Internet Header Length --> 4 bits
+                Length of an IPv4 Header in words
+                    1 word = 4 octets = 4 bytes = 32 bits
+                Minimum value is five: 5 * 4 = 20 octets
+
+            DS + ECN --> 8 bits
+                Differenciated Services (6 bits)
+                    Distinguishes service priority assignments
+                Explicit Congestion Notification (2 bits)
+                    To slow down the speed when delay is detected
+
+            Total Length --> 16 bits
+                Total length of the whole IP Packet in units of octets
+                    Maximum IP Packet length is 2^16 -1 = 65,535 octets = 524,280 bits
+                    IPv4 Packet size is limited by Layer 2's frame size
+                        Ethernet
+                            Maximum Transfer Unit
+                                46 - 1500 octets can be transmitted without fragmentation
+                        Wi-Fi
+                            Mac Protocol Data Unit
+                                Mac Service Data Unit
+                                    0 - 2304 octets
+
+            Identification --> 16 bits
+                Sequence number used to uniquely identify the IPv4 Packet
+                    Used together with the Source Address, Destination Address, and Protocol field
+
+            Flag + Fragment Offset --> 16 bits
+                Used in Packet Fragmentation
+                    Flags (3 bits)
+                        Bit 0: Reserved
+                        Bit 1: DF
+                                1 Don't Fragment
+                                0 May Fragment
+                        Bit 2: MF
+                                1 More Fragments
+                                0 Last Fragment
+                    Fragment Offset (13 bits)
+                        Indicates where in the datagram this fragment belong to (in 64 bits units)
+                            Fragments other than the last one must contain a data field that is a mutliple of 64 bits in length
+
+            Time to Live --> 8 bits
+                TTL specifies the time length in seconds that a datagram is allowed to remain in the Internet
+                Every router that the IP Packet passes through should decrease the TTL by at least one
+                    TTL is similar to a hop count
+                        If the TTL becomes zero the packet will be discarded
+
+            Protocol --> 8 bits
+                Identifies the type of the next header in the packet directly following the IPv4 Header
+                    1   00000001    Internet Control Message Protocol       ICMP
+                    2   00000010    Internet Group Management Protocol      IGMP
+                    6   00000110    Transmission Control Protocol           TCP
+                    17  00010001    User Datagram Protocol                  UDP
+                    41  00101001    IPv6 encapsulation                      ENCAP
+                    89  01011001    Open Shortest Path First                OSPF
+                    132 10000100    Stream Control Transmission Protocol    SCTP
+
+            Header Checksum --> 16 bits
+                Error Detection code added to protect the IPv4 Packet Header from errors
+                    Does not protect the payload (data) parameters
+                    Errors are checked at each router
+                        Checking is needed because IP header fields may change by hop going through the routers
+                                TTL
+                                Flags
+                                Fragmentation
+                                ...
+                            When they change, the Header Checksum is recomputed
+
+            Source Address --> 32 bits
+
+            Destination Address --> 32 bits
+
+            Options --> variable
+                Includes the options requested by the sending host computer
+            Padding --> variable
+                Used to make sure that the IPv4 Packet Header is a multiple of 32 bit word units in length
+
+
+        Payload = TCP/UPD Header + Data (Payload Segment)
+
+
+
+IPv6 Protocol
+
+    IPv6 uses Hexadecimal (Ox) numbering
+
+        0000 = Ox0
+        0001 = Ox1
+        0010 = Ox2
+        0011 = Ox3
+        0100 = Ox4
+        0101 = Ox5
+        0110 = Ox6
+        0111 = Ox7
+        1000 = Ox8
+        1001 = Ox9
+        1010 = Oxa
+        1011 = Oxb
+        1100 = Oxc
+        1101 = Oxd
+        1110 = Oxe
+        1111 = Oxf
+
+
+    IPv6 Packet Header
+
+        40 octets
+
+            Version --> 4 bits
+                Value is 6 for IPv6
+
+            DS + ECN --> 8 bits
+                Differenciated Services (6 bits)
+                Explicit Congestion Notification (2 bits)
+
+            FLow Label --> 20 bits
+                Created to provide special service support for real-time applications
+                    Currently used to inform routers and switches that routing path changes should not be applied
+                        Because these packets will not be reordered at the receiver
+
+            Payload Length --> 16 bits
+                Size of the payload in octets
+                    Includes extensions headers
+                Maximum Payload Size
+                    2^16 -1 = 65,535
+                        IPv6 Jumbogram
+                            Provide enhanced performance over networks that can support Jumbograms
+                                Payload Length field will be set to 0
+                                Can have payload size up to 2^32 -1 = 4,294,967,295 (4GB)
+                                IPv6 Jumbo packets need to use the Jumbo Payload Option extension header
+
+            Next Header --> 8 bits
+                Extension OR Transport Layer header
+                    Extension Header
+                        0   00000000    Hop-by-Hop Options
+                        43  00101011    Routing
+                        44  00101100    Fragment
+                        50  00110010    ESP (Encapsulating Security Payload)
+                        51  00110011    AH (Authentication Header)
+                        60  00111100    Destination Options
+                        135 10000111    Mobility
+
+            Hop Limit --> 8 bits
+                Decreased by one at each intermediate node that the packet passes through
+                Packet is discarded when HL = 0
+
+            Source Address --> 128 bits
+
+            Destination Address --> 128 bits
+
+
+    IPv6 Address
+
+        8 groups of 16 bits (= 4 hexadecimal digits)
+        8 groups x 4 hexadecimal digits x 4 bits/hexadecimal
+
+            Example
+                2ac1:05b8:123e:0000:0000:0000:03a0:c234
+
+                    Zeros in front of the 4 hexadecimal digits can be omitted
+                    One or more consecutive groups of zeros may be replaced with two consecutive colons ::
+                        Only once in an IPv6 address
+
+                2ac1:5b8:123e::3a0:c234
+
+            Unspecified Address ::/128
+                All 0 address / All 128 bits of the subnet mask are 1
+                    Equivalent to IPv4 0.0.0.0/32
+
+            Default Route ::/0
+                All zero route address
+                All subnet mask covering all addresses
+                    Equivalent to IPv4 0.0.0.0/0
+
+            IPv4 mapped to IPv6 address ::ffff:0:0/96
+                Few exceptions apply
+
+
+
+User Datagram Protocol
+
+    Provides port information of the source and destination for application connection
+        The port is the most important function that UDP provides
+    Connectionless
+        Does not establish any end-to-end connection manager to check on the received packets
+
+
+    UDP Header
+
+        8 octets
+
+            Source Port --> 16 bits
+
+            Destination Port --> 16 bits
+
+            Length --> 16 bits
+                Contains the length of the entire UDP Segment including UDP Header and data
+
+            Checksum --> 16 bits
+                Used to detect bit errors in the UDP Header
+                Uses the same error checking algorithm as used in TCP and IPv4 headers
+                If an error is detected the segment is discarded
+                    No error recovery action is taken
+                Use of checksum field in UDP is optional
+                    If not used all bits are set to zero
+
+
+
+Transmission Control Protocol
+
+    TCP Header
+
+        20 octets minimum length
+
+        Contains various data segment flow control functionnalities
+
+
+    Source Port --> 16 bits
+    Destination Port --> 16 bits
+
+        Frequently Used Port Numbers
+            20      FTP (File Transfer Protocol)
+            21      FTP Control
+            23      Telnet
+            25      SMTP (Simple Mail Transfer Protocol) E-mail routing between servers
+            35      Private Printer Server Protocol
+            53      DNS (Domain Name System)
+            80      HTTP (Hypertext Transfer Protocol)
+            123     NTP (Network Time Protocol) Time Synchronization
+            143     IMAP (Internet Message Access Protocol) E-mail message management
+            ...
+
+    Sequence Number (SN) --> 32 bits
+
+    Acknowledgment Number (AN) --> 32 bits
+
+    Data offset --> 4 bits
+        Number of 32 bit words in the TCP Header
+        When additional Options are used
+            Padding may be added to make the TCP Header length a multiple of 32 bit words
+
+    Reserved --> 4 bits
+        For future use
+
+    Flags
+
+        CWR --> 1 bits
+
+        ECE --> 1 bits
+
+        URG --> 1 bits
+            Urgent
+                1 indicates that the Urgent Pointer field is in use
+
+        ACK --> 1 bits
+
+        PSH --> 1 bits
+            Push function
+                1 pushes the data segment to the receiving application
+                Enables the received data segments to be quickly used by the application
+
+        RST --> 1 bits
+
+        SYN --> 1 bits
+
+        FIN --> 1 bits
+
+
+    Window --> 16 bits
+
+    Checksum --> 16 bits
+        Error Detection code added to protect the TCP Header from errors
+        Ones complement sum of all 16 bit words in the TCP Header
+
+    Urgent Pointer --> 16 bits
+        Points to the Urgent data location within the payload segment
+        Enables the receiver to know how much urgent data is coming
+            SN + UP = Urgent data's last SN
+
+    Options --> variable
+
+    Padding --> variable
+
+
+
+Internet Routing & Functions
+
+    IGP (Interior Gateway Protocol), OSI Layer 3
+
+        Used by Gateways to exchange routing information within (inside) an AS (Autonomous System)
+            ISP (Internet Service Provider) network
+            Corporate network
+            Campus network
+            ...
+
+        IGP Categories
+            LS (Link-State) routing protocols
+            DV (Distance-Vector) routing protocols
+
+        IGP Examples
+
+            RIP (Routing Information Protocol)
+            IS-IS (Intermediate System to Intermediate System)
+            EIGRP (Enhanced Interior Gateway Routing Protocol)
+
+            OSPF (Open Shortest Path First, most widely used)
+
+                Routing protocol for IPv4, IPv6, and CIDR addresses
+                Used by Internet Gateways & Routers
+                Uses LSR (Link-State Routing) algorithm
+
+                1. Routers collect LS (Link-State) information from other routeurs in the AS
+                2. Network Connection Map (Tree) is made including cost values of links
+                    Tree roots from the Source node and branches (makes connection) to all other nodes
+                3. LS Routing algorithm used to setup a Loop-Free SPT (Shortest Path Tree) routing path
+                    From Source node to all Destination nodes in the network
+                    SPT selects the Minimum Cost routing path (using Dijkstra's algorithm)
+                4. Gateways/Routers will setup/update their Routing Tables (based on SPT routing paths)
+                5. When changes in network are detected, steps 1-4 are repeated
+
+                Link Cost Factors
+                    Distance of a router
+                    RTT (Round-Trip Time) [s]
+                    Number of hops (routeurs/switches) to reach destination [hops]
+                    Throughput [bits/s, packets/s]
+                    Availability [unitless]
+                    Reliability [unitless]
+
+                Routeur Types
+                    IR (Internal Routeur)
+                        All routing interfaces belong to the same network area
+                    ABR (Area Border Router)
+                        Connects subarea networks to the backbone network
+                    BR (Backbone Router)
+                        Connects to the backbone network
+                    ASBR (Autonomous Sytem Boundary Router)
+                        Connects between ASs using multiple routing protocols
+
+                Routers may have multiple type functionality
+                    MOSPF (Multicast Open Shortest Path First)
+                        OSPF extension to support multicast routing
+                        Enables routers to share Group Membership information in multicast routing path setup
+                        Alternative multicasting schemes include
+                            OSPF + PIM (Protocol Independent Multicast)
+
+                Subdivided Networks
+                    Division based on Administration & Management requirements
+                        Simplify administration
+                        Optimize traffic & resource utilization
+                        Enhance security
+                        Enable faster routing updates
+                    Network Subdividing results in Subarea networks and a Backbone network area
+
+                OSPF-TE (Traffic Engineering)
+                    TE QoS (Quality of Service) routing control of IP packets from ingress node to egress node
+                    TE enhances reliability by minimizing service outage from errors and failures
+                    TE enables measurement, characterization, and modeling for performance optimization of traffic
+                    TE can be used for IP and non-IP networks (like optical networks)
+
+
+    EGP (Exterior Gateway Protocol), OSI Layer 3
+
+        Used by Gateways to exchange routing information between (outside) ASs
+        Routing path selection is based on
+            Network policies
+            Network administrator configured rule-sets
+        Currently the Internet uses BGP4 (Border Gateway Protocol version 4, published in 2006)
+
+
+    BGP (Border Gateway Protocol), OSI Layer 3
+
+        eBGP (external BGP)
+            BGP routing used between ASs
+
+        iBGP (internal BGP)
+            BGP routing used whithin an AS
+
+        BGP Security
+            BGP Routeurs commonly belong to different ISPs
+                Each routeur may use different encryption and security schemes
+                Routeurs and gateways are adminitrated and managed by different ISPs
+                    Routeurs need to exchange setup and updated information with each other
+                        Poor Coordination = Security Vulnerabilities
+                        When different encryption and security schemes are used
+                            It can be diffucult to authenticate and protect against spoofed BGP messages and malware
+
+
+    ARP (Address Resolution Protocol), OSI Layer 2
+
+        Maps an IPv4/IPv6 address to a device's DLL (Data Link Layer) address
+            IPv4 Address <---> Ethernet MAC (Medium Access Control) Address
+
+        IPv6 networks use NDP (Neighbor Discovery Protocol) for ARP functionality
+            IPv6 Address <---> Wi-Fi MAC Address
+
+        ARP Packet Parameters
+            HTYPE (Hardware Type)
+                Specifies network protocol type (Ethernet, Wi-Fi, etc.)
+            PTYPE (Protocol Type)
+                Specifies use of IPv4, IPv6, etc.
+            HLEN (Hardware Address Length)
+                Number of octets (bytes) of the device's address
+                    Ethernet's HLEN = 6
+            PLEN (Protocol Address Length)
+                Address length in octets
+                    IPv4's PLEN = 4
+                    IPv6's PLEN = 16
+            Operation
+                Specifies operation
+                    Request=1, Reply=2
+            SHA (Sender Hardware Address)
+                Sender's device address
+            SPA (Sender Protocol Address)
+                Sender's IP address
+            THA (Target Hardware Address)
+                Receiver's device's address
+            TPA (Target Protocol Address)
+                Receiver's IP address
+
+
+    NAT (Network Address Translation)
+
+        One-to-One NAT (Basic NAT)
+            Enables interconnection of two incompatibly addressed assigned IP networks
+                For example, an address structure within a company that is used in an address structure outside
+
+        One-to-Many NAT (IP Masquerading)
+            IP address space (with many private IP addresses) hidden under a single public IP address
+                Provides enhanced security
+                Made to save public IPv4 addresses
+
+
+    RPC (Remote Procedure Call)
+            Program that enables a function/procedure to be executed on a remote computer
+            Enables easy programming as if the function is to run on a locale computer
+            Needs recovery procedures to help overcome from unpredictable network problems
+
+        RPC Request & Response procedures
+            Client initiates RPC by sending a Request message (with setup parameters) to a remote server
+            Server replies with a Response to the client
+
+
+    FTP (File Transfer Protocol)
+            Used to transfer files from a server to a client computer over TCP/IP
+            FTP sign-in protocol commonly requires username and password
+            FTP with TLS (Transport Layer Security) protection (FTPS) is commonly used
+        FTP modes
+                Active and Passive modes were updated to support IPv6 and Enhanced Passive mode
+            Active mode
+                Client sends a FTP command PORT M to the server to inform which port to use
+                Server sends data from its FTP server data port (port 20) to the client's port
+            Passive mode
+                Used when the client is behind a firewall and cannot accept incoming TCP connections from server
+                    Client uses the control connection to send a PASV command to the server
+                    Server sends its IP address and server port number
+                    Client opens data connection (from its arbitrary port) to the server IP address and port number
+        FTP Data Transfer modes
+            Stream mode
+                TCP is used to send data in a continuous stream (FTP does minimum processing)
+            Block mode
+                FTP divides data into blocks and uses TCP to transfer
+            Compressed mode
+                Data compression (like run-length encoding) is applied
+            Enhanced data transfer techniques exist
+
+
+    E-mail
+
+        POP3 vs. IMAP
+            Both are e-mail retrieval applications that use TCP/IP
+                POP3 (Post Office Protocol version 3)
+                    Has a very simple operation
+                        Moves emails from the server onto your device
+                        Can be set to leave emails on the server after being retrieved
+                IMAP (Internet Message Access Protocol) version 4
+                    Enables complete management of a user e-mail box from multiple e-mail devices
+                    More popular due to multiple device support
+                        Uses more complex queries in communicating with the server due to multiple device support
+                        Leaves e-mails on the server after retrieval (until the email is deleted by the user)
+            Encryption through
+                TLS (Transport Layer Security)
+                STARTTLS (Opportunistic TLS)
+                SSL (Secure Sockets Layer)
+
+        SMTP (Simple Mail Transfer Protocol)
+            Internet e-mail protocol
+            Text-based protocol that uses TCP/IP
+            Commonly used to send and receive e-mails between servers
+
+
+
+Internet Security
+
+    Top Rankingn Internet Attacks
+
+        Browser Attacks
+                Disguise malware as an application or an update (Phishing)
+                Users are tricked into downloading the hidden malware
+                Intruded malware attacks the OS or applications
+            Defended by updates
+
+        Brute Force Attacks
+                Repeated attempts to decode a password or pin number
+                Easy common passwords and Dictionary attacks are attempted first
+            Defended by
+                Well-selected password changes
+                Avoiding logging in too frequently
+
+        DoS (Denial of Service) attacks
+                To block communications and services (computer, server, network)
+                Overload the target with more requests than the system can handle
+                Common targets are online banking, email, and commercial websites
+                DDoS (Distributed DoS) uses multiple (distributed) computers to conduct the DoS attack
+            Defended by
+                Anti-virus softwares
+                Firewalls
+                Email filters
+
+        SSL (Secure Sockets Layer) attacks
+                Secured link between website and browser, email server and email user applications
+                Intercept passwords, cookies, tokens in the early connection stage before encryption
+
+        Scans
+                Scan for open computer ports that can be used to gain access to the computer
+                Repeatedly send messages to computer ports to find security vulnerabilities
+                Commonly used before lauching an attack
+
+        DNS (Domain Name Server) attacks
+                DNS Spoofing (DNS poisoning) changes the domain name IP's to a wrong address
+                DNS Spoofing is used for DNS Hijacking
+                DNS Hijacking is used to redirect a user to an environment controlled by the attacker
+            Defended by
+                Using a random source port
+                Updating server security patches
+
+        Backdoor attacks
+                A computer remote access application
+                Used by developers or administrators
+                May bypass the security system
+                Hackers try to gain access through malicious backdoors in hardware or software components
+            Defended by updating security patches
+
+
+    Growing Security & Threat Issues
+
+        Botnet (= roBot + Network)
+            Mutiple devices are used to conduct Internet attacks by the Botnet owner (attacker)
+                DDoS, steal data, send spam, intrusion
+            Zombie computers are frequently used as Botnets
+                Hacker compromised computer connected to the Internet
+                Users are commonly unaware
+
+        Zero-Day Vulnerability
+            Discovered almost every day
+            Refers to the day that a critical system, network, software or platform was patched
+
+        Browser & Website attacks
+            Will be attempted 100%
+            Attackers are always looking for vulnerabilities in browsers and plugins
+
+        Repeated attacks
+            Companies attacked once are almost always attacked mutiple times again
+            Bigger companies gets more attacks
+            Ransomware is increasing rapidly
+
+        Not Reporting Breaches & Attacks
+            Reputation damage (when billions of personal records are lost or stolen)
+            Companies may not know if they were breached or how to recover
+
+
+    Internet & Cyber Attacks
+
+        Phishing
+
+            Fishing (phishing) by disguising as a trustworthy entity
+            To obtain usernames, passwords, credit card info, money
+            Phishing emails commonly contain attachments files and website links
+
+            Spear Phishing
+                To an individual or company
+                Using personal information increase the success probability
+                Most common and successful type (over 90%) of security attacks
+
+            Clone Phishing
+                Legitimate previously delivered email is resent containing an attachment or a link
+                Fools the receiver as if it is an updated or replied email
+
+            Whaling (the big fish)
+                Attack made to a high-ranked executive (the Whale) of the company
+                To attack important business files using executive-level access
+
+            Link Manipulation
+                Website link that is infected with a malware or connects to a hacker website
+
+            Filter Evasion
+                Phishing emails that use images (instead of text) to avoid anti-phishing filters
+
+            Website Forgery
+                Phishing website replaces the user's address bar with the hacker's URL
+                User is fooled into providing login, password, account information to the hacker
+
+            Covert Redirect
+                Corrupting a website with a malicious popup that redirects a login to the hacker's website
+
+            Social Engineering
+                Provoking a user to click on a malicious link or hacker website
+
+            Phone Phising
+                Telephone call or SMS to trick people into giving up personal information
+
+        Dos & DDoS
+
+            DoS (Denial of Service) Attack
+                Disables a device or network by making resources unavailable through overloading or malfunctioning
+
+            DDoS (Distributed DoS) Attack
+                Using multiple distributed systems (Botnets, Zombie Computers, etc.)
+
+                Buffer Overflow (Buffer Overrun)
+                        Is used in DoS and DDoS attacks
+                        Malware overruns the buffer's boundary and overwrites into adjacent memory locations
+                    Defense schemes
+                        Randomizing the layout of memory
+                        Deliberately leaving space between buffers
+                        Monitoring actions that write into adjacent memory spaces
+                    Two representative types of Buffer Overflow
+                        Stack Overflow
+                            Manipulate a local variable related to the vulnerable buffer on the stack
+                            Manipulate the return address in a stack frame
+                            Manipulate the function pointer or exception handler to create operation malfunction
+                            Manipulate the stack frame's local pointer or local variable
+                        Heap Overflow
+                                Used in dynamic memory allocation (of program data) of applications in run-time
+                                Occurs in the heap data area
+                            Protection methods
+                                Separate the code and data (prevent execution of the payload)
+                                Randomize heap location so it is not located at a fixed offset position
+                                Periodically check the condition of the heap
+
+        MITM (Man-in-the-Middle) Attack
+
+                Secretly relays and manipulates packets between communicating users/servers
+                Results in active eavesdropping and manipulation of information
+
+            Defense
+                Enhanced authentication using CA (Certificate Authority) based on verified certificates
+                Latency examination based tamper examination
+                HTTP Public Key Pinning (Certificate Pinning)
+                    HTTP server first announces (pins up) a list of public
+                    key hashes that can be used for message/data encryption
+
+        SQL (pronounced as "sequel") Injection
+
+                RDBMS: Relational DataBase Management System
+                RDSMS: Relational Data Stream Management System
+
+            Vulnerability in an application to insert SQL statements
+
+                Spoof identity
+                Tamper with existing data
+                Voiding or changing transactions
+                Changing account balances
+                Disclosure of data
+                Destroy data
+                Ransom data and application
+                Hijack administrator role of the server or application
+
+
+    Internet Security & Protection
+
+        IDS (Intrusion Detection System)
+
+            Detects malicious activity and policy violations in network devices
+            Detections results are reported to
+                Network Administrator
+                SIEM (Security Information & Event Management) system
+            False alarms are removed by the alarm filters
+
+            IDS types
+
+                HIDS (Host IDS)
+                    Operates on PCs, laptops, smartphones, etc.
+                    Monitors all internet packets sent and received
+                    Status snapshots are taken and compared with its former status
+
+                NIDS (Network IDS)
+                    Operates on selected gateways, routers and switches
+                    Consistently monitors to detect abnormal behavior
+
+                Signature-based IDS
+                    Searches for specific intrusion patterns (malware sequences)
+
+                Anomaly-based IDS
+                    Detection scheme for new unknown attacks (new malware behavior)
+                    ML (Machine Learning) monitoring system is used to detect new patterns
+
+                IDPS (Intrusion Detection & Prevention System)
+                    IDS + Intrusion Counter Response System (disconnection)
+
+        Firewall
+
+            Network security monitoring & control system
+            Monitors all transmitted & received packets
+            IDS (Intrusion Detection System) included
+
+            Network-based vs. Host-based
+
+                Network-based firewall
+                    In (LAN, WAN, intranet) gateways (routers, switches) for network protection
+
+                Host-based Firewall
+                    In computer OS for endpoint (PC, smartphone) protection
+
+            Generation of Firewall
+
+                1G Firewall
+                    Packet filtering of network addresses and ports
+
+                2G Firewall
+                    Stateful filters added for IP packet & Transport (TCP, UDP) protocol inspection
+                    Tracks all state changes in IPv4, IPv6, TCP, UDP, etc.
+                    All 1G Firewall packet filtering technology included
+
+                3G Firewall
+                    Application layer (HTTP, DNS, FTP, etc.) filtering added
+                    All 2G & 1G firewall technology included
+                    DPI (Deep Packet Inspection) included
+                    IPS (Intrusion Preventing System) included
+                    User Identity Monitoring
+                    Device MAC Address & Reputation monitoring
+                    WAF (Web Application Firewall) technology
+
+        TLS (Transport Layer Security)
+
+                Network cryptographic protocol to enable secure communications
+                Defined in 1999 and updated in 2008 and 2011
+                TLS replaced SSL (Secure Sockets Layer) defined and updated in 1994, 1995, 1996
+                TLS 2048 bit encryption has been used since 2013
+
+            Provides privacy and data integrity between networked applications
+
+                Symmetric cryptography with encryption keys generated uniquely
+                for each connection at session setup using TLS handshake protocol
+
+                Public-key cryptography is used to authenticate the identity
+                of the communicating systems
+
+                Message authentication code is used to ensure data integrity
+                (prevent alterations)
+
+        WEP (Wired Equivalent Privacy) & WPA (Wi-Fi Protected Access)
+
+            WEP (Wired Equivalent Privacy)
+
+                Security algorithm developed for WLANs (Wireless Local Area Networks, Wi-Fi)
+                to provide data confidentiality equivalent to the security level used in
+                wired networks (ratified in 1997)
+
+                Includes encryption and authentication techniques
+
+                Wi-Fi Alliance announced (2003) that WEP will be replaced with WPA
+
+            WPA (Wi-Fi Protected Access)
+
+                Wi-Fi Alliance developed (2003) security protocol
+                and security certification program
+
+                WPA uses TKIP (Temporal Key Integrity Protocol) that
+                dynamically generates new encryption keys for each packet
+
+                WPA is an improvement from WEP, but TKIP can now be broken
+
+            WPA2
+
+                The current WPA version commonly used
+
+                WPA2 certification is mandatory (since 2006) for all Wi-Fi devices
+
+                Uses CCMP (Counter Mode Cipher Block Chaining Message Authentication Code Protocol)
+                which is an AES (Advanced Encryption Standard) technology
+
+                Includes all mandatory elements of the RSN (Robust Security Network) standard
+                and requires Wi-Fi Alliance testing and certification
+
+        SSH (Secure Shell)
+
+            Cryptography protocol to enable secure services over unsecured networks
+
+            SSH applications
+                Remote command-line login
+                Remote command execution
+                Various other secured network services
+
+            SSH-2 is commonly supported by all servers
+
+        DPI (Deep Packet Inspection)
+
+            Also known as CPI (Complete Packet Inspection) is packet filtering
+            that inspects the data and header of packets searching for virus,
+            intrusions, anomalies, and other characteristics in order to support
+            network security, network management, and application services
+
+            A lighter version of DPI is SPI (Shallow Packet Inspection), which checks
+            the packet header including the transport header (TCP, UDP)
+
+
+
+Wireshark Internet Project
+
+    How to Check your IP Configuration
+
+        Windows
+
+            ipconfig
+            ipconfig /all
+            ipconfig /release
+                        Release your current IP and obtain a new one from the DHCP server
+            ipconfig /renew
+                        Can be used if the PC is set to automatic IP Address setup mode (using DHCP)
+            ipconfig /displaydns
+                        Show current DNS Resolver Cache logs
+            ipconfig /flushdns
+                        Flush or clear current DNS Resolver Cache logs
+            ipconfig /registerdns
+                        Update the DNS settings on your (Windows) PC
+            ping <target>
+                        Test the RTT (Round-Trip Time)
+                -a
+                    Resolve the hostname of an IP address target
+                -n
+                    Sets the number of ICMP Echo Request messages to send (without the option: 4 requests)
+                -l <size>
+                    Set the size of the echo request packet from 32 to 65527 octets (without: 32 octets)
+                -i <TTL>
+                    TTL maximum value is 255
+                -w <timeout>
+                    Adjusts the amount of time that ping waits for each reply (default value is 4000ms)
+                -p
+                    Used to ping a Hyper-V Network Virtualization provider address
+            tracert <target>
+                        Trace Route
+                            Displays the route and measure the transit delays from source to destination
+                            Each row represents a "hop" along the route
+                                Hop #
+                                    Number of hops along the route
+                                RTT
+                                    For a tracert packet to reach the router and return to the source
+                                    Checks the Round Trip Time three times for each hop
+                                Name / IP Address
+                                    Domain name or IP address for the router
+                -h <maxHops>
+                    Specify the maximum number of hops in the search for target
+                -w <timeout>
+                    Specify the time to allow each reply before timeout in milliseconds
+
+        Linux
+
+            ifconfig
+            ip a
+
+
