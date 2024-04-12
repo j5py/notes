@@ -1,0 +1,1936 @@
+
+
+Based on IBM's course on Coursera (Introduction to Containers with Docker, Kubernetes & OpenShift)
+
+
+Docker
+
+
+    Containers
+
+        Solve the problem of making software portable so that applications can run on multiple platforms
+            Operations and underlying infrastructure issues are no longer blockers
+
+        They lower deployment time and costs, improve utilization, automate processes, and support next-gen apps (microservices)
+
+            Microservices
+                Cloud-native architectural approach in which a single application contains
+                many loosely coupled and independently deployable smaller components or services
+
+
+        A container
+
+            Powered by the containerization engine, is a standard unit of software that encapsulates
+
+                Application code
+                Runtime
+                System tools
+                System libraries
+                Settings to build, ship and run
+
+            Characteristics
+
+                The container engine virtualizes the operating system
+                A container is light-weight, fast, isolated, portable and secure
+                Require less memory space
+                Binaries, libraries, and other entities within the container enable apps to run
+                One machine can host multiple Containers
+
+                Containers are platform independent and can run on the cloud, desktop, and on-premises
+                Containers being operating system independent, run on Windows, Linux, or MacOS
+                Containers are also programming language and IDE independent
+
+
+            Operating System Virtualization
+                OS-level Virtualization is a paradigm in which the kernel allows the existence of
+                multiple isolated user space instances, called containers, zones, virtual private servers,
+                partitions, virtual environments, virtual kernels, or jails
+
+
+        Container vendors
+
+            Docker      Robust and most popular container platform today
+            Podman      Daemon-less architecture providing more security than Docker containers
+            LXC         Preferred for data-intensive apps and ops
+            Vagrant     Offers highest levels of isolation on the running physical machine
+
+
+
+    Docker
+
+        Simple architecture
+        Scalability
+        Easy portability
+
+
+        Docker isolates applications from infrastructure
+
+            Apps                App1
+                                App2
+                                App3
+                                ...
+
+            Infrastructure      Container runtime
+                                Operating system
+                                Hardware
+
+
+        Underlying technology
+
+            Written in Go
+            Uses Linux kernel's features to deliver functionality
+            Uses the namespaces to provide an isolated workspace called container
+
+                Creates a set of namespaces for every container
+                    And each aspect runs in a separate namespace with access limited to that namespace
+
+                    Namespaces are an important part of Docker's isolation model. Namespaces exist for each
+                    type of resources including networking, storage, processes, hostname control and others
+
+
+                        Namespace
+                            A Linux kernel feature that isolates and virtualizes system resources. Processes
+                            which are restricted to a namespace can only interact with resources or processes
+                            that are part of the same namespace.
+
+
+        Add-ons
+            Docker methodolgy inspired additional innovations
+
+                Complementary tools             Docker CLI
+                                                Docker Compose
+                                                Prometheus
+                                                ...
+
+                Orchestration technologies      Docker Swarm
+                                                Kubernetes
+
+                Development methodologies       Microservices
+                                                Serverless
+
+
+        Benefits
+            Consistent and isolated environments
+            Fast deployment
+            Repeatability and automation
+            Supports Agile and CI/CD DevOps practices
+            Versioning for easy testing, rollbacks, and redeployments
+
+        NOT a GOOD fit FOR applications
+            Requiring high performance or security
+            Based on monolithic architecture
+            Using rich GUI features
+            Performing standard desktop or limited functions
+
+
+
+    Building and Running Container Images
+
+        Key commands
+
+            build, images, run, push, pull
+
+
+        Steps
+
+            1. Create a Dockerfile
+
+                    FROM alpine                         Defines the base image
+                    CMD ["echo", "Hello World!"]        Prints the words
+
+
+            2. Use the Dockerfile to create a container image
+
+                    docker build -t my-app:v1 .         Command, Tag, Repository, Version, Current directory
+
+                    docker images                       To verify the creation of the image
+
+
+            3. Use the container image to create a running container
+
+                    docker run my-app:v1                Create the container
+
+                    docker ps -a                        To verify the details of the container created
+
+
+        Commands
+
+                    docker push my-app:v1               Store image in a configured registry
+
+                    docker pull nginx                   Retrieves images from a configured registry
+
+
+
+    Docker Objects
+
+        Dockerfile
+
+            A text file that contains instructions needed to create an image
+                Essential instructions
+
+                    FROM
+                        A Dockerfile must always begin with a FROM instruction that defines a base image
+                            Often the base image is from a public repository, like an operating system or a specific language
+                    RUN
+                        Executes arbitrary commands
+                    CMD
+                        Defines default command for container execution
+                        A Dockerfile should have only one CMD instruction
+                            If the Dockerfile has several CMD instructions, only the last CMD instruction will take effect
+
+
+        Image
+
+            A Docker image is a Read-only template with instructions for creating a Docker container
+
+                Built using instructions in a Dockerfile, new read-only image layer is created for each instruction
+
+                A writeable layer is added when an image is run as a container
+
+
+                    Read-Write      Container layer
+
+                        Read-Only       Image layer
+                                        Image layer
+                                        Image layer
+                                        Image layer
+                                        ...
+
+                        Layers can be shared between images, which saves disk space and network bandwidth when sending and receiving images
+
+                    When you change the Dockerfile and rebuild the image, the Docker engine only rebuilds the changed layers
+
+
+                When you instantiate this image, you get a running container
+
+
+            An image name has a unique format that consists of three parts
+
+                <hostname>/<repository>:<tag>       The hostname identifies the image registry
+                                                    A repository is a group of related container images
+                                                    And the tag provides information about a specific version or variant of an image
+
+                docker.io/ubuntu:18.04              Docker Hub Registry (when using the Docker CLI, you can exclude the docker.io hostname)
+                                                    Ubuntu image
+                                                    Ubuntu version
+
+
+        Container
+
+            Is a runnable instance of an image
+            Can be created, stopped, started or deleted using the Docker API or CLI
+            Can connect to multiple networks, attach storage, or create a new image based on its current state
+            Is well isolated from other containers and its host machine
+
+
+        Networks
+
+            Used for the isolated container communication
+
+
+        Storage
+
+            By default, data doesn't persist when the container no longer exist
+            Docker uses volumes and bind mounts to persist data even after a container stops running
+
+
+        Plugins and add-ons
+
+            Storage plugins provide the ability to connect to external storage platforms
+
+
+
+    Docker Architecture
+
+        Based on client-server architecture
+        Provides a complete application environment
+        Includes the client, the host, and the registry components
+
+
+        Docker process overview
+
+            1. Using either the Docker CLI or REST APIs, the Docker client sends instructions or commands to the Docker host server
+                    The Docker client can communicate with both local and remote hosts
+                        The Docker client and the host daemon can run
+                            On the same system
+                            On different systems
+
+            2. The Docker host server, referred to as the host, includes the Docker deamon known as dockerd
+                    Also includes and manages images, containers, namespaces, networks, storage, plugins and add-ons
+
+            3. The daemon listens for Docker API requests or commands such as `docker run` and processes those commands
+                    Can also communicate with other daemons to manage Docker services
+
+            4. The daemon builds, runs, and distributes containers to the registry
+
+            5. The registry
+                    A hosted service containing repositories of images which responds to the Registry API
+                        Stores and distributes images
+                        Access is public (such as Docker Hub) or private
+                        Registry locations are either hosted using a third-party provider or self-hosted
+
+
+        Registry access
+
+            Developers build and push images using automation or a build pipeline
+                Push
+                    Docker stores the images in a registry
+                Pull
+            Local machines, cloud systems, or on-premises systems pull the images
+
+
+        Containerization is the process used to build, push, and run an image to create a running container
+
+
+
+    Hands-on Lab
+
+        Pull and run
+            docker --version
+            docker pull <image>
+            docker images
+            docker run <image>
+            docker ps -a
+            docker container rm <id>
+
+        Using a Dockerfile
+            docker build . -t <image>:<version>
+            docker images
+
+                Run the image as a container
+                    docker run -dp <port>:<port> <image>:<version>
+                    curl localhost:<port>
+                    docker stop $(docker ps -q)
+                    docker ps
+
+
+
+Kubernetes
+
+
+    Container Orchestration
+        A process that automates the container lifecycle of containerized applications
+
+            A necessity in large, dynamic environments
+                Streamlines complexity
+                Enables hands-off deployment and scaling
+                Increases speed, agility, and efficiency
+                Seamlessly integrates into CI/CD worflows
+
+                    Container lifecycle
+                        Deployement
+                        Management
+                        Scaling
+                        Networking
+                        Availability
+
+            A critical part of an organization's SOAR (Security, Orchestration, Automation, and Response) requirements
+
+            Helps to meet business goals and increase profitability by using automation
+
+
+        Features
+
+            Defines container images and registry
+            Improves provisioning and deployment
+            Secures network connectivity
+            Ensures availability and performance
+            Manages scalability and load balancing
+            Resource allocation and scheduling
+            Rolling updates and roll backs
+            Health checks and automated error handling
+
+
+        Configuration files
+            YAML or JSON
+                Find resources
+                Establish a network
+                Store logs
+
+        Deployement scheduling
+            Automatically schedules new container deployement
+            Finds the right host based on predefined settings or restrictions
+
+        Manages container lifecycle
+            Configuration file specs inform container decisions
+                System parameters (like CPU and memory)
+                File parameters (like proximity and file metadata)
+
+
+        Tools
+
+            Marathon        Framework for Apache Mesos, an open-source cluster manager that was developed at Berkeley
+                            Scales container infrastructure by automating management and task monitoring
+
+            Nomad           HashiCorp's Nomad is a free and open-source cluster management and scheduling tool
+                            Supports Docker and other standalone, virtualized, or containerized applications
+
+            Docker Swarm    Was designed specifically to work with Docker
+
+            Kubernetes      Open-source, developed by Google and maintained by the CNCF (Cloud Native Computing Foundation)
+                            Automates deployment, storage provisioning, service discovery, load balancing and scaling
+                            Self-healing (the ability to restart, replace or remove a failed container)
+                            The standard for container orchestration
+
+
+
+    Kubernetes (also known as K8s)
+
+
+        Concepts
+
+            Pods and workloads
+                Pods are the smallest deployable compute object in Kubernetes and the higher-level abstractions to run workloads
+
+            Services
+                A service exposes application running on a Set of Pods
+                Each Pod is assigned a unique IP address, and Sets of Pods have a single DNS name
+
+            Storage
+                Kubernetes supports both persistent and temporary storage for Pods
+
+            Configuration
+                Resources that Kubernetes provides for configuring Pods
+
+            Security
+                For cloud-native workloads, enforces security for Pod and API access
+
+            Policies
+                Policies for groups or resources helps ensure that Pods match
+                to the Nodes so that the kubelet can find them and run the Pods
+
+            Scheduling and eviction
+                Runs and proactively terminates one or more Pods on resource-starved Nodes
+
+            Preemption
+                Terminates lower priority Pods so that higher priority Pods can run on Nodes
+
+            Administration
+                Management details necessary to administer a Kubernetes cluster
+
+
+
+        Capabilities
+
+            Automated rollouts and rollbacks
+                Progressively rolls out changes to application or configuration
+                Monitors application health and ensures instances are running
+                Rolls back changes
+
+            Storage orchestration
+                Automatically mounts your chosen storage system whether from public cloud, network or local storage
+
+            Horizontal scaling
+                Scales loads automatically based on metrics or via commands
+
+            Automated bin packing
+                Increases resource utilization and cost savings using a mix of critical and best-effort workloads
+                Performs container auto-placement based on resource requirements and conditions without sacrificing HA (High Availability)
+
+            Secret and configuration management
+                Stores and manages sensitive information (credentials, keys or tokens) securely
+                Deploys and update secrets and configuration without rebuilding images
+
+            IPv4/IPv6 dual-stack
+                Assigns both IPv4 and IPv6 addresses to Pods and Services
+
+            Batch execution
+                Manages batch and continuous integration workloads, and replaces failed containers, if configured
+
+            Self-healing
+                Restarts, replaces, reschedules, and kills failing or unresponsive containers
+                Exposes containers to clients only if healthy and running
+
+            Service discovery and load balancing
+                Discovers Pods using their own IP addresses or a single DNS name
+                Load-balances traffic across Pods for better performance and high availability
+
+            Designed for extensibility
+                Easily extensible by adding or providing additional features to your Kubernetes cluster without any source code modifications
+
+
+
+        Ecosystem
+
+            Provides additional Kubernetes services
+                Building container images
+                Storing images in a container registry
+                Application logging and monitoring
+                Continuous improvement and continuous delivery (CI/CD)
+
+
+                Leading public cloud providers
+                    Prisma, IBM, Google, and AWS
+
+                Open source framework providers
+                    Red Hat, VMWare, SUSE, Mesosphere, Docker, and Cloud Foundry
+
+                Management providers
+                    Digital Ocean, loodse, SUPERGIANT, CloudSoft, turbonomic, Techtonic, and Weaverworks
+
+                Tool providers
+                    Jfrog, Univa, Aspen Mesh, Bitnami, and Cloud 66
+
+                Monitoring & logging providers
+                    sumalogic, DATADOG, New Relic, iguazio, Grafana SignalFX, sysdig, and Dynatrace
+
+                Security providers
+                    GUARDCORE, BLACKDUCK, yubico, cilium, aqua, Twistlock, and Alcide
+
+                Load balancing providers
+                    AVI networks, VMware, and NGiNX
+
+
+
+    Architecture
+
+        The main components in a Kubernetes system
+
+
+            A deployement of Kubernetes is called a Kubernetes cluster
+            A Kubernetes cluster is a cluster of Nodes that runs containerized applications
+
+                Each cluster has
+
+                    One master Node: the Kubernetes Control Plane
+                    One or more Worker Nodes
+
+
+                    Control Plane
+
+                        The Control Plane maintains the intended cluster state by making decisions
+                        about the cluster and detecting and responding to events in the cluster
+
+                        +---------------------------------------------------------------------------+
+                        |                        Kubernetes Control Plane                           |
+                        |                                                                           |
+                        |   +-------------------------+         +--------------------------+        |
+                        |   | +-------------------------+       | +--------------------------+      |
+                        |   +-| +-------------------------+     +-| +--------------------------+    |    +-------+
+                        |     +-| kube-controller-manager |       +-| cloud-controller-manager |---------| Cloud |
+                        |       +-------------------------+         +--------------------------+    |    +-------+
+                        |                                   \                |                      |
+                        |                                    \               |                      |
+                        |                                 +-------------------------+               |    +-------------------------+
+                        |                                 |     kube-api-server     |--------------------| Kubernetes Worker Nodes |
+                        |                                 +-------------------------+               |    +-------------------------+
+                        |                                    /               |                      |
+                        |                    _______________/                |                      |
+                        |                   (_______________)   +------------------+                |
+                        |                   |_______________|   | +------------------+              |
+                        |                   |_______________|   +-| +------------------+            |
+                        |                   |               |     +-|  kube-scheduler  |            |
+                        |                   |     etcd      |       +------------------+            |
+                        |                   |_______________|                                       |
+                        +---------------------------------------------------------------------------+
+
+                            Kubernetes API Server
+                                Exposes the Kubernetes API
+                                Serves as the front-end for Control Plane
+                                All communication in the cluster utilizes this API
+                                The main implementation of a Kubernetes API Server is kube-api-server
+                                    Which is designed to scale horizontally by deploying more instances
+                                        You can run several instances of kube-api-server and balance traffic between those instances
+
+                            etcd
+                                Highly available, distributed key-value store that contains all the cluster data
+                                Stores deployment configuration data, the desired state, and meta data
+                                    In a way that can be accessed in a common location
+
+                            Kubernetes Scheduler
+                                Assigns newly created Pods to Nodes
+                                    Means that the kube-scheduler determines where your worloads should run within the cluster
+                                    Selects the most optimal Node according to Kubernetes principles, configuration, and available resources
+
+                            Kubernetes Controller Manager
+                                Runs all the controller processes that monitor the cluster state
+                                Ensures that the actual state of a cluster matches the desired state
+
+                            Cloud Controller Manager
+                                Runs controllers that interact with the underlying cloud provider
+                                These controllers effectively link clusters into a cloud provider's API
+
+
+                    Worker Nodes
+
+                        Nodes are the worker machines in a Kubernetes cluster
+                        In other words, user applications are run on Nodes
+
+                            May be a virtual or a physical machine
+                            Nodes are not created by Kubernetes itself, but rather by the cloud provider
+                            Each Node is managed by the Control Plane and contain the services necessary to run applications
+
+                                                      +------------+            +---------------+
+                                          --- UI ---> |            |  +---------| Worker Node 1 |
+                                        /             | Kubernetes |  |         +---------------+
+                                Developer             |  Control   |--|
+                                        \             |   Plane    |  |         +---------------+
+                                          --- CLI --> |            |  +---------| Worker Node 2 |
+                                            kubectl   +------------+            +---------------+
+
+
+                            Nodes include Pods, which are the smallest deployement entity in Kubernetes
+                                Pods include one or more containers
+                                    Containers share all the resources of the Node and communicate among them
+
+                                +---------------------------------------------------------------------+
+                                |                            Worker Node 1                            |
+                                |                                                                     |
+                                |   +-----------------+   +-----------------+   +-----------------+   |
+                                |   |      Pod 1      |   |      Pod 2      |   |      Pod 3      |   |
+                                |   | +-------------+ |   | +-------------+ |   | +-------------+ |   |
+                                |   | | Container 1 | |   | | Container 1 | |   | | Container 1 | |   |
+                                |   | +-------------+ |   | +-------------+ |   | +-------------+ |   |
+                                |   | | Container 2 | |   |                 |   | | Container 2 | |   |
+                                |   | +-------------+ |   |                 |   | +-------------+ |   |
+                                |   | | Container 3 | |   |                 |   |                 |   |
+                                |   | +-------------+ |   |                 |   |                 |   |
+                                |   +-----------------+   +-----------------+   +-----------------+   |
+                                |       +-----------------------------------------------------+       |
+                                |       |                        Docker                       |       |
+                                |       +-----------------------------------------------------+       |
+                                |       |          Kubelet         |        Kube-proxy        |       |
+                                |       +-----------------------------------------------------+       |
+                                +---------------------------------------------------------------------+
+
+                                Kubelet
+                                    The most important component of a Worker Node
+                                        Communicates with the kube-api-server to receive new and modified Pod specifications
+                                        Ensures that the Pods and their associated containers are running as desired
+                                        Reports to the Control Plane on the Pods' health and status
+                                        And, in order to start a Pod, the Kubelet uses the container's runtime
+
+                                Docker
+                                    The container runtime
+                                        Is responsible for downloading images and running containers
+                                        Rather than providing a single container runtime
+                                            Implements a container runtime interface that permits pluggability of the container runtime
+
+                                Kubernetes Proxy
+                                    A network proxy that runs on each Node in a cluster
+                                    Maintains network rules that allow communication to Pods running on Nodes
+                                        In other words, communication to workloads running on your cluster
+                                        This communication can come from within or outside of the cluster
+
+
+
+    Kubernetes Objects
+
+
+        Two main fields
+
+            Object spec                 Status
+                Provided by user            Provided by Kubernetes
+                Defines desired state       Defines current state
+
+
+        Key Terms
+
+            Object
+                A bundle of software data that has an identity, a state, and a behavior
+                    Variables, data structures, and specific functions
+
+            Entity
+                A person, place, or thing with an identity and associated data
+                    In banking, a customer account is an entity
+
+            Persistent
+                Means something will last even if there is a server failure or network attack
+
+
+            Kubernetes Objects (Pods, Namespaces, ReplicaSets, Deployements, and more) are persistent entities
+
+
+        Labels
+            Key-value pairs attached to objects
+
+                Intended for identification of objects (not unique)
+                Help organize and group objects
+                    Label selectors are the core grouping method in Kubernetes
+
+
+        Namespaces
+            Mechanism for isolating groups of resources within a single cluster
+
+                Segregate cluster by team, projet, etc.
+                Necessary with larger numbers of users
+                Provide a scope for object names
+                    Each object has a name
+                    Names are unique for resource type within a namespace
+
+
+        Pods
+            Simplest unit in Kubernetes
+                Represents a process or a single instance of an application in your cluster
+                Encapsulates one or more containers
+                Replicating a Pod serves to scale applications horizontally
+
+
+                    YAML files are often used to define the objects that you want to create
+
+                        apiVersion: v1
+                        kind: Pod
+                        metadata:
+                            name: nginx
+                        spec:
+                            containers:
+                              - name: nginx
+                                image: nginx:1.7.9
+                                ports:
+                                  - containerPort: 80
+
+
+        ReplicaSet
+            Set of horizontally scaled identical running Pods
+
+                Pod A   Pod B   Pod C
+                  C1      C4      C7
+                  C2      C5      C8
+                  C3      C6      C9
+
+
+                The configuration files for a ReplicaSet and a Pod are different from each other
+
+                    apiVersion: apps/v1
+                    kind: ReplicaSet
+                    metadata:
+                        name: nginx-replicaset
+                        labels:
+                            app: nginx
+                    spec:
+                        replicas: 3
+                        selector:
+                            matchLabels:
+                                app: nginx
+                        template:
+                            metadata:
+                                labels:
+                                    app: nginx
+                            spec:
+                                containers:
+                                  - name: nginx
+                                    image: nginx:1.7.9
+                                    ports:
+                                      - containerPort: 80
+
+
+                    The replicas field specifies the number that should be running at any given time
+                Generally encapsulated by a Deployment, creating ReplicaSets directly is not recommended
+
+
+        Deployement
+            A higher-level object that provides updates for Pods and ReplicaSets
+
+                Run multiple replicas of an application using ReplicaSets
+                Offer additional management capabilities on top of these ReplicaSets
+                Suitable for stateless applications (for stateful applications, StatefulSets are used)
+
+
+                    apiVersion: apps/v1
+                    kind: Deployement
+                    metadata:
+                        name: nginx-deployement
+                        labels:
+                            app: nginx
+                    spec:
+                        replicas: 3
+                        selector:
+                            matchLabels:
+                                app: nginx
+                        template:
+                            metadata:
+                                labels:
+                                    app: nginx
+                            spec:
+                                containers:
+                                  - name: nginx
+                                    image: nginx:1.7.9
+                                    ports:
+                                      - containerPort: 80
+
+
+                One key feature provided by Deployements but not by ReplicaSets is rolling updates
+                    Scales up a new version to the appropriate number of replicas
+                    Scales down the old version to zero replicas
+
+                        A ReplicaSet ensures that the appropriate number of Pods exist,
+                        while the Deployement orchestrates the roll out of a new version
+
+
+        Service
+
+            Is a REST object, like Pods
+            Is a logical abstraction for a set of Pods in a cluster
+            Provides policies for accessing the Pods and clusters
+            Acts as a load balancer across the Pods
+            Is assigned a unique IP address for accessing applications deployed on Pods
+            Eliminates the need for a separate Service discovery process
+
+
+                Service Properties
+                    Supports TCP, UDP, and others
+                    Supports multiple port definition
+                        The port number with the same name can vary in each backend Pod
+                    Can have an optional selector
+                    Optionally maps incoming ports to a targetPort
+
+
+                Why is a Service needed?
+                    Pods in a cluster are volatile
+                    This volatility leads to discoverability issues because of changing IP addresses
+                    A Service keeps track of the changes and exposes a single IP address or DNS name
+                    A service utilizes selectors to target a set of Pods
+
+                        Native Kubernetes applications
+                            Update API endpoints when there are changes in the Pods of a service
+
+                        Non-native Kubernetes applications
+                            Use a virtual-IP-based bridge or load balancer
+                            in between the applications and the backed Pods
+
+
+                Four types of Services
+
+                    ClusterIP
+                        Is the default and most common Service type
+                        Is assigned a cluster-internal IP address to the ClusterIP Service
+                            Makes the Service only reachable within the cluster
+                        Cannot make requests to Service from ouside the cluster
+                        You can set the ClusterIP address in the Service definition file
+                        Provides inter-service communication within the cluster
+
+                    NodePort
+                        Is an extension of ClusterIP Service
+                        Creates and routes the incoming requests automatically to the ClusterIP Service
+                        Exposes the Service on each Node's IP address at a static port
+                            Note that for security purposes, production use is not recommended
+                        Exposes a single Service, with no load-balancing requirements for multiple services
+
+                    External Load Balancer (ELB)
+                        An extension of the NodePort Service
+                        Creates NodePort and ClusterIP Services automatically
+                        Integrates and automatically directs traffic to the NodePort Service with a cloud provider's ELB
+                        To expose a Service to the Internet, you need a new ELB with an IP address
+                        You can use a cloud provider's ELB to host your cluster
+
+                    External Name
+                        Maps to a DNS name and not to any selector
+                        Require a `spec.externalName` parameter
+                        Maps the Service to contents of the externalName field that returns a CNAME record and its value
+                        Used to create a Service that represents an external storage
+                            And enable Pods from different namespaces to talk to each others
+
+
+        Ingress
+            An API object (combined with a controller) that provides routing rules to
+            manage external users' access to multiple Services in a Kubernetes cluster
+
+                In production, Ingress exposes applications to the Internet via port 80 (HTTP) or port 443 (HTTPS)
+                An ELB is expensive and is managed ouside the cluster while the cluster monitors Ingress
+
+
+        DaemonSet
+            Makes sure that Nodes run a copy of a Pod
+            Ideally used for storage, logs, and monitoring Nodes
+
+                As Nodes are added to a cluster, Pods are added to the Nodes
+                Pods are garbage collected when removed from a cluster
+                If you delete a DaemonSet, all Pods are removed
+
+
+        StatefulSet
+            Manages stateful applications
+            Manages deployement and scaling of Pods
+            Provides guarantees about the ordering and uniqueness of Pods
+            Maintains a sticky identity for each of your Pods
+            Provides persistent storage volumes for your worloads
+
+                                             +-------------+
+                +----------------------------| StatefulSet |----------------------------+
+                |                            +-------------+                            |
+                |                                                                       |
+                |   +-----------------------+               +-----------------------+   |
+                |   |         Node 1        |               |         Node 2        |   |
+                |   | +-------------------+ |               | +-------------------+ |   |
+                +-----| StatefulSet Pod 0 |---------+   +-----| StatefulSet Pod 2 |-----+
+                |   | +-------------------+ |       |   |   | +-------------------+ |
+                |   | +-------------------+ |       |   |   |                       |
+                +-----| StatefulSet Pod 1 |----+    |   |   | +-------------------+ |
+                    | +-------------------+ |  |    |   |   | |        Pod        | |
+                    |                       |  |    |   |   | +-------------------+ |
+                    | +-------------------+ |  |    |   |   | +-------------------+ |
+                    | |        Pod        | |  |    |   |   | |        Pod        | |
+                    | +-------------------+ |  |    |   |   | +-------------------+ |
+                    +-----------------------+  |    |   |   +-----------------------+
+                                               |    |   |
+                                               |    |   |
+                                               |    |   |
+                    PersistentVolume 1  <------+    |   |
+                                                    |   +------>  PersistentVolume 2
+                        PersistentVolume 0  <-------+
+
+
+        Job
+            Creates Pods and tracks its completion process
+                Jobs are retried until completed
+
+            A Job can run several Pods in parallel
+
+            Deleting a Job will remove the created Pods
+            Suspending a Job will delete its active Pods until the Job resumes
+
+            A CronJob is regularly used to create Jobs on an iterative schedule
+
+
+
+    Ingress Object vs. Ingress Controller
+
+        Two core components
+            In Kubernetes, external access to cluster services is overseen by Ingress
+
+
+                                Ingress Object                                      Ingress Controller
+
+        Definition	            API object managing external access to services     Cluster resource implementing rules specified by Ingress
+        Primary Function        Regulates external access routing                   Implements rules, fulfilling the Ingress
+        Configuration Source	Rules defined on the Ingress resource               Reads and processes information from the Ingress object
+        Traffic Handling        Manages HTTP and HTTPS routes                       Utilizes load balancer, configures frontends for traffic
+        Activation              Active upon configuration with Ingress resource     Must be explicitly running for Ingress to function
+        Handling Protocols      Focused on HTTP and HTTPS                           Implements rules for various protocols and ports
+        Automatic Startup       Activated with configuration                        Requires explicit activation in the cluster
+        Analogy                 Traffic rule set for the cluster                    Executor, similar to Nginx instance handling rules
+
+
+
+    Kubernetes Antipatterns
+
+        1.  Avoid baking configuration in container images
+                Create generic images independent of specific runtime settings
+
+        2.  Split application and infrastructure deployment into separate pipelines
+
+        3.  Eliminate specific order in deployement
+                Maintaining application stability despite delays in dependencies is crucial in container orchestration
+                Adopt strategies for simultaneous component initiation to enhance application resilience
+
+        4.  Set memory and CPU limits for pods problem
+                The default setting without specified limits allows an application to potentially monopolize the entire cluster
+                Conduct a thorough examination of each application's behavior under various conditions
+
+        5.  The utilization of the `latest` tag in production settings often results in unforeseen pod crashes
+                This absence of clear versionning makes troubleshooting challenging
+                Use specific and meaningful image tags, it is crucial to uphold the immutability of container images
+                Avoiding post-deployement modifications to containers ensures safer and more repeatable deployement processes
+
+        6.  Segregate production and non-production workloads problem
+                Security concerns arise from default permissions and complications with non-namespaced resources
+                Establish a second cluster exclusively for production purposes
+
+        7.  Refrain from ad-hoc deployements with kubectl edit/patch problem
+                Configuration drift occurs when multiple environments deviate due to unplanned deployements
+                Conduct all deployements through Git commits for comprehensive history
+                    Precise knowledge of cluster contents, and easy recreation or rollback of environments
+
+        8.  Implement health checks with liveness and readiness probes problem
+                Neglecting health checks can lead to various issues
+                    Overly complex checks with unpredictable timings can cause internal denial-of-service within the cluster
+
+        9.  Embedding secrets directly into containers is poor practice
+                Use a consistent secret handling strategy, consider HashiCorp Vault
+                    Using multiple methods or complex injection mechanisms can complicate local development and testing
+                    Handle secrets uniformly across environments
+                        Pass them to containers during runtime for enhanced resilience and security
+
+        10. Use controllers and avoid running multiple processes per container problem
+                Directly using Pods in production poses limitations
+                    Pods lack durability, automatic rescheduling, and data retention guarantees
+                Running multiple processes in a single container without controllers can lead to issues
+                    Utilize Deployment with a replication factor
+                    Define one process per container
+                    Use multiple containers per Pod if necessary
+                    Leverage workload resources like Deployment, Job, or StatefulSet for reliability and scalability
+
+
+
+    Using kubectl (stands for Kube Command Tool Line)
+
+
+        kubectl [command] [TYPE] [NAME] [flags]
+
+            command     Any operation to be performed (create, get, apply, delete)
+            TYPE        Resource type (pod, deployement, replicaset)
+            NAME        Resource name (if applicable)
+            flags       Special options or modifiers that override default values
+
+
+        Three command types
+
+            Imperative commands
+
+                Allow you to create, update, and delete live objects directly
+                    Operations should be specified to the command as arguments or flags
+                    Useful for development and test environments
+
+                    Easy to learn and run
+                        But don't provide an audit trail (important for tracking changes)
+                        Not very flexible (no template, no integration)
+
+                        To create a Pod with a specific container
+                            kubectl run nginx --image nginx
+
+                Limitations
+                    Two developers must run the exact same command, because there is no configuration file
+                        It would be best if both developers used a template for the deployement
+
+
+            Imperative object configuration
+
+                Specifies required operations, optional flags, and at least one file name
+                Specified configuration file must contain a full definition of the objects in YAML or JSON format
+
+                    To create the objects defined in the file
+                        kubectl create -f nginx.yaml
+
+                Advantages
+                    Using the same configuration templates in multiple environments will produce identical results
+                    May be stored in a source control system like Git
+                    Can integrate with change processes
+                    Provides audit trails and templates for creating new objects
+
+                Disadvantages
+                    Requires basic understanding of the object schema
+                    Requires writing a YAML/JSON file
+
+                Limitations
+                    You need to specify all necessary command operations
+
+                        If a developer performs an update that isn't merged into the configuration file
+                            Another developer cannot use the updated configuration in future deployements
+
+                            It is better to define the desired state in a shared configuration file
+                                Kubernetes automatically determines the necessary operations
+                                This is know as declarative object configuration
+
+
+            Declarative object configuration
+
+                Stores configuration data in files
+                    Works on directories or individual files
+                    Operations are identified by kubectl, not the user
+                        The user is not required to perform any operations since they are performed by the system automatically
+                        Configuration files define a desired state, and Kubernetes actualizes that state (ideal for production)
+
+                        To apply configuration data to all files in a directory
+                            kubectl apply -f nginx/
+
+                Benefits
+                    Even if a developer misses several updates, all he need to do is apply the current configuration template
+                        Kubernetes automatically determines and performs the necessary to match the current state to the desired state
+
+
+        Commonly used commands
+
+            apply           Apply/change a configuration of a resource using a file or stdin
+                                kubectl apply -f ./<name1>.yaml -f ./<name2>.yaml
+                                kubectl apply -f https://<domain>/<path>
+            create          Create one or more resources using a file or stdin
+            describe        Describe or detail a file/container
+            get             Access a file/container or other resource
+                                kubectl get services
+                                kubectl get pods --all-namespaces
+                                kubectl get deployement <deployement>
+                                kubectl get pods
+            delete          Delete a file/container
+            scale           Increase/decrease the number of replicas
+                                kubectl scale --replicas=3 <replicaset>
+                                kubectl scale --replicas=3 -f <name>.yaml
+            autoscale       Apply autoscaling to the selected file/container
+            edit            Make changes to a file/container
+            exec            Execute a command on a container in a specific Pod
+            expose          Make a running file/container available
+            label           Apply a label to a file/container
+
+
+
+    Hands-on Lab
+
+        kubectl config get-clusters
+        kubectl config get-contexts
+        kubectl get pods
+
+
+        Create a Pod
+
+            Imperative command
+
+                export MY_NAMESPACE=sn-labs-$USERNAME
+                docker build -t us.icr.io/$MY_NAMESPACE/hello-world:1 . && docker push us.icr.io/$MY_NAMESPACE/hello-world:1
+                kubectl run hello-world --image us.icr.io/$MY_NAMESPACE/hello-world:1 --overrides='{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"icr"}]}}}}'
+                kubectl get pods -o wide
+                kubectl describe pod hello-world
+                kubectl delete pod hello-world
+                kubectl get pods
+
+
+            Imperative object configuration
+
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                    name: hello-world
+                    spec:
+                        containers:
+                          - name: hello-world
+                            image: us.icr.io/<my_namespace>/hello-world:1
+                            ports:
+                              - containerPort: 8080
+                        imagePullSecrets:
+                          - name: icr
+
+                kubectl create -f hello-world-create.yaml
+                kubectl get pods
+                kubectl delete pod hello-world
+
+
+        Create a Deployement
+        Create a ReplicaSet that maintains a set number of replicas
+
+            Declarative command
+
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                    generation: 1
+                    labels:
+                        run: hello-world
+                    name: hello-world
+                    spec:
+                    replicas: 3
+                    selector:
+                        matchLabels:
+                        run: hello-world
+                    strategy:
+                        rollingUpdate:
+                        maxSurge: 1
+                        maxUnavailable: 1
+                        type: RollingUpdate
+                    template:
+                        metadata:
+                        labels:
+                            run: hello-world
+                        spec:
+                            containers:
+                              - image: us.icr.io/<my_namespace>/hello-world:1
+                                imagePullPolicy: Always
+                                name: hello-world
+                                ports:
+                                  - containerPort: 8080
+                                protocol: TCP
+                                resources:
+                                limits:
+                                    cpu: 2m
+                                    memory: 30Mi
+                                requests:
+                                    cpu: 1m
+                                    memory: 10Mi
+                            imagePullSecrets:
+                              - name: icr
+                            dnsPolicy: ClusterFirst
+                            restartPolicy: Always
+                            securityContext: {}
+                            terminationGracePeriodSeconds: 30
+
+                kubectl apply -f hello-world-apply.yaml
+                kubectl get deployments
+                kubectl get pods
+
+
+        Witness Kubernetes load balancing in action
+
+            kubectl expose deployment/hello-world
+            kubectl get services
+            kubectl proxy
+            curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world
+            for i in `seq 10`; do curl -L localhost:8001/api/v1/namespaces/sn-labs-$USERNAME/services/hello-world; done
+            kubectl delete deployment/hello-world service/hello-world
+
+
+
+    Managing Applications with Kubernetes
+
+
+        ReplicaSet
+            Created for you when you create a Deployement in your cluster
+            A ReplicaSet does not own Pods, it uses Pod labels
+
+                kubectl get deployement
+                kubectl get replicaset
+                kubectl describe pod <pod_name>
+                    ...
+                    Controlled By: ReplicaSet/<replicaset_name>
+
+
+            Deployements
+                Manage ReplicaSets
+                Send Pods declarative updates
+                ...
+
+                    Create a Deployement
+
+                            kubectl create -f <deployement_name>.yaml
+
+
+                    Before you scale a Deployement, you must ensure you have a Deployement and a Pod
+                        The Deployement creates a Pod by default
+
+                            kubectl get deploy
+
+
+                        Scale Deployement
+
+                            kubectl scale deploy <deployement_name> --replicas=<integer>
+                            kubectl get pods
+
+
+                        The desired state is maintained
+
+                            kubectl delete pod <pod_name>
+                                The deleted Pod is replaced by a new Pod automatically
+
+                            kubectl create pod <pod_name>
+                                The new Pod is marked for deletion and removed automatically
+
+
+            ReplicaSet vs. Single-pod deployements
+
+                Single-pod deployements CANNOT
+                    Accomodate growing demands
+                    Handle outages
+                    Minimize downtime
+                    Auto restart on interruptions
+
+                A ReplicaSet
+                    Adds or deletes Pods for scaling and redundancy
+                    Replaces failing Pods or deletes additional Pods to maintain the desired state
+                    Supersedes ReplicaControllers
+
+
+            From scratch (but creating a Deployement that includes a ReplicaSet is recommended)
+
+                kubectl create -f <replicaset_name>.yaml
+                kubectl get pods
+                kubectl get rs
+                    rs is short for replicaset
+
+
+
+        Autoscaling
+
+            Occurs at two different layers
+                Cluster/Node level
+                Pod level
+
+
+            The three types of autoscalers
+
+                HPA (Horizontal Pod Autoscaler)
+                    Adjusts the number of replicas of an application by increasing or decreasing the number of Pods
+
+                        kubectl get hpa
+
+
+                VPA (Vertical Pod Autoscaler)
+                    Adjusts the resource requests and limits of a container by increasing or decreasing the resource size or speed of the Pods
+
+                        Lets you scale a service vertically within a cluster
+                        Scaling up refers to adding more resources to an existing machine
+                            The cluster operator sets targets for metrics like CPU or memory utilization, similar to an HPA
+                            The cluster then reconciles the size of the service's Pod or Pods based on their current usage and the desired target
+
+
+                CA (Cluster Autoscaler)
+                    Adjusts the number of Nodes in the cluster when Pods fail to schedule,
+                    or when demand increases/decreases in relation to the capacity of existing Nodes
+
+                        Ensure there is always enough compute power to run your tasks, and that you aren't paying extra for unused Nodes
+
+
+                A best practice is to scale horizontally
+                    But there are some services you may want to run in a cluster where horizontal scaling is impossible or not ideal
+
+                A combination of all three autoscaler types often provides the most optimized solution
+                    You should not use VPAs with HPAs on resource metrics like CPU or memory
+                        However, you can use them together on custom or external metrics
+
+
+            Create autoscaling for a Deployement or ReplicaSet
+
+                kubectl autoscale deploy <deployment> --min=<min> --max=<max> --cpu-percent=<percent>
+                kubectl describe rs <replicaset>
+
+
+            Manually create the HPA object from YAML (you should use the autoscale command instead)
+
+                    ...
+                    kind: HorizontalPodAutoscaler
+                    ...
+                    spec:
+                        minReplicas: <min>
+                        maxReplicas: <max>
+                    ...
+
+
+
+        Deployment strategy
+
+            Defines an application's lifecycle
+            Deploy, update, or rollback ReplicaSets, Pods, Services, and Applications
+            Scale Deployements manually or automatically
+            Pause/resume Deployements
+
+
+            Six types of deployement strategies
+                Recreate, Rolling, Blue/green, Canary, A/B testing, Shadow
+
+                    You can use either a single strategy or a combination of multiple strategies
+
+
+                Recreate strategy
+
+                    Pods running the live version of the application are all shut down simultaneously
+                        And a new version of the application is deployed on newly created Pods
+
+                    Pros
+                        Simple setup
+                        Application version completely replaced
+                    Cons
+                        There is a short downtime between the shutdown of the existing deployment and the new deployment
+
+
+                Rolling (ramped) strategy
+
+                    Each Pod is updated one at a time (rollback process is reversed)
+
+                    Pros
+                        Simple setup
+                        Suitable for stateful applications that need to handle rebalancing of the data
+                        There is hardly any downtime since users are directed to either version
+                    Cons
+                        Rollout/rollback takes time
+                        You cannot control traffic distribution
+
+
+                Blue/green strategy
+
+                    The blue environment is the live version of the application
+                    The green environment is an exact copy that contains the deployment of the new version of the application
+
+                        The green environment is thoroughly tested
+                            Once all changes, bugs, and issues are addressed, user traffic is switched from blue to green
+
+                    Pros
+                        Instant rollout/rollback (no downtime)
+                        New version is available immediatly to all users
+                    Cons
+                        Expensive (requires double resources)
+                        Rigorous testing required before releasing to production
+                        Handling stateful applications is difficult
+
+
+                Canary strategy
+
+                    The new version of the application is tested using a small set of random users alongside the current live version
+
+                        Once the new version of the application is successfully tested
+                            It is then rolled out to all users
+
+                        Pros
+                            Convenient for reliability, error, and performance monitoring
+                            Fast rollback
+                        Cons
+                            Slow rollout, gradual user access
+
+
+                A/B testing (also known as split testing) strategy
+
+                    Each version has features that cater to different sets of users
+                        You can select which version is best for global deployement based on user interaction and feedback
+
+                    Pros
+                        Multiple versions can run in parallel
+                        Full control over traffic distribution
+                    Cons
+                        Requires intelligent load balancer
+                        Difficult to troubleshoot errors for a given session, distributed tracing becomes mandatory
+
+
+                Shadow strategy
+
+                    A shadow version of the application is deployed alongside the live version
+                    User requests are sent to both versions, and both handle all requests
+                        But the shadow version does not forward responses back to the users
+                        This lets developers see how the shadow version performs using real-world data without interrupting user experience
+
+                    Pros
+                        Performance testing with production traffic
+                        No user impact
+                        No downtime
+                    Cons
+                        Expensive (double resources)
+                        Not a true user test, can lead to misinterpreted results
+                        Complex setup
+                        Requires monitoring for two environments
+
+
+
+        Rolling updates
+
+            Automated updates that occur on a scheduled basis
+                Roll out automated and controlled app changes across Pods
+                Work with Pod templates likes Deployements
+                Allow for rollback as needed
+
+
+            Step 1
+                Add liveness and readiness probes to your Deployments
+
+                        ...
+                        livenessProbe:
+                            httpGet:
+                                path: /
+                                port: 9080
+                            initialDelaySeconds: 300
+                            periodSeconds: 15
+                        readynessProbe:
+                            httpGet:
+                                path: /
+                                port: 9080
+                            initialDelaySeconds: 45
+                            periodSeconds: 5
+                        ...
+
+            Step 2
+                Add a rolling update strategy to your YAML file
+
+                        ...
+                        spec:
+                            replicas: 10
+                            ...
+                            minReadySeconds: 5
+                            progressDeadlineSeconds: 600
+                            strategy:
+                                type: RollingUpdate
+                                rollingUpdate:
+                                    maxUnavailable: 50%
+                                    maxSurge: 2
+                        ...
+
+                    Your strategy
+                        Is to have at least 50% of Pods always available
+                        There can only be 2 Pods added to the 10 you defined earlier
+
+                            For a zero-downtime system, set the maxUnavailable to 0
+
+                            Setting maxSurge to 100% would double the number of Pods
+                                And create a complete replica before the original set down after the rollout is complete
+
+                                And sometimes, it is also useful to use minReadySeconds
+                                    To wait a few seconds before moving to the next Pod in the rollout stage
+
+
+                    Example
+                        First, you need to build, tag, and upload a new image to Docker Hub
+                            docker build -t <image> .
+                            docker tag <image> <hostname>/<image>:<tag>
+                            docker push <hostname>/<image>:<tag>
+
+                        Now, apply this new image to your deployement
+                            kubectl get deployements
+                            kubectl set image deployments/<image> <image>=<hostname>/<image>:<tag>
+
+                        Observe that the version has been rolled out
+                            kubectl rollout status deployments/<image>
+
+                        You can roll back your changes
+                            kubectl rollout undo deployments/<image>
+
+                        Confirm the rollout Pods are terminated
+                            kubectl get pods
+
+                                You will also see <integer> new Pods that were created as part of this rollback
+
+
+            How rolling updates work
+
+                All-at-once
+
+                    Rollout
+                        All v1 objects must be removed (user access is blocked) before v2 objects can become active (and access restored)
+                            Notice the time lag between deployement and Pod updates
+                    Rollback
+                        Reverse
+
+
+                One-at-a-time
+
+                    Rollout
+                        Staggered so user acces is not interrupted
+                            Pod by Pod
+                                A v2 is created
+                                The v1 is marked for deletetion and removed
+                                The v2 becomes active
+                    Rollback
+                        Reverse
+
+
+
+        ConfigMap and Secret
+
+
+            ConfigMap
+
+                Helps developers avoid hard-coding configuration variables into the application code
+                Is an API object used to store non-confidential data in key-value pairs
+                Does not provide secrecy or encryption
+                Provides configuration data to Pods and Deployments
+                Is limited to 1 MB of data
+                    For larger amounts, consider mounting a volume or use a separate database or file service
+                Has optional data and binaryData fields and no spec field in the template
+                Name must be a valid DNS subdomain name
+                Multiple ways to reference from pod/deployement
+                    Reference an an environment variable
+                    Mount as a volume
+
+
+                Configure ConfigMap string literal
+
+                    Key-value pair in the create ConfigMap command
+                        kubectl create ConfigMap <cm_name> --from-literal=<key>=<value>
+
+                    Tell our Deployement about the new <key> variable and specify its location for pickup
+                        ...
+                        env:
+                          - name: <key>
+                            valueFrom:
+                                configMapKeyRef:
+                                    name: <cm_name>
+                                    key: <key>
+                        ...
+
+
+                Configure ConfigMap properties file
+
+                    cat <cm_file>
+                        <key>=<value>
+
+                        You can also use a YAML file
+                            kubectl apply -f <cm_file>.yaml
+                                ConfigMap/<cm_name> created
+
+                        kubectl create cm <cm_name> --from-file=<cm_file>
+                            If you specify a directory to --from-file, the entire directory is loaded
+
+                    kubectl describe ConfigMap <cm_name>
+
+                    ...
+                    env:
+                        - name: <key>
+                        valueFrom:
+                            configMapKeyRef:
+                                name: <cm_name>
+                                key: <cm_file>
+                    ...
+
+
+            Secret
+
+                kubectl create secret generic <api_creds> --from-literal=<key>=<secret>
+
+                    Also with volume mounts
+                    ...
+                    containers:
+                        ...
+                        volumeMounts:
+                          - name: <api_creds>
+                            mountPath: <path>
+                            readOnly: <boolean>
+                        volumes:
+                          - name: <api_creds>
+                            secret:
+                                secretName: <api_creds>
+                        ...
+
+                kubectl get secret
+                kubectl describe secret <api_creds>
+                kubectl describe secret <api_creds> -o YAML
+
+                ...
+                env:
+                  - name: <api_name>
+                    valueFrom:
+                        configMapKeyRef:
+                            name: <api_creds>
+                            key: <key>
+                ...
+
+
+
+        Service Binding
+
+            Is a process to consume external Services or backing Services
+            Manages configuration and credentials for back-end Services while protecting sensitive data
+            Makes Service credentials available to you automatically as a Secret
+            Consumes the external Service by binding the application to a Deployement
+            The application code uses the credentials from the binding and calls the corresponding Service
+
+                You can configure your app to use the credentials stored in the Secret
+                    By mounting the Secret as a volume to your Pod
+                    By referencing the Secret in environment variables
+
+
+
+Red Hat OpenShift
+
+    Is an enterprise-ready Kubernetes container platform built for an open hybrid cloud strategy
+        Both Kubernetes and OpenShift are container orchestration platforms
+            Kubernetes is a crucial component of OpenShift
+            OpenShift is an extension of Kubernetes
+
+
+    OpenShift features (selection)
+
+        Scalable
+            Apps can scale to thousands of instances across hundreds of Nodes in seconds
+
+        Advanced security & compliance
+            Access control, networking, enterprise registry, built-in scanner,
+            enhanced threat detection, lifecycle vulnerability management, risk profiling
+
+        Robust partner ecosystem
+            IDE, CI, and more
+
+
+
+    OpenShift vs. Kubernetes
+
+
+                            OpenShift                           Kubernetes
+
+        Type                Product                             Open source project
+        Installation        Limited options                     All linux environments
+        Flexibility         Some limitations                    More flexible
+        Platforms           Online, Azure, and dedicated        AWS EKS, GCP GKE, and Azure AKS
+        Management          Easy                                Not easy
+        Security            Not easy                            Easy
+        Router/Ingress      External access                     External access to Kubernetes clusters
+        Deployment          Less flexible                       More flexible
+        UX                  Good UX                             Good UX with extra tools
+        Networking          Good solutions                      Provides third party plugins
+        Services            Good service catalog                Limited service catalog
+        Learning            Easy for beginners                  Hard for beginners
+        CI/CD               Integrates with Jenkins             Integrates, but not with Jenkins
+
+
+
+    Architecture
+
+        Runs on top of a Kubernetes cluster, with object data stored in the etcd key-value store
+            It has a microservices-based architecture
+
+
+        OpenShift services
+
+            REST APIs
+                Expose each of the core objects
+
+            Controllers
+                Read REST APIs
+                Apply changes to other objects
+                Report status or write back to the objects
+                Maintain the cluster desired state
+
+
+        OpenShift adds
+            Source code management, builds, and deployments for developers
+            Managing and promoting images at scale as they flow through your system
+            Application management at scale
+            Team and user tracking management of a large developer organization
+            Networking infrastructure that supports the cluster
+
+
+                Docker provides the abstraction for lightweight, Linux-based container images
+                Kubernetes provides cluster management and orchestrates containers on multiple hosts
+
+
+        OpenShift components
+
+            In an OpenShift environment, the Kubernetes master runs on Red Hat Enterprise Linux CoreOS,
+            while worker Nodes support Red Hat Enterprise Linux; that is the Red Hat base layer
+
+                Next is the Kubernetes architecture and a set of services
+
+                    Cluster services        Platform services       Application services        Developer services
+
+                    Automated ops           Service Mesh            Databases                   Developer CLI
+                    Over-air updates        Serverless builds       Languages                   VS code extensions
+                    Monitoring              CI/CD pipelines         Runtimes                    IDE plugins
+                    Registry                Full-stack logs         Integration                 CodeReady workspaces
+                    Networking              Charge back             Business automation         CodeReady containers
+                    Router                                          100+ ISV services
+                    KubeVirt
+                    OLM
+                    Helm
+
+
+        OpenShift CLI (oc)
+
+            Since OpenShift runs on top of a Kubernetes cluster, a copy of kubectl is also included with oc
+
+                oc supports
+                    DeployementConfigs
+                    BuildConfigs
+                    Routes
+                    ImageStreams and ImageStreamtags
+
+
+
+    Builds
+
+        A build is the process of transforming inputs into a resultant object
+            Requires a build configuration file (BuildConfig), which defines the build strategy and input sources
+
+
+                Commonly used build strategies are
+
+                    Source to Image (S2I)
+                    Docker
+                    Custom
+
+
+        Build input sources
+
+            Provides content for builds
+
+            In order of precedence
+                Inline Dockerfile definitions
+                Content extracted from existing images
+                Git repositories
+                Binary (Local) inputs
+                Input secrets
+                External artifacts
+
+            You can combine multiple inputs into a single build
+            An inline Dockerfile takes precedence and overwrites any external Dockerfile
+
+
+        ImageStream
+
+            Is an abstraction for referencing container images within OpenShift
+                Consist of many different tags such as latest, dev and test
+
+
+            Continuousy creates and updates container images
+            Does not contain actual image data but is merely a pointer
+            Can store source images in different registries or other ImageStreams
+                To deploy an application
+                    You'll refer to the image stream tag rather than hardcode the registry URL and tag
+                If the source image location changes
+                    You'll update the image stream definition rather than individually updating all the deployments
+            Provides a trigger capability that automatically invokes builds and deployments when a new version of an image is available
+
+
+        Build triggers
+
+            Webhook trigger
+                Sends a request to an OpenShift Container Platform API endpoint
+                Supports generic webhooks and the more often used GitHub webhooks
+
+            Image change trigger
+                New version of an image is available
+                Useful for keeping base images up to date
+
+            Configuration change trigger
+                Build when you create a new BuildConfig
+
+
+        Builds automation
+
+            Cloud-native development requires greater automation throughout the container lifecycle
+                CI/CD deployement pipeline provides automation
+
+                    Merges code changes --> Builds and test --> Deploys
+
+
+
+    Operators
+
+        Operators automate cluster tasks and act as a custom controller to extend the Kubernetes API
+
+            Run in a Pod, interact with the API server
+            Package, deploy and manage Kubernetes apps
+            Automate app creation, configuration, and management via continuous real-time decisions
+            Integration with APIs and CLI tools, such as kubectl and oc commands
+            Regular full-system health checks
+            Over-the-air (OTA) updates
+
+
+        Services Brokers vs. Operators
+
+            Service Brokers                                     Software Operators
+
+                A short-running process that cannot perform         A long-running process that can perform
+                the consecutive day's operations such as            operations like upgrades, failover, or
+                upgrades, failover, or scaling                      scaling every day
+
+                Customizations and parameterization only            Customizations and parameterization, as
+                at the time of installation                         operators constantly watch the current
+                                                                    state of your cluster
+
+                Off-cluster services                                Off-cluster services
+
+
+        Custom Resource Definition (CRD)
+
+            CRDs store and retrieve objects in the Kubernetes API
+
+                Extend the Kubernetes API
+                Make the Kubernetes API more modular and flexible
+                Can be installed in clusters
+                Once installed, can be accessed using kubectl
+
+
+        Custom controllers
+
+            Controllers reconcile a cluster's actual state with its configured
+
+
+                Conbining CRDs and custom controllers creates a declarative API
+
+                                +-------------------------------------------------------------------+
+                                |                         Kubernetes Cluster                        |
+                                |   +-------------------+                                           |
+                                |   |        CRD        |                                           |
+                                | +-| (Holds App Config)|                       +--> StatefulSet    |
+                                | | +-------------------+                       |                   |
+                                | |           ^                                 +--> ConfigMap      |
+                    deploys ------+        monitors                             |                   |
+                                | |           ^                                 +--> Service        |
+                                | |           ^                                 |                   |
+                                | | +-------------------+                       +--> Pod, Pod       |
+                                | +-|     Controller    | >  > reconciles >  >  |                   |
+                                |   |   (Operator Pod)  |                       +--> ...            |
+                                |   +-------------------+                                           |
+                                +-------------------------------------------------------------------+
+
+                                    The Operator Pattern (CRD + Controller)
+
+                                        Custom controllers interpret CRD data as the desired state
+                                        and reconcile a cluster's actual state to match the CRD data
+
+
+        Operator Framework
+
+            Covers coding, testing, delivery, and Operators updates
+
+
+                Operator SDK (which includes Helm, Go, and Ansible)
+                    Helps authors build, test, and package Operators without requiring knowledge of Kubernetes API complexities
+
+                Operator Lifecycle Manager (OLM)
+                    Controls the install, upgrade, and role-based acess control (RBAC) of Operators in a cluster
+
+                Operator Registry
+                    Stores CRDs, CSVs (Cluster Service Versions), and Operator metadata for packages and channels
+                    It runs in Kubernetes or OpenShift clusters to provide the Operator catalog data to OLM
+
+                OperatorHub (Web console)
+                    Lets cluster administrators find Operators to install on their cluster
+                    Enables Operator installation with one click
+
+                        Many Operators available
+                            Red Hat
+                            Certified
+                            Community
+                            Custom
+
+
+        Operators in practice
+
+            To deploy a complete application
+                1.  Create a custom resource (CRD) for the app
+                2.  Create a custom controller for this CRD
+                3.  Operator logic determines how to reconcile the actual and desired states
+                4.  A CRD requires the creation of Deployments, Storage, and other objects
+
+
+
+    Istio
+
+        Service mesh
+            A dedicated infrastructure layer for making service-to-service communication fast, secure, and reliable
+
+                Traffic management to control the flow of traffic between services
+                Security to encrypt traffic between services
+                Observability of service behavior to troubleshoot and optimize applications
+
+
+        A platform-independent service mesh often used on Kubernetes
+
+            Connection to control traffic
+                Between services in canary deployements, A/B tests, and other deployment models
+
+            Secures services
+                Using managed authentication, authorization, and encryption
+
+            Enforce policies
+                Across the fleet
+
+            Observes traffic flow
+                Traces call flows and dependencies
+                Enables the view of metrics such as latency, errors, and saturation
+
+
+        Services
+            TSL communications between services in a cluster combined with authentication and authorization
+            Load balances traffic for different protocols, including HTTP, TCP, gRPC, and WebSocket traffic
+            Granular configuration of traffic flow, known as routing rules
+                Supports control with continuous retries, fault injection methods, and automatic failovers
+            Policies and API support access control, rate limits, and quotas
+            Automatic monitoring, logging, and tracking traffic of both inbound and outbound traffic
+
+
+        How Istio works
+
+            Two main components
+                The control plane
+                The data plane
+
+
+            Communication between services is handled by the data plane
+                If a service mesh is absent
+                    The network cannot identify the type of traffic that flows the source or destination and make the necessary decisions
+
+            All network traffic is subject to, or intercepted by, a proxy, called Envoy
+                Which is used by the service mesh, and allows many features depending on the configuration
+
+            The control plane takes the desired configuration and its view of the services
+                And dynamically programs and updates the proxy servers as the environment changes
+
+
+        Microservices with Istio
+            Cloud-native architectural approach
+            Single application composed of loosely coupled and independently deployable services
+            Well-defined APIs for communication
+
+            Benefits
+                Code updates are easy, as only the relevant service needs to be updated instead of the entire application
+                Microservices allow team to use different technology stacks for each component
+                In addition, components can be scaled independently
+
+            Challenges
+                Encrytion of traffic to ensure secure communication
+                Canary deployments and A/B testing
+                    Communication between microservices leads to cascading failures if one service is unreachable or particularly slow
+                    Developers need retries and circuit breaking to prevent errors in one microservices from cascading to others
+
+
