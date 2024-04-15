@@ -1,0 +1,458 @@
+
+
+Based on the HTB Academy course on Coursera (Linux Fundamentals)
+
+
+File System Hierarchy
+
+    /       The top-level directory is the root filesystem
+    /bin    Contains essential command binaries
+    /boot   Consists of the static bootloader, kernel executable, and files required to boot the Linux OS
+    /dev    Contains device files to facilitate access to every hardware device attached to the system
+    /etc    Local system configuration files and configuration files for installed applications
+    /home   Each user on the system has a subdirectory here for storage
+    /lib    Shared library files that are required for system boot
+    /media  External removable media devices such as USB drives are mounted here
+    /mnt    Temporary mount point for regular filesystems
+    /opt    Optional files such as third-party tools
+    /root   Home directory for the root user
+    /sbin   Contains executables used for system administration (binary system files)
+    /tmp    This directory is generally cleared upon system boot and may be deleted at other times without any warning
+    /usr    Contains executables, libraries, man files, etc
+    /var    Contains variable data files such as log files, email in-boxes, web application related files, cron files, and more
+
+
+
+Prompt
+
+    ~   The home directory for a user
+    $   Unprivileged - User Shell Prompt
+    #   Privileged - Root Shell Prompt
+
+    Can be customized using special characters and variables in the shell’s configuration file
+
+        \D              Date (Mon Feb 6)
+        \D{%Y-%m-%d}    Date (YYYY-MM-DD)
+        \H              Full hostname
+        \j              Number of jobs managed by the shell
+        \n              Newline
+        \r              Carriage return
+        \s              Name of the shell
+        \t              Current time 24-hour (HH:MM:SS)
+        \T              Current time 12-hour (HH:MM:SS)
+        \@              Current time
+        \u              Current username
+        \w              Full path of the current working directory
+
+
+
+Update the System
+
+    sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
+
+
+
+System Information
+
+    hostname    Sets or prints the name of current host system
+    whoami      Displays current username
+    id          Returns users identity, to see what access a user may have
+    w           Show who is logged on and what they are doing
+
+    uname       Prints basic information about the operating system name and system hardware
+    uname -a    In a specific order: kernel name, hostname, the kernel release, kernel version, machine hardware name, and operating system
+
+    pwd         Returns working directory name
+    ifconfig    The ifconfig utility is used to assign or to view an address to a network interface and/or configure network interface parameters
+    ip          Ip is a utility to show or manipulate routing, network devices, interfaces and tunnels
+    netstat     Shows network status
+    ss          Another utility to investigate sockets
+    ps          Shows process status
+    who         Displays who is logged in
+    env         Prints environment or sets and executes command
+    lsblk       Lists block devices
+    lsusb       Lists USB devices
+    lsof        Lists opened files
+    lspci       Lists PCI devices
+
+
+
+SSH Login
+    ssh <username>@<ip-address>
+
+
+
+Navigation
+
+    ls -l
+        total 32
+        drwxr-xr-x 2 cry0l1t3 htbacademy 4096 Nov 13 17:37 Desktop
+        ...
+
+            First, we see the total amount of blocks (512-byte)
+                That means it used 32 * 512-byte = 16384 bytes of disk space
+
+            drwxr-xr-x      Type and permissions
+            2               Number of hard links to the file/directory
+            cry0l1t3        Owner of the file/directory
+            htbacademy      Group owner of the file/directory
+            4096            Size of the file or the number of blocks used to store the directory information
+            Nov 13 17:37    Date and time
+            Desktop         Directory name
+
+    cd -
+        Quickly jump back to the directory we were last in
+
+    cd /etc/s [TAB 2x]
+        The auto-complete function
+
+    cd && clear
+
+    [Ctrl] + [R]
+        Search through the command history
+
+    ls -i <file>
+    ls --inode <file>
+        Print the index number of each file
+
+
+
+Working with Files and Directories
+
+    mkdir -p Main/Sub/Deep
+        Option -p to add parent
+
+    ls -R Main
+        List subdirectories recursively
+
+    tree .
+        Look at the whole structure
+
+    touch ./Main/Sub/some.txt
+        Create files directly in the directories
+
+
+
+Editing Files
+
+    vimtutor
+
+
+
+Find Files and Directories
+
+    which <command>
+        Return the path to the file or link that should be executed
+
+    find <location> <options>
+
+    find / -type f -name *.conf -user root -size +20k -newermt 2023-03-03 -exec ls -al {} \; 2>/dev/null
+
+        -type f                 In this case 'f' stands for 'file'
+        -name *.conf            With the '.conf' extension
+        -user root              All files whose owner is the root user
+        -size +20k              Larger than 20 KiB
+        -newermt 2020-03-03     Only files newer than the specified date
+        -exec ls -al {} \;      This option executes the specified command, using the curly brackets as placeholders
+        2>/dev/null             STDERR redirection to the 'null device', ensures that no errors are displayed in the terminal
+
+    locate *.<ext>
+        Does not have as many filter options that we can use
+
+
+
+File Descriptors
+
+    A FD in Unix/Linux is an indicator of connection maintened by the kernel to perform I/O operations
+        In Windows-based operating systems, it is called filehandle
+
+    First three FDs in Linux
+        Data Stream for Input
+            STDIN - 0
+        Data Stream for Output
+            STDOUT - 1
+        Data Stream for Output with error
+            STDERR - 2
+
+    Redirections
+        Output with pipe
+            When we want to use the STDOUT from one program to be processed by another
+                find /etc/ -name *.conf 2>/dev/null | grep systemd
+            Not only once
+                find /etc/ -name *.conf 2>/dev/null | grep systemd | wc -l
+
+        Errors and output with greater-than character
+            find /etc/ -name shadow 2>/dev/null > results.txt
+            find /etc/ -name shadow 2> stderr.txt 1> stdout.txt
+
+        Input with lower-than character
+            Append
+                End-Of-File function
+                    cat << EOF > some.txt
+                        > Hello world
+                        > EOF
+                    Hello world
+
+        "
+            Pipe is used to pass output to another program or utility.
+
+            Redirect is used to pass output to either a file or stream.
+        "
+
+
+
+Filter Contents
+
+    Fundamental pagers
+        more
+            Q = leave
+        less
+            Output does not remain in the terminal
+            Contains many more features
+
+    Ten lines of a file
+        head
+        tail
+
+    Alphabetical
+        cat /etc/passwd | sort
+
+    Patterns
+        Include
+            Users who have the default shell
+                cat /etc/passwd | grep "/bin/bash"
+        Exclude
+                cat /etc/passwd | grep -v "/bin/bash"
+            Users who have disabled the standard shell with "/bin/false" or "/usr/bin/nologin"
+                cat /etc/passwd | grep -v "false\|nologin"
+
+    Delimiters
+        cat /etc/passwd | grep -v "false\|nologin" | cut -d":" -f1
+            -d delimiter
+            -f position
+
+    Replace
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " "
+
+    Representation
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | column -t
+
+    Processing
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}'
+            $1 first result in the line
+            $NF last result
+
+    Stream Editor
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | sed 's/bin/HTB/g'
+
+    Counting
+        cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | wc -l
+
+    Exercises
+        How many services are listening on the target system on all interfaces? (Not on localhost and IPv4 only)
+            ss -l -4 | grep -v "127\.0\.0" | grep "LISTEN" | wc -l
+                -l                      listening services
+                -4                      ipv4
+                -grep -v "127.0.0"      exclude localhost
+                -grep "LISTEN"          listening services
+                wc -l                   count
+
+                    " ss --> another utility to investigate sockets "
+
+        Filter all unique paths of that domain
+            curl https://www.inlanefreight.com/ | grep -Eo "https:\/\/.{0,3}\.inlanefreight\.com[^\"\']*" | sort -u | wc -l
+
+
+
+Regular Expressions
+
+    " grep --> print lines that match patterns "
+    " sed --> stream editor for filtering and transforming text "
+
+
+    Grouping operators
+        (a)     Round brackets to group parts of a regex, and further patterns within the brackets
+        [a-z]   Square brackets for character class, a list to search for
+        {1,10}  Curly brackets to define quantifier, number or range indicating how often a previous pattern repeats
+        |       The OR operator
+        .*      The AND operator
+
+        To use these operators, you need to apply the extended regex using the -E option in grep
+            grep -E "(my|false)" /etc/passwd
+            grep -E "(my.*false)" /etc/passwd
+
+
+
+Permission Management
+
+    Permissions are assigned to users and groups
+    Each user can be a member of different groups
+    Membership of these groups gives additional permissions
+    Each file and directory belongs to a specific user and a specific group
+    When we create new files and directories, they belong to the group we belong to and us
+
+    When a user wants to access the contents of a Linux directory, they must traverse the directory
+    Navigating to that directory require the user to have execute permissions on the directory
+
+        Without this permission: "Permission Denied" error message
+
+            execute permissions are necessary to traverse a directory, no matter the user's level of access
+            execute permissions on a directory do not allow a user to execute or modify any files or contents
+
+                To execute files within a directory, a user needs to execute permissions on the files
+                To modify (create, delete, rename) files, the user needs write permissions
+
+    r - Read
+    w - Write
+    x - Execute
+
+        The permissions can be set for: owner, group, others
+
+            - rwx rw- r--   1 root root 1641 May  4 23:42 /etc/passwd
+            - --- --- ---   |  |    |    |   |__________|
+            |  |   |   |    |  |    |    |        |_ Date
+            |  |   |   |    |  |    |    |__________ File Size
+            |  |   |   |    |  |    |_______________ Group
+            |  |   |   |    |  |____________________ User
+            |  |   |   |    |_______________________ Number of hard links
+            |  |   |   |_ Permission of others (read)
+            |  |   |_____ Permissions of the group (read, write)
+            |  |_________ Permissions of the owner (read, write, execute)
+            |____________ File type (- = File, d = Directory, l = Link, ... )
+
+
+    Change Permissions
+
+        The chmod command
+
+            u - owner
+            g - Group
+            o - others
+            a - All users
+
+                And either a + or a - to add or remove the designated permissions
+                    chmod a+r example.txt && ls -l example.txt
+
+                Read only using the octal assignment
+                    chmod 754 example.txt && ls -l example.txt
+
+                If we sum the Binary Representation assigned to the values from Binary Notation, we get the Octal Value
+                The Permission Representation represents the bits set in the Binary Representation
+
+
+                    Binary Notation:                4 2 1  |  4 2 1  |  4 2 1
+                    ==========================================================
+
+                    Permission Representation:      r w x  |  r - x  |  r - -
+                    ----------------------------------------------------------
+                    Binary Representation:          1 1 1  |  1 0 1  |  1 0 0
+                    ----------------------------------------------------------
+                    Octal Value:                      7    |    5    |    4
+
+
+
+    Change Owner
+
+        The chown command
+
+            chown <user>:<group> <file/directory>
+                chown root:root example.txt && ls -l example.txt
+
+
+    SUID & SGID
+
+        Besides direct user and group permissions, we can configure special permissions for files by setting:
+
+            Set User ID (SUID)
+            Set Group ID (SGID)
+
+        These SUID/SGID bits allow, for example, users to run programs with the rights of another user
+        Administrators often use this to give their users special rights for certain applications or files
+
+            "s" is used instead of an "x"
+
+                When executing such a program, the SUID/SGID of the file owner is used
+                Administrators are not familiar with the applications, which leads to a high-security risk
+                    Such programs may contain functions that allow the execution of a shell from the pager
+                    Such as the application "journalctl"
+                        If the administrator sets the SUID bit to "journalctl"
+                            Any user with access to this application could execute a shell as root
+
+
+    Sticky Bit
+
+        Can be set on directories
+        Provides an extra layer of security when controlling the deletion and renaming of files
+        Typically used on directories that are shared to prevent accidental deletion or renaming of files
+        Ensures that only the owner, the directory owner, or the root user can change files within the directory
+
+            drw-rw-r-t 3 cry0l1t3 cry0l1t3   4096 Jan 12 12:30 scripts
+                (t) is the sticky bit where the execute (x) permissions have been set
+
+            drw-rw-r-T 3 cry0l1t3 cry0l1t3   4096 Jan 12 12:32 reports
+                (T) means that all other users do not have execute (x) permissions
+                    And, therefore, cannot see the contents of the folder nor run any programs from it
+
+
+
+User Management
+
+    sudo        Execute command as a different user
+
+    su          The su utility requests appropriate user credentials via PAM and switches to that user ID
+                The default user is the superuser
+                A shell is then executed
+
+    useradd     Creates a new user or update default new user information
+    userdel     Deletes a user account and related files
+    usermod     Modifies a user account
+    addgroup    Adds a group to the system
+    delgroup    Removes a group from the system
+    passwd      Changes user password
+
+
+
+Package Management
+
+    Packages are archives that contain
+
+        Binaries of software
+        Configuration files
+        Information about dependencies
+        Track of updates and upgrades
+
+
+    The features that most package management systems provide are
+
+        Package downloading
+        Dependency resolution
+        A standard binary package format
+        Common installation and configuration locations
+        Additional system-related configuration and functionality
+        Quality control
+
+
+    Package management programs
+
+        dpkg        Debian packages, the primary and more user-friendly front-end for dpkg is aptitude.
+        apt         Apt provides a high-level command-line interface for the package management system
+        aptitude    Aptitude is an alternative to apt and is a high-level interface to the package manager
+        snap        Snap packages, for the cloud, servers, desktops, and the internet of things
+        gem         Gem is the front-end to RubyGems, the standard package manager for Ruby
+        pip         Python package installer recommended for packages that are not available in the Debian archive
+        git         Distributed revision control system that provides high-level operations and full access to internals
+
+
+    Advanced Package Manager (APT)
+
+        We can search the APT cache, for example, to find all Impacket related packages
+
+            apt-cache search impacket
+
+                apt-cache show <result>
+
+        We can also list all installed packages
+
+            apt list --installed
+
+
