@@ -1,6 +1,6 @@
 
 
-Based on the HTB Academy course on Coursera (Linux Fundamentals)
+Based on the HTB Academy course (Linux Fundamentals)
 
 
 File System Hierarchy
