@@ -1,0 +1,414 @@
+
+
+Based on Google's course on Coursera (Technical Support Fundamentals)
+
+
+Logic Gates
+
+    Computers work by performing binary calculations
+
+    Logic gates are electrical components that tell a computer how to perform binary calculations
+    They specify rules for how to produce an electrical output based on one or more electrical inputs
+
+    Computers use these electrical signals to represent two binary states: either an "on" state or an "off" state
+
+
+    Six common logic gates (and their truth tables)
+
+        NOT gate
+
+            Takes that input signal and outputs a signal with the opposite binary state
+
+                Input       Output
+
+                Off         On
+                On          OFF
+
+
+        AND gate
+
+            Outputs an "on" signal when both the inputs are "on"
+
+                Input A     Input B     Output
+
+                Off         Off         Off
+                Off         On          Off
+                On          Off         Off
+                On          On          On
+
+
+        OR gate
+
+            Outputs an "off" signal only when both the inputs are "off"
+
+                Input A     Input B     Output
+
+                Off         Off         Off
+                Off         On          On
+                On          Off         On
+                On          On          On
+
+
+        XOR gate (pronounced as Exclusive OR, when the number of true inputs is odd)
+
+            Outputs an "on" signal only when one (but not both) of the inputs are "on"
+
+                Input A     Input B     Output
+
+                Off         Off         Off
+                Off         On          On
+                On          Off         On
+                On          On          Off
+
+
+        NAND gate (NOT-AND)
+
+            Outputs an "off" signal only when both the inputs are "on"
+
+                Input A     Input B     Output
+
+                Off         Off         On
+                Off         On          On
+                On          Off         On
+                On          On          Off
+
+
+        XNOR gate (pronounced as Exclusive NOR)
+
+            Outputs an "on" signal only when both the inputs are the same
+
+                Input A     Input B     Output
+
+                Off         Off         On
+                Off         On          Off
+                On          Off         Off
+                On          On          On
+
+
+
+How to Count in Binary
+
+    A byte has 256 values
+
+        The 0 is counted as a value
+
+        128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255 (maximum decimal number)
+
+
+    A byte of 8 bits
+
+        128     64      32      16      8       4       2       1
+
+
+        0       0       0       0       1       0       1       0       (8 + 2 = 10)
+
+        0       1       1       0       1       0       0       0       (64 + 32 + 8 = 104)
+
+
+
+Abstraction
+
+    Hides complexity by providing a common interface
+
+
+
+Computer Architecture
+
+    Four Main Layers of Computer Architecture
+
+        Harware
+        Operating System
+        Software
+        User
+
+    The human element is a critical aspect of working as an IT support professional
+
+
+
+Motherboard
+
+    PCB (Printed Circuit Board)
+        Holds everything in place and let's our components communicate with each other
+
+
+
+Programs, the CPU, and Memory
+
+    Programs
+        Instructions that tell the computer what to do
+        We typically store programs on durable media like hard drives
+
+    CPU (Central Processing Unit)
+        Does all the calculations and data processing, the brain of our computer
+            Processes the programs faster that it can read
+                So we take a copy of the programs and put them into RAM
+        Registers
+            CPU components
+                They let us store the data that our CPU works with
+            Example
+                Our CPU wanted to add two numbers
+                    One number would be stored in a register A
+                    Another number will be stored in register B
+                    The result of those two numbers will be stored in register C
+        Cache
+            Smaller than RAM but it lets us store data that we use often and let's us quickly reference it
+                RAM isn't the fastest way we can get more data to our CPU processing
+            Three different cache levels in a CPU
+                L1, L2, and L3
+                    L1 is the smallest and fastest cache
+        Internal clock
+            How does our CPU know when a set of instructions end and a new one begins?
+                Our CPU has an internal clock that keeps its operations in sync
+                    It connects to a special wire called a clock wire
+                        When you send or receive data
+                            It sends a voltage to that clock wire to let the CPU know it can start doing calculations
+                        Think of our clock wires as the ticking of a clock
+                            For every tick the CPU does one cycle of operations
+                                A clock cycle
+                Example
+                    3.4 GHz refers to the clock speed of the CPU
+                        Represents the maximum number of clock cycles that it can handle in a certain time period
+                            3.4 gigahertz is 3.4 billion cycles per second
+                        There's a way you can exceed the number of clock cycles on your CPU
+                            It's referred to as over clocking (potentially overheating your CPU)
+
+    RAM (Random Access Memory)
+        Short term memory, randomly accessed, allowing our CPU to read from
+            It stores information in a location our CPU can access it faster than they could with our hard drive
+
+    EDB (External Data Bus)
+        A row of wires that interconnect the parts of our computer
+            When you send a voltage to one of the wires
+                We say the state of the wire is on (represented by a 1)
+            If there's no voltage
+                Then we say that the state is off (represented by a 0)
+        Comes in different sizes
+            8-bit
+                Sending one byte at a time
+            16-bit
+            32-bit
+            64-bit
+
+    MCC (Memory Controller Chip)
+        A bridge between the CPU and the RAM
+            We don't send data from RAM over the EDB
+                Since we can only send one line of data through the EDB at a time
+                There would be way too much stuff, RAM can hold millions even billions of rows of data
+            Example
+                The CPU talks to the MCC and says hey I need instructions for step number 3
+                The MCC finds step number 3 in RAM, grabs the data and sends it through the EDB
+
+    Address Bus
+        Connects the CPU to the MCC
+            Sends over the location of the data but not the data itself
+            Then the MCC takes the address and looks for the data
+                And then data is sent over the EDB
+
+
+
+CPU cache and overclocking
+
+    Cache
+        Refers to a small amount of recently used data that is stored either on hardware or in software
+        Speeds up the process of accessing data in temporary storage instead of using full paths
+
+    CPU cache
+        Normally stored inside each core of the CPU
+        Older computers might store CPU cache in a transistor chip
+            Attached to the Motherboard
+            Along with a high-speed bus connecting the chip to the CPU
+
+
+    CPU levels of cache
+
+        Level 3 cache
+            The largest and slowest (however, often twice as fast as RAM)
+            The first location to store data after it is transfered from RAM
+            Often shared by all of the cores in a single CPU
+
+        Level 2 cache
+            Holds less data than L3 cache, but it has faster access speeds
+            Holds a copy of the most recently accessed data that is not currently in use by the CPU
+            Each core normally has it's own L2 cache
+
+        Level 1 cache
+            The fastest and smallest
+            Holds the data currently in use by the CPU
+            Each core usually has its own L1 cache
+
+
+    Overclocking a CPU
+
+        Involves three variables
+            The base CPU clock frequency, often measured in GHz
+            The core frequency, which is calculated by multiplying the base frequency by the CPU core multipliers
+            THe core voltage, which needs to be increased in small increments to meet the increasing power demand
+
+        Warnings on overclocking
+            Can damage the computer
+            Can shorten the overall lifespan of the computer and void the computer's warranty
+
+        How to overclock a CPU safely
+            Check if supported
+                Check the CPU manufacturer's documentation
+                Check the documentation for the computer's motherboard model
+            Clean the inside of the computer
+                Unplug the computer, use an anti-static wristband and compressed air to remove dust
+            Ensure an appropriate CPU cooler is installed (critical)
+                A stock CPU cooler is most likely insufficient
+                Replace the stock CPU cooler with a liquid cooling system
+            Follow the manufacturer's instructions for overclocking the CPU
+                Use benchmarking software to establish a baseline for the normal performance of the computer
+                Set each CPU core multiplier to the lowest value of the lowest multiplier
+                    Using either the manufacturer's overclocking software (recommended) or the BIOS
+                         Then reboot the computer
+                Increase each CPU core multiplier by 1
+                Test each increase for stability using the testing utility provided by the manufacturer
+                    If the voltage appears to become insufficient
+                        Increase by 0.05V
+                            Do not increase above 1.4V without specialized cooling hardware
+                    If the computer freezes or crashes
+                        It has either become completely unstable or the CPU is not getting enough voltage
+                            Use the BIOS to return to the last stable frequency
+                            Or increase the voltage in 0.01V increments
+                If stable, reboot the computer before attempting the next increase
+
+
+
+CPU
+
+    Instruction set
+        A list of instructions that our CPU is able to run
+        Hard-coded into our CPU
+            Different CPU manufacturers may use different instruction sets
+                But they generally perform the same functions
+
+    When you select your CPU
+        Make sure it's compatible with your motherboard
+        There are different ways of CPUs fit on motherboards using different sockets
+            Your CPU might have lots of tiny pins that are either stick out or have contact points
+            Two major types of CPU sockets
+                LGA (Land Grid Array)
+                    An LGA socket has pins coming out of the motherboard
+                PGA (Pin Grid Array)
+                    A PGA socket has pins coming out of the processor itself
+            The socket size may vary, so always make sure your CPU and socket are compatible beforehand
+
+
+
+RAM
+
+    To store data that we want to access quickly
+        This data changes all the time so it isn't permanent
+        Almost all RAM is volatile
+            Once we power off our machines, the data stored in RAM is cleared
+
+    Our computer is comprised of programs
+        To run a program
+            We need to make a copy of it in RAM so our CPU can process it
+
+
+    There are a lots of types of RAM
+
+        DRAM (Dynamic Random Access Memory)
+            The one that's commonly found in computers
+            When 1 or 0 is sent to DRAM, it stores each bit in a microscopic capacitor
+                This is either charged or discharged, represented by 1 or a 0
+                These semiconductors are put into chips that are on the RAM and store our data
+
+
+    There are also different types of memory sticks that DRAM chips can be put on
+
+        DIMM (Dual Inline Memory Module)
+            The more modern sticks
+            Have different sizes of pins on them
+
+
+    SD RAM (Synchronous DRAM)
+        This type of RAM is synchronized to our system's clock speed, allowing quicker processing of data
+
+    DDR SDRAM (Double Data Rate SDRAM)
+        Faster, takes up less power, and has a large capacity
+            Iterations
+                DDR1, DDR2, DDR3, and now, DDR4 (fastest type of short-term memory currently)
+
+    Make sure that your motherboard is compatible with any RAM sticks that you buy
+
+
+
+Motherboards
+
+    Chipset
+        Decides how components talk to each other on our machine
+            A key component that allows us to manage data between
+                CPU
+                RAM
+                Peripherals
+                    External devices we connect to our computer (mouse, keyboard, monitor)
+        Made up of two chips
+            Northbridge
+                Interconnects RAM and video cards
+                In some modern CPUs, the Northbridge has been directly integrated into the CPU
+            Southbridge
+                Maintains input/output (IO) controllers
+                    Like hard drives and USB devices, that input and output data
+
+    Expansion slots
+        Give us the ability to increase the functionality of our computer
+            If you wanted to upgrade your graphics card
+                You could purchase one and install it on your motherboard through the expansion slots
+        The standard for an expansion bus today is the PCIe (Peripheral Component Interconnect express)
+
+    Form Factor
+        Determines the amount we can put in and the amount of space we'll have
+        There are different size of motherboards
+            ATX (Advanced Technology Extended)
+                The most common form factor for motherboards
+                Comes in different sizes too
+                    Full-sized ATXs in desktops
+            ITX (Information Technology Extended)
+                Much smaller than ATX boards
+                    For example, the Intel NUC comes in three board sizes
+                        Mini ITX
+                        Nano ITX
+                        Pico ITX
+
+
+
+Physical Storage: Hard Drives
+
+    Metrics
+
+        Bit
+            The smallest unit of a data storage
+            Can store one binary digit, a one or a zero
+
+        Byte
+            The next largest unit of storage, which is comprised of eight bits
+            Can hold a letter, number or symbol
+
+        Kylobyte
+            The next largest unit, made up of 1024 bytes
+
+
+    Conversion chart
+
+        8 bits          |   1 byte
+        1024 bytes      |   1 kilobyte (KB)
+        1024 kilobytes  |   1 megabyte (MB)
+        1024 megabytes  |   1 gigabyte (GB)
+        1024 gigabytes  |   1 terabyte (TB)
+
+
+    Two basic hard drive types
+
+        HDDs (Hard Disk Drives)
+            Uses a spinning platter and a mechanical arm to read and write information
+                The speed that the platter rotate allows you to read and write data faster
+                    RPM (Revolution Per Minute)
+            Prone to a lot more damage because there are a lot of moving parts
+
+        SSD (Solid State Drive)
+            ...
+
+
