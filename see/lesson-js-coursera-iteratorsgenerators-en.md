@@ -1,6 +1,15 @@
+
+
+
+
+
 # JavaScript Iterators and Generators
 > Based on Stanimira Vlaeva's course on Coursera (Modern JavaScript: Iterators and Generators).
+
+
+
 ### In ES6, all basic data types were made iterable
+
 ```JavaScript
 const easy = 'abc';
 
@@ -8,7 +17,11 @@ for (point of easy) {
     console.log(point)
 }
 ```
+
+
+
 ### An Iterator object provides a next() method
+
 ```JavaScript
 const primaryColors = ['blue', 'yellow', 'red']
     , itPC = primaryColors[Symbol.iterator]()
@@ -21,7 +34,11 @@ while (!color.done) {
     color = itPC.next()
 }
 ```
+
+
+
 ### A function returning an Iterator
+
 ```JavaScript
 function countIterator() {
     let count = 1;
@@ -39,7 +56,11 @@ console.log(itC.next().value);
 console.log(itC.next().value);
 console.log(itC.next().value);
 ```
+
+
+
 ### Generators are Iterator factories
+
 ```JavaScript
 function* countGenerator() {
     let count = 1;
@@ -55,7 +76,11 @@ console.log(genC.next().value);
 console.log(genC.next().value);
 console.log(genC.next().value);
 ```
+
+
+
 ### The yield operator pauses and resumes a Generator function
+
 ```JavaScript
 function* classicalElementsGenerator() {
     yield 'earth';
@@ -73,7 +98,11 @@ while (!element.done) {
     element = genCE.next()
 }
 ```
+
+
+
 ### Custom Generator
+
 ```JavaScript
 class Human {
 
@@ -96,7 +125,11 @@ for (sense of being) {
     console.log(sense)
 }
 ```
+
+
+
 ### Lazy sequence generation using destructuring assignment syntax
+
 ```JavaScript
 function* fibonacciGenerator() {
     let a = 0
@@ -119,7 +152,11 @@ console.log(genF.next().value);
 console.log(genF.next().value);
 console.log(genF.next().value);
 ```
+
+
+
 ### Generator with parameters
+
 ```JavaScript
 function* intervalGenerator(start = 0, end = Infinity) {
     for (let i = start; i < end; i++) {
@@ -134,7 +171,11 @@ console.log(genI.next());
 console.log(genI.next());
 console.log(genI.next());
 ```
+
+
+
 ### Generator as observer
+
 ```JavaScript
 function* observerGenerator() {
     const value = yield;
@@ -152,7 +193,11 @@ console.log(genO.next('myth'));
 console.log(genO.next('truth'));
 console.log(genO.next('tale'));
 ```
+
+
+
 ### Notable behavior of an observer
+
 ```JavaScript
 function* omittingGenerator() {
     while (true) {
@@ -167,7 +212,11 @@ genT.next('omitted');
 genT.next('present');
 genT.next('existing');
 ```
+
+
+
 ### Delegating execution
+
 ```JavaScript
 function* skyGenerator() {
     yield* ['sun', 'moon', 'stars']

@@ -1,18 +1,44 @@
+
+
+
+
+
 # Client-side Data Collection
+
+
+
 The JavaScript solutions presented here meet needs that are imperfectly covered or not managed by Tag Management Systems.
+
+
+
 ### Tag Management Systems
+
 TMS are software allowing you to orchestrate the triggering of third-party solutions. The interface designed for less technical profiles attempts to facilitate the configuration of tracking solutions for marketing purposes, however it is almost always necessary to have a more or less advanced knowledge of JavaScript and a good understanding of the development tools integrated into the browsers. A TMS is ultimately a JavaScript file integrated into a website (or application), an entry point allowing third-party solutions to be activated or deactivated independently of the development team.
+
+
+
 ### JavaScript Versions
+
 When updating my JavaScript solutions, verifying them and refining them, I felt free to use recent syntax. However, TMS may not support arrow function expressions or the use of keywords such as `let` or `const`, **among others**. I invite you to check which of the [JavaScript Versions](https://www.w3schools.com/Js/js_versions.asp) is supported by your TMS, then adapt the statements to avoid any errors.
+
+
+
+
 ## Loading
+
+
 One of the biggest pain points of TMS users.
 > Added the script, got undefined
 
 It is extremely common to find configurations where the variables and functions of the third-party solution are referenced just below the code that initializes it, causing the famous `undefined` error.
+
+
+
 ### The wrong way
 > It works, almost always
 
 This first example serves to highlight the `onload` attribute of an `HTMLScriptElement`, but third-party solutions are added via a "tag": literally an HTML tag containing JavaScript code initializing the solution.
+
 ```JavaScript
 function addScript(url, invokable) {
     const script = document.createElement('script');
@@ -21,13 +47,26 @@ function addScript(url, invokable) {
     document.querySelector('body').appendChild(script)
 }
 ```
+
 | Parameter | Use       | Value     | Description                       |
 |-----------|-----------|-----------|-----------------------------------|
 | url       | Required  | String    | Address of a JavaScript file      |
 | invokable | Optional  | Function  | Your function, executed onload    |
+
+
+
+
 #### Why is this wrong?
+
+
 Encapsulation of references to the solution being loaded in the `onload` attribute does not offer any guarantee of avoiding a blocking error in a user's journey: **once a script is loaded, its content must still be read before being available: this is the execution time**.
+
+
+
+
 #### The fix
+
+
 ```JavaScript
 function wait(isDefined, onSuccess, onFailure) {
     let i = 0;
@@ -47,14 +86,19 @@ function wait(isDefined, onSuccess, onFailure) {
         ;
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                       |
 |-----------|-----------|-----------|-------------------------------------------------------------------|
 | isDefined | Required  | Function  | Should return `true`/`<value>` or `false`/`undefined`             |
 | onSuccess | Required  | Function  | Contains the logic to apply, or informs the TMS of availability   |
 | onFailure | Optional  | Function  | If the 30 second time limit is exceeded                           |
 > About the `isDefined` function you need to write: you can use `typeof` to prevents errors.
+
+
+
 ### The right way
 > All in one, always works
+
 ```JavaScript
 function getPromisedScript(url, reference) {
     return new Promise((resolve, reject) => {
@@ -73,11 +117,18 @@ function getPromisedScript(url, reference) {
     })
 }
 ```
+
 | Parameter | Use       | Value     | Description                                           |
 |-----------|-----------|-----------|-------------------------------------------------------|
 | url       | Required  | String    | Address of a JavaScript file                          |
 | reference | Required  | String    | Variable or function name being defined by the script |
+
+
+
+
 #### Example of use
+
+
 You still need to define `onSuccess` and `onError` functions.
 ```JavaScript
 getPromisedScript(
@@ -86,16 +137,28 @@ getPromisedScript(
 ).then(() => onSuccess()).catch(e => onError(e));
 ```
 > Note that `'dataObjects'` is just an example to represent how to refer to the JavaScript variable or function you expect.
+
+
+
+
 ## Triggering
+
+
 To decide whether or not to trigger a code for data reporting, it is often necessary to determine the context or track an interaction. For example the device, the parameters, or identifying the precise moment when it is relevant to proceed.
 > These are just a few of the numerous code snippets I've written, many of the other solutions I've created are not only proprietary but also specific to the configurations and needs encountered
+
+
+
 ### Contextual
+
 #### URL Query String parameters
 ```JavaScript
 function getParameter(name) {
     return new URLSearchParams(document.location.search).get(name)
 }
 ```
+
+
 #### Domain vs. subdomain
 ```JavaScript
 function isMainDomain() {
@@ -103,8 +166,11 @@ function isMainDomain() {
     return host.match(/\./g).length === 1 ? true : false
 }
 ```
+
+
 #### Mobile device
 > I didn't wrote that one, thanks to [Open source mobile phone detection](http://detectmobilebrowsers.com)
+
 ```JavaScript
 function isMobile() {
     return !!(function(x) { // By http://detectmobilebrowsers.com
@@ -112,6 +178,8 @@ function isMobile() {
     })(navigator.userAgent || window.opera || navigator.vendor)
 }
 ```
+
+
 #### IOS app .vs Webview
 ```JavaScript
 function isWebviewIOS() {
@@ -125,12 +193,16 @@ function isWebviewIOS() {
     } else return false
 }
 ```
+
+
 #### Main document .vs Iframe
 ```JavaScript
 function isIframe() {
     return window.self !== window.top
 }
 ```
+
+
 #### Main document host
 ```JavaScript
 function getHostEvenFromIframe() {
@@ -141,7 +213,11 @@ function getHostEvenFromIframe() {
     return host.replace(/\/$/, '')
 }
 ```
+
+
+
 ### Interactional
+
 #### Detect element display
 ```JavaScript
 function onScrollAndVisibility(node, invokable, once = true) {
@@ -161,11 +237,14 @@ function onScrollAndVisibility(node, invokable, once = true) {
     window.addEventListener('scroll', onEvent)
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                           |
 |-----------|-----------|-----------|-----------------------------------------------------------------------|
 | node      | Required  | Element   | The reference to the HTML element (a node) that you have selected     |
 | invokable | Required  | Function  | Should contain the code you want to run                               |
 | once      | Optional  | Boolean   | Not relevant to trigger more than once, but it's there                |
+
+
 #### Detect scroll percentage
 ```JavaScript
 function onScrollPercentage(invokable, once = 0) {
@@ -183,24 +262,36 @@ function onScrollPercentage(invokable, once = 0) {
     }
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                                                       |
 |-----------|-----------|-----------|---------------------------------------------------------------------------------------------------|
 | invokable | Required  | Function  | Should contain the code you want to run, note that the parameter `p` is passed to you             |
 | once      | Optional  | Integer   | If `0` it triggers every time, if `80` (for example) it will only trigger once when it reaches it |
+
+
+
+
 ## Solving
 The only thing worse than having an error is not knowing there is one.
 > Errors are good things, they inform you of a malfunction
+
+
 ### If no error message
+
 #### Determine if SPA
 This must absolutely **not** be pasted into your TMS but into your browser console: if it is a Single Page Application nothing will happen during your navigation even if the URLs change, but this code will pause execution if there are "real pages" when the current page unloads before loading the next one.
 > The browser console must remain open for this code to work, it's particularly useful in mixed user journeys (real and virtual pages) to understand why certain "page views" have not been tracked
+
 ```JavaScript
 window.onbeforeunload = function() { debugger }
 ```
+
+
 #### Watching an Invokable
 > Overriding a function
 
 This code allows you to check that an existing function is indeed invoked or to observe the moment when it will be invoked by adding `console.log` or `debugger` for example, this technique is a way of adding an instruction without overwriting the initial logic.
+
 ```JavaScript
 const retainingOriginalCode = originalFunctionNameHere;
 
@@ -211,13 +302,23 @@ originalFunctionNameHere = function(a, b, ...c) {
 
 }
 ```
+
 | Parameter                 | Use       | Description                                                                                   |
 |---------------------------|-----------|-----------------------------------------------------------------------------------------------|
 | retainingOriginalCode     | Variable  | No reason to modify it, this temporarily stores the code of the existing function             |
 | originalFunctionNameHere  | Function  | Replace this name with the function you want to observe or modify, without any parentheses    |
+
+
+
+
 ## Displaying
+
+
+
 ### Edit style attribute
+
 The style attribute of an HTML element often has more than one CSS declaration, here's how to modify part of the attribute value without overwriting everything.
+
 ```JavaScript
 function moveStyleAttribute(node, removeRegEx, addBoolean, addString) {
     const css = (node.getAttribute('style') || '').replace(removeRegEx, '').trim();
@@ -226,17 +327,21 @@ function moveStyleAttribute(node, removeRegEx, addBoolean, addString) {
     else node.setAttribute('style', css)
 }
 ```
+
 | Parameter     | Use       | Value     | Description                                                               |
 |---------------|-----------|-----------|---------------------------------------------------------------------------|
 | node          | Required  | Element   | The reference to the HTML element (a node) that you have selected         |
 | removeRegEx   | Required  | Regex     | A regular expression identifying the targeted CSS property(ies)           |
 | addBoolean    | Optional  | Boolean   | Will add CSS as replacement if `true`, just remove selection if `false`   |
 | addString     | Optional  | String    | Contains the CSS you can add if `addBoolean` is `true`                    |
+
+
 #### Example of use
 ```HTML
 <div style="color:blue; font-size: 16px; display: block;">Do you want cookies?</div>
 ```
 > HTML element example
+
 ```JavaScript
 moveStyleAttribute(
     document.querySelector('body'),
@@ -246,20 +351,33 @@ moveStyleAttribute(
 );
 ```
 > Edit without overwriting
+
+
+
 ### Get property value
+
 When you need to set one value based on another on the fly.
+
 ```JavaScript
 function getStyleValue(property, node) {
     return window.getComputedStyle(node)
         .getPropertyValue(property)
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                           |
 |-----------|-----------|-----------|-----------------------------------------------------------------------|
 | property  | Required  | String    | The name of the CSS property                                          |
 | node      | Required  | Element   | The reference to the HTML element (a node) that you have selected     |
+
+
+
+
 ## Persisting
+
+
 ### Cookies
+
 #### Reading
 ```JavaScript
 function getCookie(name) {
@@ -281,9 +399,13 @@ function getCookie(name) {
 }
 ```
 > The `unescape` built-in function is **deprecated**, this feature is no longer recommended but is used here as a last case to avoid an error if you encounter it (cookies are almost always encoded to handle special characters)
+
+
 #### Writing
 Editing a cookie requires determining a few properties, each of the following functions allows you to configure them.
+
 ##### Functions for properties
+
 ###### domain
 ```JavaScript
 function getCookieDomain(unrestricted) {
@@ -294,6 +416,7 @@ function getCookieDomain(unrestricted) {
 }
 ```
 > Note that sometimes you will not be able to set a cookie on the main domain (if you do not own it and are simply a user of one of its subdomains for example), and it is important to understand that a cookie set to a domain is accessible by all of its subdomains (set `unrestricted` to `true` for this) but a cookie on a subdomain is not accessible by adjacent and higher domains
+
 ###### expires
 ```JavaScript
 function getRelativeUTC(days = 0, year, month, day) {
@@ -309,12 +432,14 @@ function getRelativeUTC(days = 0, year, month, day) {
     return time.toUTCString()
 }
 ```
+
 | Parameter | Use       | Value             | Description                                                                           |
 |-----------|-----------|-------------------|---------------------------------------------------------------------------------------|
 | days      | Required  | Integer/String    | A negative value deletes the cookie, a positive value determines its lifespan         |
 | year      | Optional  | Integer/String    | From a date different from the current one, parameters `year` `month` `day` or none   |
 | month     | Optional  | Integer/String    | "                                                                                     |
 | day       | Optional  | Integer/String    | "                                                                                     |
+
 ###### Secure
 ```JavaScript
 function isHTTPS() {
@@ -322,6 +447,7 @@ function isHTTPS() {
 }
 ```
 > **Warning**: In the absence of HTTPS, if you try to write a cookie with the `Secure` property it will simply not be written and there will be no error to inform you
+
 ##### The function
 ```JavaScript
 function setCookie(name, value, path, domain, expires, same) {
@@ -336,8 +462,10 @@ function setCookie(name, value, path, domain, expires, same) {
 }
 ```
 > **Warning**: if you modify a third-party cookie with the `encodeURIComponent` method and if initially it was encoded with `encodeURI` or `escape`, then the third-party solution may not respond if this type of error is not handled.
+
 ###### Example of use
 I recommend leaving `path` at the root value `/`, but if you want to fine-tune cookie availability in addition to domain-based configuration, you can also use `location.pathname`.
+
 ```JavaScript
 setCookie(
     'Vegan',
@@ -349,8 +477,10 @@ setCookie(
 )
 ```
 > The `lax` property determines read access ( [SameSite | OWASP Foundation](https://owasp.org/www-community/SameSite) ), and if this function fail to read or write an existing cookie: it is possible that `HttpOnly` restricts access to cookies ( [HTTP cookies | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies) )
+
 ##### Deleting
 Cookies are deleted when they expire.
+
 ```JavaScript
 function unsetCookie(name) {
     setCookie(
@@ -364,8 +494,13 @@ function unsetCookie(name) {
 }
 ```
 > To delete one, edit it with a date that is anterior to the actual time
+
+
+
 ### localStorage
+
 The `localStorage` interface allows you to persist a value across pages in a much simpler way than cookies.
+
 ```JavaScript
 function getSessionPageViews() {
     let count
@@ -388,13 +523,24 @@ function getSessionPageViews() {
 }
 ```
 > This function must be invoked each time a page is loaded, you will obtain in return the number of pages visited within the limit of 30 minutes allocated as session duration
+
+
+
+
 ## Testing
+
+
 ### A/B Testing and Personalization
+
 This was by far my favorite part! This involves not only having tracking skills to know how to report data, but also understanding which values are relevant. And then it involves Web development, Responsive Web Design of course, from the slightest change for a tiny A/B test to a very extensive modification of the home page of a major client as part of a personalization experience. And finally, designing and applying the logic that will make certain tests possible requires a certain ingenuity; it can be very complex to alter the rendering without impacting the visitor's experience by overriding the intended behavior.
 > I won't go into further detail here. I simply provide functions to randomly determine which version (control or variant) should be triggered, it's light and reliable.
+
+
 #### Random Generation
+
 ##### Testing a single variant
 > So two versions: a control one, and its variant including the modifications
+
 ```JavaScript
 function getRandomAB(raw = false) {
     const integer = Math.round(Math.random());
@@ -403,11 +549,14 @@ function getRandomAB(raw = false) {
     else return 'A'
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                   |
 |-----------|-----------|-----------|---------------------------------------------------------------|
 | raw       | Optional  | Boolean   | If `true` or `1` it returns `0`/`1`, else it returns `A`/`B`  |
+
 ##### Testing up to nine variants
 > So ten versions: one control, and its variants each including a different modification
+
 ```JavaScript
 function getRandomAJ(versions = 5, raw = false) {
     const check = Number.isInteger(versions)
@@ -421,12 +570,16 @@ function getRandomAJ(versions = 5, raw = false) {
     return raw ? i : keys[i]
 }
 ```
+
 | Parameter | Use       | Value     | Description                                                               |
 |-----------|-----------|-----------|---------------------------------------------------------------------------|
 | versions  | Optional  | Integer   | `5` by default, but you'll probably use `3`... you could go up to `10`    |
 | raw       | Optional  | Boolean   | If `true` or `1` it returns `0`-`9`, else it returns `A`-`J`              |
+
+
 #### Proof of Concept
 I understand that you may doubt the effectiveness of such simple functions when certain third-party solutions offer you, in addition to other functionalities, to obtain the same result.
+
 ##### How to collect results
 ```JavaScript
 function getVersionDistribution(iterations, invokable, ...parameters) {
@@ -443,16 +596,21 @@ function getVersionDistribution(iterations, invokable, ...parameters) {
     return alphabetical
 }
 ```
+
 | Parameter     | Use       | Value             | Description                                                                           |
 |---------------|-----------|-------------------|---------------------------------------------------------------------------------------|
 | iterations    | Required  | Integer           | How many times do you want to invoke it to check version distribution?                |
 | invokable     | Required  | Function          | It will only be `getRandomAB`or `getRandomAJ` here                                    |
 | parameters    | Optional  | [Integer,]Boolean | Could be `true` for `getRandomAB`, at least an integer (`3`-`10`) for `getRandomAJ`   |
+
+
 ##### How to view results
+
 ###### 1 million times, 2 versions
 ```JavaScript
 console.log(getVersionDistribution(1000000, getRandomAB));
 ```
+
 ###### 1 million times, but 10 times
 ```JavaScript
 let i = 0;
@@ -461,6 +619,7 @@ while (i < 10) {
     i++
 }
 ```
+
 ###### 1 billion times, 5 versions 
 ```JavaScript
 console.log('This may take a minute, please wait...');

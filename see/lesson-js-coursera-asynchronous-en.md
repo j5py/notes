@@ -1,30 +1,59 @@
+
+
+
+
+
 # Asynchronous JavaScript
 > Based on Mau Fournier's course on Coursera (AJAX for Web Developers)
+
+
+
 ## Reminder
+
+
 Most of the code is synchronous
 - Meaning that it's a synchronized sequence of operations
     - Each line runs only once the previous line is finished
 
 With Promises
 - There can be parts of the code running while we wait for other parts
+
+
+
 ### AJAX
+
 Asynchronous JavaScript And XML
 > JSON is easier to work with than XML
+
+
+
 ### JSON
+
 JavaScript Object Notation
+
 ##### Supported
 - `string`, `number`, `object`, `array`, `boolean`, `null`
+
 ##### Unsupported
 - `undefined`, `function`
+
 ##### Encode and decode JSON for requests
 - `JSON.stringify(thatJson)`
 - `JSON.parse(thatString)`
+
+
+
 ### API
+
 Application Programming Interface
 - Intermediary between client and server
 - Usually provide different URLS which correspond to each operation that is available
     - These URLs are called endpoints
+
+
+
 ### HTTP
+
 | Main methods  | Usage         |
 | ------------- | ------------- |
 | GET           | Read (fetch)  |
@@ -32,11 +61,20 @@ Application Programming Interface
 | PUT           | Update        |
 | PATCH         | Update        |
 | DELETE        | Delete        |
+
+
 #### Request and response components
 - Headers, Body, Payload
+
+
+
+
 ## Request
+
+
 ### The original method (XHR)
 > Many years ago
+
 ```JavaScript
 function getUsers() {
 
@@ -61,16 +99,23 @@ function getUsers() {
 
 }
 ```
+
+
+
 ### Traditional Promises (then / catch)
+
 ##### States
 - Pending, Resolved, Rejected
+
 ##### Methods
 - `.then()`, `.catch()`, `.finally()`
+
 ##### Fetch API
 - JavaScript operation for issuing requests to servers
 - Implementing `.then()` and `.catch()` methods to handle responses and errors
     - A failed HTTP status code doesn't reject the Promise
         - Seem like you got a successful result
+
 ###### GET
 ```JavaScript
 fetch('https://api.example.false/users')
@@ -78,6 +123,7 @@ fetch('https://api.example.false/users')
     .then(js => console.log(js))
     .catch(error => console.log('Promise error:', error));
 ```
+
 ###### POST
 ```JavaScript
 fetch(
@@ -88,6 +134,7 @@ fetch(
     }
 ).then(response => response.json()).then(js => console.log(js));
 ```
+
 ###### PUT
 ```JavaScript
 fetch(
@@ -98,6 +145,7 @@ fetch(
     }
 ).then(response => response.json()).then(js => console.log(js));
 ```
+
 ###### DELETE
 ```JavaScript
 fetch(
@@ -107,7 +155,11 @@ fetch(
     }
 ).then(response => response.json()).then(js => console.log(js));
 ```
+
+
+
 ### Modern Promises (async / await)
+
 "Syntactic sugar" over Traditional Promises
 - It works exactly the same way internally
 - Makes your code easier to read
@@ -117,6 +169,8 @@ Binding
 - `await` Keyword whithin the function body
     - Pauses the execution of our function until the promise is resolved
     - But while this function is paused, the rest of your code keeps running
+
+
 ```JavaScript
 async function getUsers() {
     try {
@@ -130,7 +184,11 @@ async function getUsers() {
     }
 }
 ```
+
+
+
 ### Axios (external library)
+
 - Reject the Promise when the HTTP response comes back with a failed status code
 - Allow to set up global headers that apply to all your requests
 - Automatically includes the JSON Content-Type header
@@ -138,6 +196,7 @@ async function getUsers() {
 - Isomorphic
     - NPM package `npm install axios`
     - Script tag `<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>`
+
 
 ```JavaScript
 axios.defaults.headers.common['Authorization'] = 'Bearer your-access-token-here'; 
@@ -164,8 +223,15 @@ async function addUser() {
     }
 }
 ```
+
+
+
+
 ## Error handling
+
+
 ### Traditional Promises (then / catch)
+
 ```JavaScript
 fetch('https://api.example.false/users')
     .then(response => {
@@ -177,7 +243,11 @@ fetch('https://api.example.false/users')
     .then(js => console.log(js))
     .catch(error => console.log('Promise error:', error));
 ```
+
+
+
 ### Modern Promises (async / await)
+
 ```JavaScript
 async function getUsers() {
     try {
@@ -192,17 +262,28 @@ async function getUsers() {
     }
 }
 ```
+
+
+
 ### Axios (external library)
+
 ```JavaScript
 axios.get('https://api.example.false/users')
     .then(response => console.log(response.data))
     .catch(error => console.log('Axios error:', error));
 ```
+
+
+
+
 ## Security
+
+
 #### Authentication
 Proving that the user is who they claim they are
 - Authorization header
     - A bearer token or acces token
+
 ```JavaScript
 function getToken(auth) {
     const prefix = 'Bearer ';
@@ -210,6 +291,8 @@ function getToken(auth) {
         return auth.slice(prefix.length)
 }
 ```
+
+
 #### CORS
 Cross-Origin Resource Sharing
 - Control which domains are allowed to make requests from a given server
@@ -217,10 +300,15 @@ Cross-Origin Resource Sharing
     - Implemented at the server level
         - The server will still receive the request and process it
         - But the browser won't allow you to access the response
+
+
 #### CSRF
 Cross-Site Request Forgery
 - When an attacker tricks the victim into performing actions they didn't intend to perform
 - A unique and random token called a CSRF token must be sent with each request to verify that it's legitimate
+
+
+
 ### Fetch API
 
 ```JavaScript
@@ -231,7 +319,11 @@ fetch('https://api.example.false/users', {
     }
 });
 ```
+
+
+
 ### Modern Promises (async / await)
+
 ```JavaScript
 async function getUsers() {
     const response = await fetch('https://api.example.false/users', {
@@ -242,7 +334,11 @@ async function getUsers() {
     })
 }
 ```
+
+
+
 ### Axios (external library)
+
 ```JavaScript
 axios.get('https://api.example.false/users', {
     headers: {
