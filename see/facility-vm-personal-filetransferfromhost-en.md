@@ -35,6 +35,12 @@ ipconfig
 
 
 ```
+cd %userprofile%\Downloads
+```
+
+**OR**
+
+```
 mkdir <directoryName>
 cd <directoryName>
 ```
