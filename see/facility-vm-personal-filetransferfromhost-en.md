@@ -37,6 +37,11 @@ ipconfig
 ```
 mkdir <directoryName>
 cd <directoryName>
+```
+> From the directory, use `dir` to list the files and `del <fileName>` to delete one
+
+
+```
 notepad <fileName>
 ```
 > Edit and save the file, and go back in Command Prompt
