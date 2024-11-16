@@ -21,6 +21,8 @@ TMS are software allowing you to orchestrate the triggering of third-party solut
 
 When updating my JavaScript solutions, verifying them and refining them, I felt free to use recent syntax. However, TMS may not support arrow function expressions or the use of keywords such as `let` or `const`, **among others**. I invite you to check which of the [JavaScript Versions](https://www.w3schools.com/Js/js_versions.asp) is supported by your TMS, then adapt the statements to avoid any errors.
 
+<br />
+
 
 
 
@@ -137,6 +139,8 @@ getPromisedScript(
 ).then(() => onSuccess()).catch(e => onError(e));
 ```
 > Note that `'dataObjects'` is just an example to represent how to refer to the JavaScript variable or function you expect.
+
+<br />
 
 
 
@@ -268,6 +272,8 @@ function onScrollPercentage(invokable, once = 0) {
 | invokable | Required  | Function  | Should contain the code you want to run, note that the parameter `p` is passed to you             |
 | once      | Optional  | Integer   | If `0` it triggers every time, if `80` (for example) it will only trigger once when it reaches it |
 
+<br />
+
 
 
 
@@ -307,6 +313,8 @@ originalFunctionNameHere = function(a, b, ...c) {
 |---------------------------|-----------|-----------------------------------------------------------------------------------------------|
 | retainingOriginalCode     | Variable  | No reason to modify it, this temporarily stores the code of the existing function             |
 | originalFunctionNameHere  | Function  | Replace this name with the function you want to observe or modify, without any parentheses    |
+
+<br />
 
 
 
@@ -369,6 +377,8 @@ function getStyleValue(property, node) {
 |-----------|-----------|-----------|-----------------------------------------------------------------------|
 | property  | Required  | String    | The name of the CSS property                                          |
 | node      | Required  | Element   | The reference to the HTML element (a node) that you have selected     |
+
+<br />
 
 
 
@@ -523,6 +533,8 @@ function getSessionPageViews() {
 }
 ```
 > This function must be invoked each time a page is loaded, you will obtain in return the number of pages visited within the limit of 30 minutes allocated as session duration
+
+<br />
 
 
 
