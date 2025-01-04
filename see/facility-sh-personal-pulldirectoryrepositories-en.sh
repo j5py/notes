@@ -2,7 +2,7 @@
 
 # The shebang above may not match your environment
 # In Unix or GNU/Linux, enter `which zsh` or `which bash` to find the path of your interpreter
-# Then, execute this file by entering /bin/zsh <filename>.sh
+# Then, execute this file by entering `/bin/zsh <filename>.sh`
 
 
 
