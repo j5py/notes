@@ -1,5 +1,10 @@
 #!/usr/bin/zsh
 
+# The shebang above may not match your environment
+# In Unix or GNU/Linux, enter `which zsh` or `which bash` to find the path of your interpreter
+# Then, execute this file by entering `/bin/zsh <filename>.sh`
+
+
 
 # Checking for the presence of a directory path as an argument
 # Or, find the repositories in the current directory
