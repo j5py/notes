@@ -6,11 +6,16 @@
 # Daily Linux
 
 <br />
+<br />
+<br />
 
 
 
 
 ## Configure Bash Run Commands File
+
+<br />
+
 
 
 
@@ -24,9 +29,25 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 
 <br />
 
+### Apps
+
+```Shell
+npm pkg get version
+```
+
+<br />
+<br />
+<br />
+
+
+
 
 
 ## Vi Essentials Cheat-Sheet
+
+<br />
+
+
 
 ### Launching Vi
 - `view <file>` Read-only mode
