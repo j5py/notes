@@ -28,6 +28,17 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 > `xx` Clear the terminal `vv` Update the OS
 
 <br />
+<br />
+<br />
+
+
+
+
+## Node.js Environment
+
+<br />
+
+
 
 ### Apps
 
