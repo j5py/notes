@@ -2,7 +2,6 @@
 
 
 
-
 # Daily Linux
 
 <br />
@@ -40,6 +39,7 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 
 
 
+
 ### Apps
 
 ```Shell
@@ -49,7 +49,6 @@ npm pkg get version
 <br />
 <br />
 <br />
-
 
 
 
@@ -112,3 +111,47 @@ npm pkg get version
 ### Replace
 - `:s/any/new` Substitute "any" with "new"
 - `u` Undo
+
+<br />
+<br />
+<br />
+
+
+
+
+## IDE Tricks
+
+<br />
+
+
+
+
+### Regular Expressions
+
+
+```Shell
+from\s'.*[A-Z]
+```
+> To find files containing at least one uppercase letter
+
+<br />
+
+
+```Shell
+(?:const|let|var)\s+([A-Z_][\w-]*)\s*[:=]
+```
+> To find variables that start with an uppercase letter or an underscore, and/or contain a hyphen or an underscore
+
+<br />
+<br />
+
+
+
+### Terminal
+
+```Shell
+find ./<path> -name "<name>"
+```
+> From a repository to find a specific file name
+
+
