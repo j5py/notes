@@ -40,6 +40,31 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 
 
 
+### Processes
+
+<br />
+
+When you get a `Error: listen ... address already in use ...`
+
+
+```Shell
+lsof -i :<port_number>
+```
+> List open files to get the PID
+
+<br />
+
+```Shell
+kill <PID>
+```
+> Kill the process
+
+<br />
+<br />
+<br />
+
+
+
 ### Apps
 
 ```Shell
