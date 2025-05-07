@@ -11,14 +11,14 @@
 
 
 
-## Configure Bash Run Commands File
+## Bash Run Commands
 
 <br />
 
 
 
 
-### Short Alias Rules for Lightning-Fast Commands
+### Aliases for Lightning-Fast Commands
 
 
 ```Shell
@@ -78,7 +78,7 @@ npm pkg get version
 
 
 
-## Vi Essentials Cheat-Sheet
+## Vi Cheat-Sheet
 
 <br />
 
