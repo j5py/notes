@@ -33,6 +33,24 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 
 
 
+## Git
+
+<br />
+
+### List Files Changed in Feature Branch
+
+```Shell
+git checkout <reference_branch> && git diff --name-only <feature_branch>
+```
+> Do not forget to `git checkout <feature_branch>` afterwards
+
+<br />
+<br />
+<br />
+
+
+
+
 ## Node.js Environment
 
 <br />
