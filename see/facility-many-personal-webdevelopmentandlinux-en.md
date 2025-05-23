@@ -2,7 +2,7 @@
 
 
 
-# Daily Linux
+# Web Development and Linux
 
 <br />
 <br />
