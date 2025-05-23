@@ -1,27 +1,18 @@
-
-
-
-
-# Web Development and Linux
+Web Development and Linux
+================================================================
 
 <br />
 <br />
 <br />
 
-
-
-
-## Bash Run Commands
+Bash Run Commands
+----------------------------------------------------------------
 
 <br />
-
-
-
 
 ### Aliases for Lightning-Fast Commands
 
-
-```Shell
+```
 printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y"\n' >> ~/.bashrc
 ```
 > `xx` Clear the terminal `vv` Update the OS
@@ -30,16 +21,14 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 <br />
 <br />
 
-
-
-
-## Git
+Git
+----------------------------------------------------------------
 
 <br />
 
 ### List Files Changed in Feature Branch
 
-```Shell
+```
 git checkout <reference_branch> && git diff --name-only <feature_branch>
 ```
 > Do not forget to `git checkout <feature_branch>` afterwards
@@ -48,15 +37,10 @@ git checkout <reference_branch> && git diff --name-only <feature_branch>
 <br />
 <br />
 
-
-
-
-## Node.js Environment
+Node.js Environment
+----------------------------------------------------------------
 
 <br />
-
-
-
 
 ### Processes
 
@@ -64,15 +48,14 @@ git checkout <reference_branch> && git diff --name-only <feature_branch>
 
 When you get a `Error: listen ... address already in use ...`
 
-
-```Shell
+```
 lsof -i :<port_number>
 ```
 > List open files to get the PID
 
 <br />
 
-```Shell
+```
 kill <PID>
 ```
 > Kill the process
@@ -81,11 +64,9 @@ kill <PID>
 <br />
 <br />
 
-
-
 ### Apps
 
-```Shell
+```
 npm pkg get version
 ```
 
@@ -93,14 +74,10 @@ npm pkg get version
 <br />
 <br />
 
-
-
-
-## Vi Cheat-Sheet
+Vi Cheat-Sheet
+----------------------------------------------------------------
 
 <br />
-
-
 
 ### Launching Vi
 - `view <file>` Read-only mode
@@ -159,28 +136,21 @@ npm pkg get version
 <br />
 <br />
 
-
-
-
-## IDE Tricks
+IDE Tricks
+----------------------------------------------------------------
 
 <br />
 
-
-
-
 ### Regular Expressions
 
-
-```Shell
+```
 from\s'.*[A-Z]
 ```
 > To find files containing at least one uppercase letter
 
 <br />
 
-
-```Shell
+```
 (?:const|let|var)\s+([A-Z_][\w-]*)\s*[:=]
 ```
 > To find variables that start with an uppercase letter or an underscore, and/or contain a hyphen or an underscore
@@ -188,13 +158,13 @@ from\s'.*[A-Z]
 <br />
 <br />
 
-
-
 ### Terminal
 
-```Shell
-find ./<path> -name "<name>"
+```
+find ./<path> -name <name> 2>/dev/null
 ```
 > From a repository to find a specific file name
 
-
+<br />
+<br />
+<br />
