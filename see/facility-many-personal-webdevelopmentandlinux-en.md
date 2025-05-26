@@ -26,7 +26,11 @@ Git
 
 <br />
 
-### List Files Changed in Feature Branch
+### Committed Changes
+
+<br />
+
+#### List Files Changed in Feature Branch
 
 ```
 git checkout <reference_branch> && git diff --name-only <feature_branch>
@@ -36,7 +40,11 @@ git checkout <reference_branch> && git diff --name-only <feature_branch>
 <br />
 <br />
 
-### Stashing Changes
+### Uncommitted Changes
+
+<br />
+
+#### Stashing Changes
 
 <br />
 
@@ -66,6 +74,8 @@ git stash -a
 
 #### Listing Stashes
 
+<br />
+
 ```
 git stash list
 ```
@@ -73,7 +83,9 @@ git stash list
 
 <br />
 
-##### Applying and Dropping
+#### Applying and Dropping
+
+<br />
 
 ```
 git stash show -p
