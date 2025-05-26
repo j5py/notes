@@ -35,6 +35,78 @@ git checkout <reference_branch> && git diff --name-only <feature_branch>
 
 <br />
 <br />
+
+### Stashing Changes
+
+<br />
+
+```
+git stash
+```
+> Save changes on a stack and revert your working directory to the last committed state
+
+<br />
+
+```
+git stash save <message>
+```
+> Stash with a message
+
+```
+git stash -u
+```
+> Stash untracked files
+
+```
+git stash -a
+```
+> Stash all files (including ignored)
+
+<br />
+
+#### Listing Stashes
+
+```
+git stash list
+```
+> List all stashes
+
+<br />
+
+##### Applying and Dropping
+
+```
+git stash show -p
+```
+> View the patches in the most recent stash
+
+```
+git stash apply
+```
+> Apply the latest stash, the most recent stash is at the top
+
+```
+git stash pop
+```
+> Apply and drop the stash
+
+```
+git stash apply stash@{<index>}
+```
+> Apply a specific stash
+
+```
+git stash drop stash@{<index>}
+```
+> Drop a specific stash
+
+```
+git stash clear
+```
+> Clear all stashes
+
+<br />
+<br />
 <br />
 
 Node.js Environment
