@@ -30,12 +30,21 @@ Git
 
 <br />
 
-#### List Files Changed in Feature Branch
+#### List Files Differing Between Reference and Feature Branch
 
 ```
 git checkout <reference_branch> && git diff --name-only <feature_branch>
 ```
 > Do not forget to `git checkout <feature_branch>` afterwards
+
+<br />
+
+#### Ckeck Your Own Changes in Feature Branch
+
+```
+git diff --name-only <reference_branch>...<feature_branch>
+```
+> From any branch
 
 <br />
 <br />
@@ -158,29 +167,6 @@ npm pkg get version
 <br />
 <br />
 
-Avoid Overthinking Debugging
-----------------------------------------------------------------
-
-<br />
-
-- Use explicit `console.log` statements with a prefix to easily filter messages in DevTools
-  ```JavaScript
-  console.log('j5py from "_____" log of "_____":', _____);
-  ```
-- Watch values by logging state changes using React's `useEffect` hook
-  ```JavaScript
-  useEffect(() => {
-      console.log('j5py from "_____" log of "_____":', _____);
-  }, [_____]);
-  ```
-- Copy objects from DevTools logs and compare the outputs with the expected results
-- Ensure the correct usage of solutions by checking signatures in third-party documentation
-- Then, you can still add breakpoints
-
-<br />
-<br />
-<br />
-
 Vi Cheat-Sheet
 ----------------------------------------------------------------
 
@@ -243,12 +229,14 @@ Vi Cheat-Sheet
 <br />
 <br />
 
-IDE Tricks
+IDE and DevTools Tricks
 ----------------------------------------------------------------
 
 <br />
 
 ### Regular Expressions
+
+<br />
 
 ```
 from\s'.*[A-Z]
@@ -267,10 +255,33 @@ from\s'.*[A-Z]
 
 ### Terminal
 
+<br />
+
 ```
 find ./<path> -name <name> 2>/dev/null
 ```
 > From a repository to find a specific file name
+
+<br />
+<br />
+
+### Avoid Overthinking Debugging
+
+<br />
+
+- Use explicit `console.log` statements with a prefix to easily filter messages in DevTools
+  ```JavaScript
+  console.log('j5py from "_____" log of "_____":', _____);
+  ```
+- Watch values by logging state changes using React's `useEffect` hook
+  ```JavaScript
+  useEffect(() => {
+      console.log('j5py from "_____" log of "_____":', _____);
+  }, [_____]);
+  ```
+- Copy objects from DevTools logs and compare the outputs with the expected results
+- Ensure the correct usage of solutions by checking signatures in third-party documentation
+- Then, you can still add breakpoints
 
 <br />
 <br />
