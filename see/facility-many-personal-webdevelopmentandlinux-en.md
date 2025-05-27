@@ -32,14 +32,19 @@ Git
 
 #### List Files Differing Between Reference and Feature Branch
 
+<br />
+
 ```
 git checkout <reference_branch> && git diff --name-only <feature_branch>
 ```
 > Do not forget to `git checkout <feature_branch>` afterwards
 
 <br />
+<br />
 
 #### Ckeck Your Own Changes in Feature Branch
+
+<br />
 
 ```
 git diff --name-only <reference_branch>...<feature_branch>
@@ -63,22 +68,28 @@ git stash
 > Save changes on a stack and revert your working directory to the last committed state
 
 <br />
+<br />
 
 ```
 git stash save <message>
 ```
 > Stash with a message
 
+<br />
+
 ```
 git stash -u
 ```
 > Stash untracked files
+
+<br />
 
 ```
 git stash -a
 ```
 > Stash all files (including ignored)
 
+<br />
 <br />
 
 #### Listing Stashes
@@ -91,6 +102,7 @@ git stash list
 > List all stashes
 
 <br />
+<br />
 
 #### Applying and Dropping
 
@@ -101,25 +113,37 @@ git stash show -p
 ```
 > View the patches in the most recent stash
 
+<br />
+
 ```
 git stash apply
 ```
 > Apply the latest stash, the most recent stash is at the top
+
+<br />
+
 
 ```
 git stash pop
 ```
 > Apply and drop the stash
 
+<br />
+
+
 ```
 git stash apply stash@{<index>}
 ```
 > Apply a specific stash
 
+<br />
+
 ```
 git stash drop stash@{<index>}
 ```
 > Drop a specific stash
+
+<br />
 
 ```
 git stash clear
@@ -229,12 +253,16 @@ Vi Cheat-Sheet
 <br />
 <br />
 
-IDE and DevTools Tricks
+Tricks
 ----------------------------------------------------------------
 
 <br />
 
-### Regular Expressions
+### IDE
+
+<br />
+
+#### Search with Regular Expressions
 
 <br />
 
@@ -251,9 +279,8 @@ from\s'.*[A-Z]
 > To find variables that start with an uppercase letter or an underscore, and/or contain a hyphen or an underscore
 
 <br />
-<br />
 
-### Terminal
+#### Terminal<br />
 
 <br />
 
@@ -265,7 +292,11 @@ find ./<path> -name <name> 2>/dev/null
 <br />
 <br />
 
-### Avoid Overthinking Debugging
+### IDE and DevTools
+
+<br />
+
+#### Avoid Overthinking Debugging
 
 <br />
 
