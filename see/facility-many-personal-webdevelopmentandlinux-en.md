@@ -5,17 +5,43 @@ Web Development and Linux
 <br />
 <br />
 
-Bash Run Commands
+Bash
 ----------------------------------------------------------------
 
 <br />
 
-### Aliases for Lightning-Fast Commands
+### Bash Run Commands
+
+<br />
+
+#### Aliases for Lightning-Fast Commands
 
 ```
 printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y"\n' >> ~/.bashrc
 ```
 > `xx` Clear the terminal `vv` Update the OS
+
+<br />
+<br />
+
+
+### Shortcuts for Command Line Editing in Bash
+> Only those that work in a VS Code terminal
+
+<br />
+
+| Shortcut    | Description                                             |
+|------------:|---------------------------------------------------------|
+| `Tab`       | Autocomplete commands or file names                     |
+| `Ctrl + R`  | Search through command history                          |
+| `Alt + B`   | Move backward one word                                  |
+| `Ctrl + A`  | Move to the beginning of the line                       |
+| `Alt + F`   | Move forward one word                                   |
+| `Ctrl + U`  | Clear the line from the cursor to the beginning         |
+| `Ctrl + W`  | Clear the word before the cursor                        |
+| `Ctrl + C`  | Cancel the current command                              |
+| `Ctrl + Z`  | Suspend the current command (can be resumed with `fg`)  |
+| `Ctrl + L`  | Clear the screen (like the `clear` command)             |
 
 <br />
 <br />
