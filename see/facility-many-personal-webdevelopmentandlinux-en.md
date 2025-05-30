@@ -1,31 +1,14 @@
 Web Development and Linux
 ================================================================
 
-<br />
-<br />
-<br />
+<br /><br /><br />
 
 Bash
 ----------------------------------------------------------------
 
-<br />
+<br /><br />
 
-### Bash Run Commands
-
-<br />
-
-#### Aliases for Lightning-Fast Commands
-
-```
-printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y"\n' >> ~/.bashrc
-```
-> `xx` Clear the terminal `vv` Update the OS
-
-<br />
-<br />
-
-
-### Shortcuts for Command Line Editing in Bash
+### Shortcuts
 > Only those that work in a VS Code terminal
 
 <br />
@@ -43,46 +26,29 @@ printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrad
 | `Ctrl + Z`  | Suspend the current command (can be resumed with `fg`)  |
 | `Ctrl + L`  | Clear the screen (like the `clear` command)             |
 
+<br /><br />
+
+### Bash Run Commands
+
+> Aliases for lightning-Fast commands
+
 <br />
-<br />
-<br />
+
+```
+printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y"\n' >> ~/.bashrc
+```
+> `xx` Clear the terminal `vv` Update the OS
+
+<br /><br /><br />
 
 Git
 ----------------------------------------------------------------
 
-<br />
+<br /><br />
 
-### Committed Changes
+### Uncommitted
 
-<br />
-
-#### List Files Differing Between Reference and Feature Branch
-
-<br />
-
-```
-git checkout <reference_branch> && git diff --name-only <feature_branch>
-```
-> Do not forget to `git checkout <feature_branch>` afterwards
-
-<br />
-<br />
-
-#### Ckeck Your Own Changes in Feature Branch
-
-<br />
-
-```
-git diff --name-only <reference_branch>...<feature_branch>
-```
-> From any branch
-
-<br />
-<br />
-
-### Uncommitted Changes
-
-<br />
+<br /><br />
 
 #### Stashing Changes
 
@@ -93,7 +59,6 @@ git stash
 ```
 > Save changes on a stack and revert your working directory to the last committed state
 
-<br />
 <br />
 
 ```
@@ -115,10 +80,9 @@ git stash -a
 ```
 > Stash all files (including ignored)
 
-<br />
-<br />
+<br /><br />
 
-#### Listing Stashes
+##### Listing Stashes
 
 <br />
 
@@ -127,10 +91,9 @@ git stash list
 ```
 > List all stashes
 
-<br />
-<br />
+<br /><br />
 
-#### Applying and Dropping
+##### Applying and Dropping
 
 <br />
 
@@ -148,14 +111,12 @@ git stash apply
 
 <br />
 
-
 ```
 git stash pop
 ```
 > Apply and drop the stash
 
 <br />
-
 
 ```
 git stash apply stash@{<index>}
@@ -176,20 +137,134 @@ git stash clear
 ```
 > Clear all stashes
 
+<br /><br /><br />
+
+### Committed
+
+<br /><br />
+
+#### Not Pushed
+
 <br />
+
+##### Undo Last Commit
+
 <br />
+
+```
+git reset --soft HEAD~1
+```
+> Keep changes staged
+
 <br />
+
+```
+git reset --hard HEAD~1
+
+```
+> Discard changes completely
+
+<br /><br />
+
+#### Pushed
+
+<br />
+
+##### Amend Last Commit Message
+
+<br />
+
+```
+git commit --amend -m <new_message> && git push --force
+```
+> Update the last commit message and overwrite the remote history
+> <br /><br />
+> Edit `<new_message>` with the changes you wish to apply
+
+<br /><br />
+
+##### Patch Previous Commit
+
+<br />
+
+This process allows you to combine the last commit as a patch with the previous one after it has been pushed
+
+```
+git rebase -i HEAD~2
+```
+> Change `pick` to `squash`, follow the editor instructions to save and exit
+
+<br />
+
+```
+git push --force
+```
+> Force push the changes
+
+<br /><br />
+
+##### Find Branches
+
+<br />
+
+```
+git branch -a | grep <keyword>
+```
+> List both local and remote branches matching a keyword
+
+<br /><br />
+
+##### Branch Differences
+
+<br />
+
+###### Changed Files Since Branch Creation
+
+```
+git checkout <reference_branch> && git diff --name-only <feature_branch>
+```
+> Do not forget to `git checkout <feature_branch>` afterwards
+
+<br />
+
+###### Your Changes Since Branch Creation
+
+```
+git diff --name-only <reference_branch>...<feature_branch>
+```
+> From any branch
+
+<br />
+
+###### Merge Latest from Reference Branch
+
+```
+git fetch origin && git merge origin/<reference_branch>
+```
+> Update your development branch with the latest changes from the main branch
+
+<br /><br /><br />
 
 Node.js Environment
 ----------------------------------------------------------------
 
 <br />
 
-### Processes
+### App Version
+
+```
+npm pkg get version
+```
+
+<br /><br />
+
+### Address Already in Use
 
 <br />
 
-When you get a `Error: listen ... address already in use ...`
+When you get `Error: listen ... address already in use ...`
+
+<br />
 
 ```
 lsof -i :<port_number>
@@ -203,19 +278,7 @@ kill <PID>
 ```
 > Kill the process
 
-<br />
-<br />
-<br />
-
-### Apps
-
-```
-npm pkg get version
-```
-
-<br />
-<br />
-<br />
+<br /><br /><br />
 
 Vi Cheat-Sheet
 ----------------------------------------------------------------
@@ -275,9 +338,7 @@ Vi Cheat-Sheet
 - `:s/any/new` Substitute "any" with "new"
 - `u` Undo
 
-<br />
-<br />
-<br />
+<br /><br /><br />
 
 Tricks
 ----------------------------------------------------------------
@@ -315,8 +376,7 @@ find ./<path> -name <name> 2>/dev/null
 ```
 > From a repository to find a specific file name
 
-<br />
-<br />
+<br /><br />
 
 ### IDE and DevTools
 
@@ -340,6 +400,4 @@ find ./<path> -name <name> 2>/dev/null
 - Ensure the correct usage of solutions by checking signatures in third-party documentation
 - Then, you can still add breakpoints
 
-<br />
-<br />
-<br />
+<br /><br /><br />
