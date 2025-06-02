@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 if [ "$#" -eq 1 ]; then
     naming_convention=$(echo "$1" | \
@@ -8,7 +8,14 @@ if [ "$#" -eq 1 ]; then
         tr ' ' '-' | \
         tr -s '-' | \
         sed 's/^-//;s/-$//')
-    echo "$naming_convention"
+
+    read -p "Do you want to prefix the output with 'task/'? (y/n): " prefix_choice
+
+    if [[ "$prefix_choice" == "y" || "$prefix_choice" == "Y" ]]; then
+        echo "task/$naming_convention"
+    else
+        echo "$naming_convention"
+    fi
 else
     echo "This script expects a command-line argument string to return its hyphenated lowercase version"
 fi
