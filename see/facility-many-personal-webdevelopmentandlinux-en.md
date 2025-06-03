@@ -388,13 +388,11 @@ find ./<path> -name <name> 2>/dev/null
 
 - Use explicit `console.log` statements with a prefix to easily filter messages in DevTools
   ```JavaScript
-  if (true) console.log(`abc`, { xyz });
+  console.log(`abc`, xyz);
   ```
 - Watch values by logging state changes using React's `useEffect` hook
   ```JavaScript
-  useEffect(() => {
-      if (true) console.log(`abc`, { xyz });
-  }, [xyz]);
+  useEffect(() => { console.log(`abc`, xyz); }, [xyz]);
   ```
 - Copy objects from DevTools logs and compare the outputs with the expected results
 - Ensure the correct usage of solutions by checking signatures in third-party documentation
