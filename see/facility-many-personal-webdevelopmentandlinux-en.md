@@ -46,6 +46,43 @@ Git
 
 <br /><br />
 
+### Published
+
+
+<br /><br />
+
+#### Rename Your Current Branch
+
+<br />
+
+```
+git branch -m <new_name>
+```
+> Rename local branch
+
+<br />
+
+```
+git push origin --delete <old_name>
+```
+> Delete old branch from remote
+
+<br />
+
+```
+git push origin <new_name>
+```
+> Push new branch to remote
+
+<br />
+
+```
+git push --set-upstream origin <new_name>
+```
+> Set upstream connection from the local branch to the specific remote branch on origin
+
+<br /><br /><br />
+
 ### Uncommitted
 
 <br /><br />
@@ -345,7 +382,15 @@ Tricks
 
 <br />
 
-### IDE
+### Visual Studio Code
+
+<br />
+
+#### IntelliSense
+
+<br />
+
+`Ctrl + Space` activates context-aware code suggestions
 
 <br />
 
