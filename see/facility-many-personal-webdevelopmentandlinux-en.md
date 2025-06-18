@@ -347,6 +347,24 @@ kill <PID>
 ```
 > Kill the process
 
+<br /><br />
+
+
+### React
+
+#### TanStack Query Devtools
+
+<br />
+
+```
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+```
+
+```
+<ReactQueryDevtools initialIsOpen={false} />
+```
+> For [Floating Mode](https://tanstack.com/query/latest/docs/framework/react/devtools#floating-mode)
+
 <br /><br /><br />
 
 Vi Cheat-Sheet
