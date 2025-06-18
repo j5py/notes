@@ -81,6 +81,38 @@ git push --set-upstream origin <new_name>
 ```
 > Set upstream connection from the local branch to the specific remote branch on origin
 
+<br /><br />
+
+#### Recreate Branch for Latest Changes
+
+<br />
+
+```
+git branch -d <feature_branch>
+```
+> Delete the local branch, `-D` to force delete
+
+<br />
+
+```
+git push origin --delete <feature_branch>
+```
+> Delete the remote branch
+
+<br />
+
+```
+git checkout -b <feature_branch>
+```
+> Recreate the branch
+
+<br />
+
+```
+git push origin <feature_branch>
+```
+> Push the new branch
+
 <br /><br /><br />
 
 ### Uncommitted
