@@ -119,6 +119,44 @@ git push origin <feature_branch>
 
 <br /><br />
 
+#### Co-authors
+
+<br />
+
+##### Get Co-author Email
+
+```
+git log --author="<username>"
+```
+
+> If GitHub's `noreply` email address appears, use `<username>@users.noreply.github.com`
+
+<br />
+
+##### Set Your No Reply
+
+```
+git config user.email "<username>@users.noreply.github.com"
+```
+
+<br />
+
+##### Commit Message
+
+```
+Message...
+
+Co-authored-by: username1 <username1@users.noreply.github.com>
+Co-authored-by: username2 <username2@example.com>
+...
+```
+
+> While angle brackets < and > are usually placeholders, they should stay in the Co-authored-by lines as part of the format
+
+<br />
+
+<br /><br />
+
 #### Stashing Changes
 
 <br />
