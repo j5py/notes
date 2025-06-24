@@ -13,11 +13,29 @@ to_branch_name_format() {
 to_pr_title_format() {
     echo "$1" | \
         iconv -f utf-8 -t ascii//TRANSLIT | \
-        sed 's/[^a-zA-Z0-9 ]/ /g' | \
+        sed 's/[^a-zA-Z0-9 -]/ /g' | \
         tr '-' ' ' | \
-        awk '{for(i=1;i<=NF;i++){$i=toupper(substr($i,1,1)) tolower(substr($i,2))}}1' | \
         sed 's/  */ /g' | \
-        sed 's/^ *//;s/ *$//'
+        sed 's/^ *//;s/ *$//' | \
+        awk 'BEGIN{
+            split("a an and as at but by for if in nor of on or out off onto past per plus sans save so the than till to up upon via vs versus with from into upon over yet", minorwords)
+            for(i in minorwords) minor[minorwords[i]]=1
+        }
+        {
+            for(i=1;i<=NF;i++){
+                if($i == toupper($i)){
+                    word=$i
+                } else {
+                    word=tolower($i)
+                }
+                if(i!=1 && i!=NF && (word in minor)){
+                    $i=word
+                } else {
+                    $i=toupper(substr(word,1,1)) substr(word,2)
+                }
+            }
+            print
+        }'
 }
 
 if [ "$1" = "-pr" ] && [ -n "$2" ]; then
