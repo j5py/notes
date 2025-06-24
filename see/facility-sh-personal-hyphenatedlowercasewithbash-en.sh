@@ -18,7 +18,7 @@ to_pr_title_format() {
         sed 's/  */ /g' | \
         sed 's/^ *//;s/ *$//' | \
         awk 'BEGIN{
-            split("a an and as at but by for if in nor of on or out off onto past per plus sans save so the than till to up upon via vs versus with from into upon over yet", minorwords)
+            split("a an and as at but by for if in nor of on or so the to up yet with", minorwords)
             for(i in minorwords) minor[minorwords[i]]=1
         }
         {
