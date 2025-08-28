@@ -226,14 +226,14 @@ git stash pop
 <br />
 
 ```
-git stash apply stash@{<index>}
+git stash apply <index>
 ```
 > Apply a specific stash
 
 <br />
 
 ```
-git stash drop stash@{<index>}
+git stash drop <index>
 ```
 > Drop a specific stash
 
@@ -349,6 +349,17 @@ git diff --name-only <reference_branch>...<feature_branch>
 git fetch origin && git merge origin/<reference_branch>
 ```
 > Update your development branch with the latest changes from the main branch
+
+<br /><br /><br />
+
+### Pull Request
+
+#### Conflicts
+
+```
+git fetch origin && git merge origin/<reference_branch>
+```
+> From your `<feature_branch>`
 
 <br /><br /><br />
 
