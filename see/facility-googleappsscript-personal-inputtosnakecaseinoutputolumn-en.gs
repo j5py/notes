@@ -1,6 +1,6 @@
 function inputToSnakeCaseInOutputColumn() {
 
-    const prefix = null // or any lowercased string you want
+    const prefix = null; // or any lowercased string you want
 
     //
     //
@@ -30,7 +30,7 @@ function inputToSnakeCaseInOutputColumn() {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(googleSheetsTab);
     if (!sheet) {
       Logger.log("The sheet does not exist or the name is incorrect.");
-      return;
+      return
     }
 
     const range = sheet.getRange(firstRowIncluded, inputColumn, lastRowIncluded - firstRowIncluded + 1);
@@ -43,11 +43,11 @@ function inputToSnakeCaseInOutputColumn() {
                 return String(str)
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '_')
-                    .replace(/(^_|_$)/g, '');
+                    .replace(/(^_|_$)/g, '')
             })(input);
-            return [prefix ? `${prefix}_${snakeCase}` : snakeCase];
+            return [prefix ? `${prefix}_${snakeCase}` : snakeCase]
         }
-        return [''];
+        return ['']
     });
 
     sheet.getRange(firstRowIncluded, outputColumn, transformedValues.length, 1).setValues(transformedValues);

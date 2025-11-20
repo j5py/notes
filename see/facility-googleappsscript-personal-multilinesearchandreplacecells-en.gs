@@ -30,7 +30,7 @@ Have a nice day!`;
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(googleSheetsTab);
     if (!sheet) {
       Logger.log("The sheet does not exist or the name is incorrect.");
-      return;
+      return
     }
 
     var range = sheet.getDataRange();
@@ -38,10 +38,10 @@ Have a nice day!`;
     for (var i = 0; i < values.length; i++) {
       for (var j = 0; j < values[i].length; j++) {
         if (typeof values[i][j] === "string") {
-          values[i][j] = values[i][j].replace(new RegExp(searchCellContent.replace(/\n/g, "\\n"), "g"), replaceCellContent);
+          values[i][j] = values[i][j].replace(new RegExp(searchCellContent.replace(/\n/g, "\\n"), "g"), replaceCellContent)
         }
       }
     }
 
-    range.setValues(values);
+    range.setValues(values)
 }

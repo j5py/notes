@@ -21,7 +21,7 @@ function removeLineBreaksInCells() {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(googleSheetsTab);
     if (!sheet) {
         Logger.log("The sheet does not exist or the name is incorrect.");
-        return;
+        return
     }
 
     var values = sheet.getRange(targetedRange).getValues();
@@ -29,10 +29,10 @@ function removeLineBreaksInCells() {
         for (var j = 0; j < values[i].length; j++) {
             if (typeof values[i][j] === "string") {
                 values[i][j] = values[i][j].replace(/(\r\n|\n|\r)/g, "");
-                values[i][j] = values[i][j].trim();
+                values[i][j] = values[i][j].trim()
             }
         }
     }
 
-    sheet.getRange(targetedRange).setValues(values);
+    sheet.getRange(targetedRange).setValues(values)
 }

@@ -26,17 +26,17 @@ function addContentPrefixToCells() {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(googleSheetsTab);
     if (!sheet) {
         Logger.log("The sheet does not exist or the name is incorrect.");
-        return;
+        return
     }
 
     var values = sheet.getRange(targetedRange).getValues();
     for (var i = 0; i < values.length; i++) {
         for (var j = 0; j < values[i].length; j++) {
             if (typeof values[i][j] === "string" && values[i][j] !== "") {
-                values[i][j] = cellContentPrefix + values[i][j];
+                values[i][j] = cellContentPrefix + values[i][j]
             }
         }
     }
 
-    sheet.getRange(targetedRange).setValues(values);
+    sheet.getRange(targetedRange).setValues(values)
 }
