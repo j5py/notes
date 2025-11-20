@@ -2,6 +2,7 @@ function addContentPrefixToCells() {
 
     //
     //
+    // TODO: Change `var` declarations to `const` or `let` where appropriate.
     //
     //
 
