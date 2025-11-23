@@ -20,7 +20,7 @@ function extractJsonDataIntoColumnRange() {
     //
     //
 
-    var googleSheetsTab = "Hey, I'm the tab name!";
+    const googleSheetsTab = "Hey, I'm the tab name!";
 
     // COLUMNS
 
