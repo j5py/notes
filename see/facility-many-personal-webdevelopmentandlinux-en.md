@@ -8,6 +8,22 @@ Bash
 
 <br /><br />
 
+### Searching
+
+
+#### String from Your Home Directory and Higher
+
+```
+grep -r "your_string" ~/ 2>/dev/null
+```
+
+#### Files by Extension from Home Directory and Higher
+```
+find ~/ -type f -name "*.pub" 2>/dev/null
+```
+
+<br /><br />
+
 ### Shortcuts
 > Only those that work in a VS Code terminal
 
