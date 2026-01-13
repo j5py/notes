@@ -665,16 +665,6 @@ Utils
 
 <br />
 
-### HTML
-
-#### Secure External Link
-
-```
-<a href="" target="_blank" rel="noopener noreferrer">___</a>
-```
-
-<br />
-
 ### Dataset
 
 #### Basic Details
@@ -712,5 +702,21 @@ https://fake.false.glitch
 ```
 N30-SP00N-404-N0TF0UND-M4TR1X-G71TCH
 ```
+<br />
+
+### HTML
+
+#### Secure External Link
+
+```
+<a href="" target="_blank" rel="noopener noreferrer">___</a>
+```
+<br />
+
+### New Job
+
+#### Bookmarks Bar Folders
+
+External, Public, Personal, Internal, References, Desk.
 
 <br /><br /><br />
