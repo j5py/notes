@@ -1,3 +1,6 @@
+
+<br />
+
 Web Development and Linux
 ================================================================
 
@@ -18,13 +21,13 @@ CLI
 
 ##### Update Software Packages
 
-```
+```Shell
 sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
 ```
 
 ##### Remove Package
 
-```
+```Shell
 sudo apt purge -y <package_name> && sudo apt autoremove -y && sudo apt autoclean
 ```
 
@@ -293,6 +296,16 @@ git stash clear
 
 <br /><br />
 
+#### History
+
+<br />
+
+```
+git log --oneline
+```
+
+<br /><br />
+
 #### Not Pushed
 
 <br />
@@ -419,6 +432,24 @@ npm pkg get version
 
 <br /><br />
 
+### localhost
+> Assuming you have updated the `scripts` section of your **package.json**
+
+#### Start
+
+```Shell
+git pull && npm install && npm run <script>
+```
+
+#### Stop
+
+```Shell
+npm run <script>
+```
+> After `Ctrl|Cmd + C`
+
+<br /><br />
+
 ### Address Already in Use
 
 <br />
@@ -441,6 +472,21 @@ kill <PID>
 
 <br /><br />
 
+### Docker
+
+#### Database Management System
+
+```
+sudo docker compose up <dbms>
+```
+```
+sudo docker ps
+```
+```
+sudo docker stop <container_id>
+```
+
+<br /><br />
 
 ### React
 
@@ -532,24 +578,23 @@ Tricks
 
 <br />
 
+#### Extra Whitespaces
 ```
 (?<=\S) {2,}
 ```
-> Identify extra Whitespaces
 
-<br />
+#### Import Containing Uppercase
 
 ```
 from\s'.*[A-Z]
 ```
-> To find files containing at least one uppercase letter
 
-<br />
+#### Unusual Variable Names
 
 ```
 (?:const|let|var)\s+([A-Z_][\w-]*)\s*[:=]
 ```
-> To find variables that start with an uppercase letter or an underscore, and/or contain a hyphen or an underscore
+> Start with an uppercase letter or an underscore, and may contain a hyphen or an underscore
 
 <br />
 
@@ -595,5 +640,61 @@ from\s'.*[A-Z]
 })('text');
 ```
 > Console > Create live expression
+
+<br /><br /><br />
+
+
+Utils
+----------------------------------------------------------------
+
+<br />
+
+### HTML
+
+#### Secure External Link
+
+```
+<a href="" target="_blank" rel="noopener noreferrer">___</a>
+```
+
+<br />
+
+### Dataset
+
+#### Basic Details
+
+```
+John Wheat
+```
+```
+Lorem Quantum
+```
+```
+300 Multiple Choices Avenue
+```
+```
+Apt 101
+```
+```
+NY
+```
+```
+10001
+```
+```
+New York
+```
+```
++12127773333
+```
+```
+lorem-quantum@test.glitch
+```
+```
+https://fake.false.glitch
+```
+```
+N30-SP00N-404-N0TF0UND-M4TR1X-G71TCH
+```
 
 <br /><br /><br />
