@@ -1,0 +1,16 @@
+type: ________
+url: ________
+tile: ________
+report: |
+  ________
+  ________
+  ________
+details:
+  - update:
+      branch:
+        git: ________
+        url: ________
+      pr:
+        title: ________
+        url: ________
+        status: ________
