@@ -1,4 +1,4 @@
 # Notes
-- `see/facility ... .*` My solutions to a given problem, neat and tidy
-- `see/lesson ... .md` My own examples from lessons, strictly the essentials
-- `see/lesson ... .txt` My notes, voluminous but raw and personal
+- `see/facility ... .md|js|sh|yaml` Solutions, neat and tidy
+- `see/lesson ... .md|py` Examples from lessons, strictly the essentials
+- `see/lesson ... .txt` Notes, voluminous but raw and personal
