@@ -3,28 +3,55 @@ Web Development and Linux
 
 <br /><br /><br />
 
-Bash
+CLI
 ----------------------------------------------------------------
 
 <br /><br />
 
-### Searching
+### System
 
+<br />
 
-#### String from Your Home Directory and Higher
+#### Advanced Package Tool
+
+<br />
+
+##### Update Software Packages
 
 ```
-grep -r "your_string" ~/ 2>/dev/null
+sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y
 ```
 
-#### Files by Extension from Home Directory and Higher
+##### Remove Package
+
 ```
-find ~/ -type f -name "*.pub" 2>/dev/null
+sudo apt purge -y <package_name> && sudo apt autoremove -y && sudo apt autoclean
+```
+
+<br />
+
+#### Searching
+
+<br />
+
+##### String from Your Home Directory and Higher
+
+```
+grep -r "<string>" ~/ 2>/dev/null
+```
+
+##### Files by Extension from Home Directory and Higher
+```
+find ~/ -type f -name "*.<extension>" 2>/dev/null
 ```
 
 <br /><br />
 
-### Shortcuts
+### Bash
+
+<br />
+
+#### Shortcuts
 > Only those that work in a VS Code terminal
 
 <br />
@@ -44,7 +71,7 @@ find ~/ -type f -name "*.pub" 2>/dev/null
 
 <br /><br />
 
-### Bash Run Commands
+#### Bash Run Commands
 
 > Aliases for lightning-Fast commands
 
@@ -501,15 +528,14 @@ Tricks
 
 <br />
 
-#### IntelliSense
-
-<br />
-
-`Ctrl + Space` activates context-aware code suggestions
-
-<br />
-
 #### Search with Regular Expressions
+
+<br />
+
+```
+(?<=\S) {2,}
+```
+> Identify extra Whitespaces
 
 <br />
 
@@ -527,25 +553,22 @@ from\s'.*[A-Z]
 
 <br />
 
-#### Terminal<br />
+#### IntelliSense
 
 <br />
 
-```
-find ./<path> -name <name> 2>/dev/null
-```
-> From a repository to find a specific file name
+`Ctrl + Space` activates context-aware code suggestions
 
 <br /><br />
 
-### IDE and DevTools
+### DevTools
 
 <br />
 
-#### Avoid Overthinking Debugging
+#### Debugging
 
-<br />
-
+- Check requests and responses in the Network tab
+- Ensure the correct usage of solutions by checking signatures in third-party documentation
 - Use explicit `console.log` statements with a prefix to easily filter messages in DevTools
   ```JavaScript
   console.log(`abc`, xyz);
@@ -555,7 +578,22 @@ find ./<path> -name <name> 2>/dev/null
   useEffect(() => { console.log(`abc`, xyz); }, [xyz]);
   ```
 - Copy objects from DevTools logs and compare the outputs with the expected results
-- Ensure the correct usage of solutions by checking signatures in third-party documentation
 - Then, you can still add breakpoints
+
+
+<br />
+
+#### Unlock Copy/Paste
+
+```JavaScript
+(function(t) {
+    const b = document.body;
+    b.style.userSelect = t;
+    b.style.webkitUserSelect = t;
+    b.style.mozUserSelect = t;
+    b.style.msUserSelect = t;
+})('text');
+```
+> Console > Create live expression
 
 <br /><br /><br />
