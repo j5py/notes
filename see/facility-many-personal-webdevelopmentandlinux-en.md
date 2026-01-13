@@ -578,18 +578,18 @@ Tricks
 
 <br />
 
-#### Extra Whitespaces
+##### Extra Whitespaces
 ```
 (?<=\S) {2,}
 ```
 
-#### Import Containing Uppercase
+##### Import Containing Uppercase
 
 ```
 from\s'.*[A-Z]
 ```
 
-#### Unusual Variable Names
+##### Unusual Variable Names
 
 ```
 (?:const|let|var)\s+([A-Z_][\w-]*)\s*[:=]
