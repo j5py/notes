@@ -83,7 +83,14 @@ find ~/ -type f -name "*.<extension>" 2>/dev/null
 ```
 printf '\nalias xx="clear"; alias vv="sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y"\n' >> ~/.bashrc
 ```
-> `xx` Clear the terminal `vv` Update the OS
+> Open a new terminal for this to work: `xx` to clear the terminal, `vv` to update packages
+
+<br />
+
+```
+~/.bashrc
+```
+> Location
 
 <br /><br /><br />
 
@@ -424,6 +431,15 @@ Node.js Environment
 
 <br />
 
+### NPM Token
+
+```Shell
+printf '\nexport NPM_TOKEN="<token>"' >> ~/.bashrc
+```
+> Get your [Personal access tokens (classic)](https://github.com/settings/tokens)
+
+<br />
+
 ### App Version
 
 ```
@@ -434,6 +450,8 @@ npm pkg get version
 
 ### localhost
 > Assuming you have updated the `scripts` section of your **package.json**
+
+<br />
 
 #### Start
 
@@ -448,13 +466,11 @@ npm run <script>
 ```
 > After `Ctrl|Cmd + C`
 
-<br /><br />
-
-### Address Already in Use
-
 <br />
 
-When you get `Error: listen ... address already in use ...`
+#### Already in Use
+
+> When you get `Error: listen ... address already in use ...`
 
 <br />
 
