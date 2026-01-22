@@ -446,6 +446,18 @@ printf '\nexport NPM_TOKEN="<token>"' >> ~/.bashrc
 npm pkg get version
 ```
 
+<br />
+
+### Dependencies
+
+#### Update to Latest
+
+```
+npm i @<namespace>/<package>@latest
+```
+> Get the latest version of a package when immediately required
+
+
 <br /><br />
 
 ### localhost
