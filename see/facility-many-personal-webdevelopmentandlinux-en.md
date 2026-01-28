@@ -734,10 +734,32 @@ Aliquam convallis sollicitudin purus. Praesent aliquam, enim at fermentum mollis
 ```
 <br />
 
-### New Job
+### Productivity
 
 #### Bookmarks Bar Folders
 
 External, Public, Personal, Internal, References, Desk.
+
+#### Dev Task Tracking Template
+
+```yaml
+type: ________
+url: ________
+tile: ________
+report: |
+  ________
+  ________
+  ________
+details:
+  - update:
+      branch:
+        git: ________
+        url: ________
+      pr:
+        title: ________
+        url: ________
+        status: ________
+```
+> 22221122-type-id-title.yaml
 
 <br /><br /><br />
